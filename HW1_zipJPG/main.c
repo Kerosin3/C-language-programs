@@ -57,7 +57,7 @@ int find_valid_jpg(FILE* fp){
 		}
 		//printf("0x%X \n",buff[0]);
 		//printf("0x%X \n",buff[1]);
-		word = word=((0xFFFF & (buff[0] << 8  )) + buff[1] );
+		word = ((0xFFFF & (buff[0] << 8  )) + buff[1] );
 		printf("0x%X\t\t,i = %d \n",word,i);
 		if (word == JPG_START) {
 			printf("found valid beginning\n");
