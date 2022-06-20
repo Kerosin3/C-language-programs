@@ -12,14 +12,16 @@
 signed long long read_bytes(FILE*,unsigned,unsigned, ...); //retuns last byte number
 unsigned long find_valid_jpg(FILE*);
 unsigned long find_zip_filename(FILE*);
-unsigned long extract_filename(FILE*, unsigned long offset);
+signed long extract_filename(FILE*, unsigned long offset);
 
 unsigned global_offset = 0x0;
 
 int main(int argc, char *argv[])
 {
 	unsigned long long jpg_end = 0x0;
-	unsigned long first_signature_zip = 0x0;
+	unsigned long long zip_temp= 0x0;
+	unsigned long first_signature_zip = 0x1;
+	unsigned n_files= 0;
 	if (argc <= 1) {
 		printf("Please enter filename, aborting..\n");
 		return 0;
@@ -32,10 +34,20 @@ int main(int argc, char *argv[])
 	}
 	fp = fopen(argv[1],"rb");
 	if (!(jpg_end = find_valid_jpg(fp))) exit(1); // find whether this is a valid jpg file
-	first_signature_zip = find_zip_filename(fp);
-	if (first_signature_zip) printf("first zip signature offset is: 0x%X\n",first_signature_zip);
-	extract_filename(fp,first_signature_zip);
-	printf("-----%x\n" ,read_bytes(fp,global_offset,2,0x48,0x2C)); 
+	while ( first_signature_zip = find_zip_filename(fp) ) {
+		if (DEBUG) printf("first zip signature offset is: 0x%X\n",first_signature_zip);
+		extract_filename(fp,first_signature_zip);
+		n_files++;
+		printf("total number of found files is %u\n",n_files);
+	}// while not EOF
+	printf("total number of found files is %u\n",n_files);
+	printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
+	//if (first_signature_zip) printf("first zip signature offset is: 0x%X\n",first_signature_zip);
+	//else {
+	//	printf("no valid zip archive found in the file\n");
+	//	exit(1);
+	//}
+	//first_signature_zip = extract_filename(fp,first_signature_zip); // end of first zip file
 	// end open
 	//
 	//printf("the offset 0x%x \n", read_bytes(fp,2,0x32,0x29));
@@ -45,13 +57,12 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-unsigned long extract_filename(FILE* fp,unsigned long offset) {
+signed long extract_filename(FILE* fp,unsigned long offset) {
 		offset+=1; // read from the next position
-		printf("current offset is %X \n",offset);
+		if (DEBUG) printf("current offset is %X \n",offset);
 		const unsigned filename_length = 2; // for length, not for filename itself
-		printf("searching first filename\n");
+		signed long offset_signature = 0x0;
 		const unsigned long len_offset =  0x16;  // 0x10 + 0xA - 4
-		//const unsigned long fiename_offset =  0x20 - 0x4;  // 0x10 + 0xA - 4
 		unsigned length_of_filename = 0x0 ;
 		offset += len_offset; // add offseti to filename len field
 		unsigned char buf[filename_length];
@@ -73,13 +84,15 @@ unsigned long extract_filename(FILE* fp,unsigned long offset) {
 			printf("%c",filename_chars[i]);
 		} printf("\n");
 		global_offset = offset + 0xF + 0x7; // set global adress to extra fiel offse
-		printf("nex offset is %x \n",global_offset);
+		offset_signature = global_offset;
+		if (DEBUG) printf("nex offset is %x \n",global_offset);
+		return offset_signature;
 		//unsigned char filename[18]; // max filename
 		//fseek(fp,offset,SEEK_SET); //set position to ..
 			
 }
 unsigned long find_zip_filename(FILE* fp){
-	printf("searching first local file zip signature\n");
+	if (DEBUG) printf("searching first local file zip signature\n");
 	unsigned const*const header_start[4] = {
 		0x50,
 		0x4B,
@@ -87,12 +100,12 @@ unsigned long find_zip_filename(FILE* fp){
 		0x04,
 	};
 	signed long long signarute_offset = 0x0;
-	signarute_offset = read_bytes(fp,0,4,header_start[0],header_start[1],header_start[2],header_start[3]);
+	signarute_offset = read_bytes(fp,global_offset,4,header_start[0],header_start[1],header_start[2],header_start[3]);
 	if (signarute_offset >= 0){
-		printf("found valid zip signature at offset: 0x%X\n",signarute_offset);
+		if (DEBUG) printf("found valid zip signature at offset: 0x%X\n",signarute_offset);
 		return (unsigned long) signarute_offset; // return first signature offset
 	} else {
-		printf("not valid zip signature has been found\n");
+		if (DEBUG) printf("not valid zip signature has been found\n");
 		return 0;
 	}
 	return 0;
@@ -111,13 +124,13 @@ unsigned long find_valid_jpg(FILE* fp) {
 	};
 	unsigned long out_func = 0;
 	signed long long  out = 0;
-	if ( (out = read_bytes(fp,0,2,jpg_start[0],jpg_start[1]))  > 0 ) {
+	if ( (out = read_bytes(fp,global_offset,2,jpg_start[0],jpg_start[1]))  > 0 ) {
 		printf("found valid jpg signature at: 0x%X\n",out);
 	} else {
 		printf("valid jpg signature has not been found, aborting..\n");
 		return 0; // beginning not found
 	}
-	if ( (out = read_bytes(fp,0,2,jpg_end[0],jpg_end[1]))  > 0 ) {
+	if ( (out = read_bytes(fp,global_offset,2,jpg_end[0],jpg_end[1]))  > 0 ) {
 		printf("found valid end jpg signature at: 0x%X\n",out);
 		printf("--------------------------------------------\n");
 		out_func = (unsigned) (out);
@@ -148,13 +161,13 @@ signed long long read_bytes(FILE* fp,unsigned skip, unsigned n_width, ...){
 			searched_pattern = searched_pattern | searched_comp[t] ;
 			t++;
 		} while (t != n_width);
-	printf("searched pattern is 0x%X\n",searched_pattern);
+	if (DEBUG) printf("searched pattern is 0x%X\n",searched_pattern);
 
 
 	unsigned char* buffer = (unsigned char*) malloc(sizeof(unsigned char)*n_width); //allocate for buf
 	unsigned long offset_byte = 0;
 	unsigned char byte_readed = 0x00;
-	rewind(fp); //start from the start...
+	//rewind(fp); //start from the start...
 	while (!(feof(fp))) { //read from start
 		if (DEBUG) printf("i= %d\n",offset_byte);
 		fseek(fp, offset_byte + skip ,SEEK_SET); // set 0,1,2,3 byte
@@ -179,7 +192,7 @@ signed long long read_bytes(FILE* fp,unsigned skip, unsigned n_width, ...){
 		++offset_byte;		      //
 	
 	}
-	printf("EOF reached, section has not been found \n");
+	printf("EOF reached \n");
 	free(buffer);
 	va_end(ap);
 	return -2;
