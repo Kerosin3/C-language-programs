@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
 		printf("error while opening the file, aborting..\n");
 		exit(1);
 	}
-	fp = fopen(argv[1],"rb");
 	if (!(jpg_end = find_valid_jpg(fp))) {// find whether this is a valid jpg file
 		printf("jpg signatures has not been found, you passed not a valid jpg file, exiting...\n");
 		exit(1);
