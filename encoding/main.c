@@ -10,7 +10,7 @@
 
 
 #include "multichar.h"
-
+#include  "chars_table.h"
 
 /*#define assignUTF8g(word) \
 	_Generic((word), char8_t: utf8_assign1BW, \
@@ -61,10 +61,21 @@ int main(int argc, char *argv[])
 	//utf8_two_bytes utf8_word_test;
 //	utf8_constr(&utf8_word_test);
 	
-	multichar* mchar01 ; // allocate memory for mchar
-	init_multichar(mchar01);
-	assign_multichar(mchar01,0xAA,0xAB,0xAC,0xAD);
-	printf("---------%X\n",mchar01x->cp1251char);
+	//multichar mchar01 ; // allocate memory for mchar
+	//multichar mchars[] ; // allocate array of multichars
+	//mchar01 = mchars[0];
+	//multichar mchar02 ; // allocate memory for mchar
+	//init_multichar(&mchar01);
+	//init_multichar(&mchar02);
+	//assign_multichar(&mchar01,0xAA,0xAB,0xAC,0xAD);
+	//assign_multichar(&mchar02,0xCC,0xCD,0xCE,0xCA);
+	//multichar_store storage; //allocate storage
+	//init_multichar_store(&storage); //init storage
+	//append_to_multichar_store(&storage,mchar01);
+	//append_to_multichar_store(&storage,mchar02);
+	multichar_store storage = multichar_collection_init();
+	printf("----value main:-----%X\n",get_some_multichar(&storage,0).cp1251char);
+	//printf("----value main:-----%X\n",get_some_multichar(&storage,1).cp1251char);
 	//multichar_store* storage = init_multichar_store(&mchar01);// init array of absract chars
 	//assign_multichar(&mchar01,0xAA,0xAB,0xAC,0xAD);
 	//append_to_multichar_store(storage,&mchar01);
@@ -89,6 +100,7 @@ int main(int argc, char *argv[])
 	printf("content length: %lu\n",cl);
 	//destroy_multichar_store(&char00);
 	free(content_prt);
+	destroy_multichar_store(&storage); // free storage
 	fclose(fp);
 	return 0;
 }

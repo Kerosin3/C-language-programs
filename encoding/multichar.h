@@ -9,7 +9,9 @@
 #ifndef  MULTICHAR
 #define MULTICHAR value
 #define CHAR_STORE_LENGTH_MAX 40
-
+#ifndef ASSERT_INDLUDED
+#include <assert.h>
+#endif /* ifndef ASSERT_INDLUDED */
 
 typedef uint16_t char16_t;
 typedef uint8_t char8_t;
@@ -34,6 +36,6 @@ void assign_multichar(multichar*,char16_t utf8c, char16_t koi8c,char16_t isoc,ch
 void init_multichar_store(multichar_store*);
 void destroy_multichar_store(multichar_store*);
 void append_to_multichar_store(multichar_store*,multichar);
-
+multichar get_some_multichar(multichar_store*, size_t);
 
 #endif /* ifndef  MULTICHAR */
