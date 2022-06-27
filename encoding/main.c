@@ -58,37 +58,11 @@ int main(int argc, char *argv[])
 		printf("error while areating the file, aborting..\n");
 		exit(1);
 	}
-	//utf8_two_bytes utf8_word_test;
-//	utf8_constr(&utf8_word_test);
-	
-	//multichar mchar01 ; // allocate memory for mchar
-	//multichar mchars[] ; // allocate array of multichars
-	//mchar01 = mchars[0];
-	//multichar mchar02 ; // allocate memory for mchar
-	//init_multichar(&mchar01);
-	//init_multichar(&mchar02);
-	//assign_multichar(&mchar01,0xAA,0xAB,0xAC,0xAD);
-	//assign_multichar(&mchar02,0xCC,0xCD,0xCE,0xCA);
-	//multichar_store storage; //allocate storage
-	//init_multichar_store(&storage); //init storage
-	//append_to_multichar_store(&storage,mchar01);
-	//append_to_multichar_store(&storage,mchar02);
 	multichar_store storage = multichar_collection_init();
 	printf("----value main:-----%X\n",get_some_multichar(&storage,0).cp1251char);
-	//printf("----value main:-----%X\n",get_some_multichar(&storage,1).cp1251char);
-	//multichar_store* storage = init_multichar_store(&mchar01);// init array of absract chars
-	//assign_multichar(&mchar01,0xAA,0xAB,0xAC,0xAD);
-	//append_to_multichar_store(storage,&mchar01);
-		
-	//utf8_assign2BW(&utf8_word_test,0x4142);
-	//char16_t b0 = 0x4142;
-        //assignUTF8g(&utf8_word_test, b0);
-	//utf8_write_16(&utf8_word_test,fp);
-	//utf8_assign1BW(&utf8_word_test,0x41);
-	//char8_t b1 = 0x42;
-        //assignUTF8g( (char8_t) 0x41, b1 );
-	//utf8_write_8(&utf8_word_test,fp);
+	printf("----value main:-----%X\n",get_some_multichar(&storage,1).cp1251char);
 	unsigned long cl = 0;
+
 	char8_t *content_prt = read_contend_file(fp,&cl);
 	if (content_prt == NULL) {
 		printf("error getting file\n");

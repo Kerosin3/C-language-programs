@@ -28,8 +28,8 @@ void append_to_multichar_store(multichar_store* multichar_array,multichar multi_
 	multichar* ptr_pos = multichar_array ->chars_store;// main pointer
 	printf("one pos is %p\n",ptr_pos);
 	ptr_pos = ptr_pos + current_position; // add to pointer position
-	printf("one pos is %p\n",ptr_pos);
-	printf(" multichar val is %X\n",multi_char.cp1251char);
+//	printf("one pos is %p\n",ptr_pos);
+//	printf(" multichar val is %X\n",multi_char.cp1251char);
 	*ptr_pos = multi_char; // assign value to storage
 	printf(" multichar val  assign is %X\n",((multichar) *ptr_pos ).cp1251char );
 	printf(" multichar val  pointer is %p\n",ptr_pos);
@@ -50,8 +50,8 @@ multichar get_some_multichar(multichar_store* storage, size_t n_th ){
 	assert( n_th <= storage->used );
 	assert( n_th >= 0 );
 	multichar* ch0 = (multichar*)((storage->chars_store)+n_th);
-	printf(" multichar val  pointer get is %p\n",ch0);
-	printf(" multichar val get %X\n",ch0->cp1251char );
+//	printf(" multichar val  pointer get is %p\n",ch0);
+//	printf(" multichar val get %X\n",ch0->cp1251char );
 	return *ch0;
 	
 }
