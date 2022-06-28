@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <wctype.h>
 #include <assert.h>
-
+#include <string.h>
 
 //typedef uint16_t char16_t;
 //typedef uint8_t char8_t;
@@ -51,30 +51,57 @@ int main(int argc, char *argv[])
 		printf("Please enter filename\n");
 		return 0;
 	}
+	if (argc < 2) {
+		printf("you must specify file to write\n");
+		return 0;
+	}
+
 	FILE* fp; // all is ok
 	//open file
 	if ( (fp = fopen(argv[1],"rb")) == NULL ) {
 	//if ( (fp = fopen(argv[1],"a+b")) == NULL ) {
-		printf("error while areating the file, aborting..\n");
+		printf("error while reading the file, aborting..\n");
 		exit(1);
 	}
-	multichar_store storage = multichar_collection_init();
-	printf("----value main:-----%X\n",get_some_multichar(&storage,0).cp1251char);
-	printf("----value main:-----%X\n",get_some_multichar(&storage,1).cp1251char);
-	unsigned long cl = 0;
+	assert ( strlen(argv[2]) != 0 );
+	assert ( strlen(argv[2]) <= 25u );
+	FILE* fp_w;
+	if ( (fp_w = fopen(argv[2],"w+b")) == NULL ) {
+		printf("error while creating the file, aborting..\n");
+		exit(1);
+	}
 
+	multichar_store storage = multichar_collection_init();
+	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).utf8char);
+	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).cp1251char);
+	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).iso8859char);
+	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).koi8char);
+	unsigned long cl = 0;
+	/*char8_t gg = 0xE1;
+	printf("UTF8:0x%lX \n",find_match(&storage,gg,cp));*/
 	char8_t *content_prt = read_contend_file(fp,&cl);
 	if (content_prt == NULL) {
 		printf("error getting file\n");
 		exit(1);
 	}
-	for (size_t i = 0; i < 1; ++i) {
-		printf("content of[%lu] is %X\n",i,*(content_prt+i));
+	unsigned long byte_of_file = cl - 1u;
+	char16_t* to_write = (char16_t*) calloc(cl,sizeof(char16_t));
+	assert (to_write); // should be ok
+	char8_t current_readed_char = 0x0;
+	for (size_t i = 0; i <= byte_of_file; ++i) {
+		current_readed_char = *(content_prt+i);
+		char16_t matched = find_match(&storage,current_readed_char,koi);
+		printf("matched symbol: 0x%lX \n",matched);
+		*(to_write+i) = matched;
 	}
+
+	//rewind(fp_w);
+	fwrite(to_write,cl*sizeof(char16_t),1,fp_w);
+
 	printf("content length: %lu\n",cl);
-	//destroy_multichar_store(&char00);
 	free(content_prt);
 	destroy_multichar_store(&storage); // free storage
+	free(to_write);
 	fclose(fp);
 	return 0;
 }
