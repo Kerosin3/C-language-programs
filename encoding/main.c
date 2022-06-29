@@ -88,15 +88,31 @@ int main(int argc, char *argv[])
 	char16_t* to_write = (char16_t*) calloc(cl,sizeof(char16_t));
 	assert (to_write); // should be ok
 	char8_t current_readed_char = 0x0;
+	rewind(fp_w);
+	assert(byte_of_file <= 0xFFFFFFF);
 	for (size_t i = 0; i <= byte_of_file; ++i) {
 		current_readed_char = *(content_prt+i);
 		char16_t matched = find_match(&storage,current_readed_char,koi);
 		printf("matched symbol: 0x%lX \n",matched);
-		*(to_write+i) = matched;
+		char8_t byteH_become0 =(char8_t) (matched) ;
+		char8_t byteL_become1 =(char8_t) (matched>>8) ;
+		//printf("become0 is 0x%X, become1 is 0x%X\n",byteH_become0, byteL_become1);
+		if (byteL_become1 == 0x0) {
+			printf("heheh\n");
+			fwrite(&byteH_become0,sizeof(char8_t),1,fp_w); // write one byte
+			continue;
+		}
+		//matched = (byteH_become0 << 8) | byteL_become1;
+		
+		matched = (matched>>8) | (matched<<8);
+		printf("matched symbol---: 0x%lX \n",matched);
+		fwrite(&matched,sizeof(char16_t),1,fp_w); // write one byte
+		//matched = (matched>>8) | (matched<<8);
+		//*(to_write+i) = matched;
 	}
 
 	//rewind(fp_w);
-	fwrite(to_write,cl*sizeof(char16_t),1,fp_w);
+	//fwrite(to_write,cl*sizeof(char16_t),1,fp_w);
 
 	printf("content length: %lu\n",cl);
 	free(content_prt);
