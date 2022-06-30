@@ -55,6 +55,10 @@ int main(int argc, char *argv[])
 		printf("you must specify file to write\n");
 		return 0;
 	}
+	if (argc < 2) {
+		printf("you must specify readed file encoding\n");
+		return 0;
+	}
 
 	FILE* fp; // all is ok
 	//open file
@@ -64,19 +68,21 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 	assert ( strlen(argv[2]) != 0 );
-	assert ( strlen(argv[2]) <= 25u );
+	assert ( strlen(argv[2]) <= 25u ); // limit max length
 	FILE* fp_w;
 	if ( (fp_w = fopen(argv[2],"w+b")) == NULL ) {
 		printf("error while creating the file, aborting..\n");
 		exit(1);
 	}
-
+	//assert ( strlen(argv[3]) <= 25u ); // limit max length
+	//char *encoding_specified = argv[3];
 	multichar_store storage = multichar_collection_init();
 	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).utf8char);
 	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).cp1251char);
 	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).iso8859char);
 	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).koi8char);
 	unsigned long cl = 0;
+	enum char_type encoding_type = iso;
 	/*char8_t gg = 0xE1;
 	printf("UTF8:0x%lX \n",find_match(&storage,gg,cp));*/
 	char8_t *content_prt = read_contend_file(fp,&cl);
@@ -92,8 +98,8 @@ int main(int argc, char *argv[])
 	assert(byte_of_file <= 0xFFFFFFF);
 	for (size_t i = 0; i <= byte_of_file; ++i) {
 		current_readed_char = *(content_prt+i);
-		char16_t matched = find_match(&storage,current_readed_char,koi);
-		printf("matched symbol: 0x%lX \n",matched);
+		char16_t matched = find_match(&storage,current_readed_char,encoding_type);
+		printf("readed char is 0x%X ,matched symbol: 0x%lX \n",current_readed_char,matched);
 		char8_t byteH_become0 =(char8_t) (matched) ;
 		char8_t byteL_become1 =(char8_t) (matched>>8) ;
 		//printf("become0 is 0x%X, become1 is 0x%X\n",byteH_become0, byteL_become1);

@@ -28,10 +28,38 @@ multichar_store multichar_collection_init(){
 	char16_t a_letter_utf8 = 0xD090;
 	char8_t a_letter_iso8859 = 0xB0;
 	char8_t a_letter_cp1251 = 0xC0;
+	char8_t a_letter_ko = 0x0;
 
 	multichar a_char ;
-	for (i = 0; i <= 62u; ++i) {
-	/*append_to_multichar_store(&storage,\*/
+	/*for (i = 0; i <= 63u; ++i) {
+		if (i == 48u) {
+			a_letter_utf8+=0xC0u;
+			//a_letter_iso8859+=0xC0u;
+			//a_letter_cp1251+=0xC0u;
+			//a_letter_ko+=0xC0u;
+
+		}
+	a_char = ((multichar) set_one_char(a_letter_utf8,0xE1,a_letter_iso8859,a_letter_cp1251));
+	append_to_multichar_store(&storage,\
+			a_char); //
+			printf("--------%d----------0x%X ",i,a_letter_cp1251);
+			printf("-------utf8--------0x%X\n",a_letter_utf8);
+			a_letter_utf8+=1u;
+			a_letter_iso8859+=1u;
+			a_letter_cp1251+=1u;
+			a_letter_ko+=1u;
+	} 
+	*/
+	for (i = 0; i <= 63u; ++i) {
+	//append_to_multichar_store(&storage,
+		if (i == 48u) {
+			a_letter_utf8+=0xC0u;
+			//a_letter_iso8859+=0xC0u;
+			//a_letter_cp1251+=0xC0u;
+			//a_letter_ko+=0xC0u;
+
+		}
+
 		if (i == 0) a_char = ((multichar) set_one_char(a_letter_utf8,0xE1,a_letter_iso8859,a_letter_cp1251));  //A
 		if (i == 1) a_char = ((multichar) set_one_char(a_letter_utf8,0xE2,a_letter_iso8859,a_letter_cp1251)); //B
 		if (i == 2) a_char = ((multichar) set_one_char(a_letter_utf8,0xF7,a_letter_iso8859,a_letter_cp1251)); //V
@@ -65,7 +93,8 @@ multichar_store multichar_collection_init(){
 		if (i == 30) a_char = ((multichar) set_one_char(a_letter_utf8,0xE0,a_letter_iso8859,a_letter_cp1251));  //uy
 		if (i == 31) a_char = ((multichar) set_one_char(a_letter_utf8,0xF1,a_letter_iso8859,a_letter_cp1251));  //ia
 															//
-		if (i == 32) a_char = ((multichar) set_one_char(a_letter_utf8,(0xE1u - 0x20u),a_letter_iso8859,a_letter_cp1251));  //A
+															//
+		if (i == 32) a_char = ((multichar) set_one_char(a_letter_utf8,0xE1u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //A
 		if (i == 33) a_char = ((multichar) set_one_char(a_letter_utf8,0xE2u- 0x20u,a_letter_iso8859,a_letter_cp1251)); //B
 		if (i == 34) a_char = ((multichar) set_one_char(a_letter_utf8,0xF7u- 0x20u,a_letter_iso8859,a_letter_cp1251)); //V
 		if (i == 35) a_char = ((multichar) set_one_char(a_letter_utf8,0xE7u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //G
@@ -86,17 +115,17 @@ multichar_store multichar_collection_init(){
 		if (i == 50) a_char = ((multichar) set_one_char(a_letter_utf8,0xF4u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //T
 		if (i == 51) a_char = ((multichar) set_one_char(a_letter_utf8,0xF5u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //uy
 		if (i == 52) a_char = ((multichar) set_one_char(a_letter_utf8,0xE6u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //F
-		if (i == 52) a_char = ((multichar) set_one_char(a_letter_utf8,0xE8u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //X
-		if (i == 53) a_char = ((multichar) set_one_char(a_letter_utf8,0xE3u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //TSE
-		if (i == 54) a_char = ((multichar) set_one_char(a_letter_utf8,0xFEu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //TCHE
-		if (i == 55) a_char = ((multichar) set_one_char(a_letter_utf8,0xFBu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //SHE
-		if (i == 56) a_char = ((multichar) set_one_char(a_letter_utf8,0xFDu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //SHEeeee
-		if (i == 57) a_char = ((multichar) set_one_char(a_letter_utf8,0xFFu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //tverdy znak
-		if (i == 58) a_char = ((multichar) set_one_char(a_letter_utf8,0xF9u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //bI
-		if (i == 59) a_char = ((multichar) set_one_char(a_letter_utf8,0xF8u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //magki znak
-		if (i == 60) a_char = ((multichar) set_one_char(a_letter_utf8,0xFCu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //e
-		if (i == 61) a_char = ((multichar) set_one_char(a_letter_utf8,0xE0u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //uy
-		if (i == 62) a_char = ((multichar) set_one_char(a_letter_utf8,0xF1u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //ia
+		if (i == 53) a_char = ((multichar) set_one_char(a_letter_utf8,0xE8u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //X
+		if (i == 54) a_char = ((multichar) set_one_char(a_letter_utf8,0xE3u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //TSE
+		if (i == 55) a_char = ((multichar) set_one_char(a_letter_utf8,0xFEu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //TCHE
+		if (i == 56) a_char = ((multichar) set_one_char(a_letter_utf8,0xFBu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //SHE
+		if (i == 57) a_char = ((multichar) set_one_char(a_letter_utf8,0xFDu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //SHEeeee
+		if (i == 58) a_char = ((multichar) set_one_char(a_letter_utf8,0xFFu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //tverdy znak
+		if (i == 59) a_char = ((multichar) set_one_char(a_letter_utf8,0xF9u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //bI
+		if (i == 60) a_char = ((multichar) set_one_char(a_letter_utf8,0xF8u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //magki znak
+		if (i == 61) a_char = ((multichar) set_one_char(a_letter_utf8,0xFCu- 0x20u,a_letter_iso8859,a_letter_cp1251));  //e
+		if (i == 62) a_char = ((multichar) set_one_char(a_letter_utf8,0xE0u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //uy
+		if (i == 63) a_char = ((multichar) set_one_char(a_letter_utf8,0xF1u- 0x20u,a_letter_iso8859,a_letter_cp1251));  //ia
 
 		//a_char = ((multichar) set_one_char(a_letter_utf8,0x00,a_letter_iso8859,a_letter_cp1251));  //ia
 		append_to_multichar_store(&storage,\
@@ -107,6 +136,7 @@ multichar_store multichar_collection_init(){
 			a_letter_iso8859++;
 			a_letter_cp1251++;
 	}
+	
 //	append_to_multichar_store(&storage,\
 			(multichar) set_one_char(0xD090,0xAB,0xAC,0xAD)); //
 	//append_to_multichar_store(&storage,\
