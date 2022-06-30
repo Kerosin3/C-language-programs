@@ -44,6 +44,7 @@ void utf8_assign1BW(utf8_two_bytes*, char8_t byte0);
 void utf8_assign2BW(utf8_two_bytes*, char16_t byte01);
 char8_t* read_contend_file(FILE*,long unsigned*); 
 char8_t* process_koi8(char8_t*i, unsigned long);
+enum char_type decide_encode(const char* input_encoding);
 
 int main(int argc, char *argv[])
 {
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
 		printf("you must specify file to write\n");
 		return 0;
 	}
-	if (argc < 2) {
+	if (argc < 3) {
 		printf("you must specify readed file encoding\n");
 		return 0;
 	}
@@ -74,15 +75,17 @@ int main(int argc, char *argv[])
 		printf("error while creating the file, aborting..\n");
 		exit(1);
 	}
-	//assert ( strlen(argv[3]) <= 25u ); // limit max length
-	//char *encoding_specified = argv[3];
-	multichar_store storage = multichar_collection_init();
-	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).utf8char);
-	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).cp1251char);
-	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).iso8859char);
-	//printf("----value main:-----%X\n",get_some_multichar(&storage,41).koi8char);
+	assert ( strlen(argv[3]) <= 25u ); // limit max length
+	char* encoding_specified = argv[3];
+	enum char_type input_encoding;
+	input_encoding = decide_encode(encoding_specified);
+	if (input_encoding ==  err) {
+		printf("please use these ecoding apecifiers: koi,iso,cp \n");
+		exit(1);
+	}
+	multichar_store storage = multichar_collection_init(); // init char collections
 	unsigned long cl = 0;
-	enum char_type encoding_type = koi;
+	//enum char_type encoding_type = koi;
 	/*char8_t gg = 0xE1;
 	printf("UTF8:0x%lX \n",find_match(&storage,gg,cp));*/
 	char8_t *content_prt = read_contend_file(fp,&cl);
@@ -101,7 +104,7 @@ int main(int argc, char *argv[])
 	for (size_t i = 0; i <= byte_of_file; ++i) {
 		current_position; // current potion pointer
 		current_readed_char = *(content_prt+i);
-		char16_t matched = find_match(&storage,current_readed_char,encoding_type);
+		char16_t matched = find_match(&storage,current_readed_char,input_encoding);
 		printf("readed char is 0x%X ,matched symbol: 0x%lX \n",current_readed_char,matched);
 		char8_t byteH_become0 =(char8_t) (matched) ;
 		char8_t byteL_become1 =(char8_t) (matched>>8) ;
@@ -138,6 +141,19 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+enum char_type decide_encode(const char* input_encoding){
+	const size_t val = 10; //max size
+	char const  *iso_c = "iso";
+	char const *koi_c = "koi";
+	char const *cp_c = "cp";
+
+	int (*cmp)(const char *,const char *,size_t);
+	cmp = strncmp;
+	if ( ( cmp(input_encoding,iso_c,val))==0) return iso;
+	if ( ( cmp(input_encoding,koi_c,val))==0) return koi;
+	if ( ( cmp(input_encoding,cp_c,val))==0)  return cp;			
+	return err;
+}
 
 void utf8_constr(utf8_two_bytes* utf8word){
 	total_symbols++; // increment

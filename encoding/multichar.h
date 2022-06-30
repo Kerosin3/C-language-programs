@@ -20,7 +20,7 @@ typedef uint8_t char8_t;
  *
  *  Detailed description
  */
-enum char_type { cp,iso,koi };
+enum char_type { cp,iso,koi,err};
 
 typedef struct {
 	char16_t utf8char;
