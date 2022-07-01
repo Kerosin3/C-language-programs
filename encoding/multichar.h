@@ -16,10 +16,6 @@
 typedef uint16_t char16_t;
 typedef uint8_t char8_t;
 
-/*! \enum char_type
- *
- *  Detailed description
- */
 enum char_type { cp,iso,koi,err};
 
 typedef struct {
@@ -35,11 +31,8 @@ typedef struct {
 	unsigned long used;
 } multichar_store; 
 
-multichar* multichar_alloc();
-void multichar_destr(multichar*);
 void init_multichar(multichar*);
 void assign_multichar(multichar*,char16_t utf8c, char8_t koi8c,char8_t isoc,char8_t cp1251c);
-void assign_koi8(multichar*,char8_t koi8c);
 void init_multichar_store(multichar_store*);
 void destroy_multichar_store(multichar_store*);
 void append_to_multichar_store(multichar_store*,multichar);
