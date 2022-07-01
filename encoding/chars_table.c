@@ -1,7 +1,8 @@
 //#define chars_table
-#include "chars_table.h"
-#include "multichar.h"
+//#include "chars_table.h"
+//#include "multichar.h"
 //inline multichar set_one_char();
+#include "includes.h"
 static inline multichar set_one_char(char16_t utf8c,   char16_t koi8c ,\
 		       char16_t iso8859c, char16_t  cp1251c ){ // private
 	multichar some_char;

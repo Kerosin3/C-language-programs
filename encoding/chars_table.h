@@ -1,4 +1,4 @@
-#include "multichar.h"
+//#include "multichar.h"
 //extern multichar mchar01;
 
 

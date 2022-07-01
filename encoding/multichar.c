@@ -1,4 +1,5 @@
-#include "multichar.h"
+//#include "multichar.h"
+#include "includes.h"
 
 
 void init_multichar(multichar* abstr_char){

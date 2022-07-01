@@ -1,14 +1,15 @@
-#include <stdio.h>
+//#include <stdio.h>
 //#include <stdint.h>
-#include <stdlib.h>
-#include <wctype.h>
-#include <assert.h>
-#include <string.h>
+//#include <stdlib.h>
+//#include <wctype.h>
+//#include <assert.h>
+//#include <string.h>
 
 
 
-#include "multichar.h"
-#include  "chars_table.h"
+//#include "multichar.h"
+//#include  "chars_table.h"
+#include "includes.h"
 
 /*#define assignUTF8g(word) \
 	_Generic((word), char8_t: utf8_assign1BW, \
@@ -23,6 +24,7 @@ typedef struct { // base utf-8 16 bit wide char
 	unsigned short mark_byte;
 } utf8_two_bytes;
 
+size_t strnlen (const char* s, size_t n);
 char8_t* read_contend_file(FILE* fp,long unsigned* content_length);
 enum char_type decide_encode(const char* input_encoding);
 
@@ -110,7 +112,7 @@ int main(int argc, char *argv[])
 		//matched = (matched>>8) | (matched<<8);
 		//*(to_write+i) = matched;
 	}
-	current_position = to_write; // back
+	current_position = NULL; // back
 	rewind(fp_w);
 	fwrite(to_write,n_written*sizeof(char8_t),1,fp_w);
 
@@ -166,3 +168,8 @@ char8_t* read_contend_file(FILE* fp,long unsigned* content_length){
 
 }
 
+size_t strnlen (const char* s, size_t n) 
+{ 
+  const char* found = memchr(s, '\0', n); 
+  return found ? (size_t)(found-s) : n; 
+}
