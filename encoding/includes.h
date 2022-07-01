@@ -1,13 +1,13 @@
 #ifndef __INCLUDES__
-#define __INCLUDES__ 
-#include <stdio.h>
-#include <strings.h>
-#include <string.h>
-#include <stdlib.h>
+#define __INCLUDES__
+#include "chars_table.h"
+#include "multichar.h"
 #include <assert.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 #include <wctype.h>
-#include "multichar.h"
-#include "chars_table.h"
-#define CHAR_STORE_LENGTH_MAX 70 // max alphabet 
+#define CHAR_STORE_LENGTH_MAX 70 // max alphabet
 #endif /* ifndef __INCLUDES__ */
