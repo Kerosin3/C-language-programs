@@ -1,5 +1,5 @@
 #include "includes.h"
-//#define DEBUG
+#define DEBUG 
 /*#define assignUTF8g(word) \
         _Generic((word), char8_t: utf8_assign1BW, \
                         char16_t: utf8_assign2BW,) \
@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
         current_readed_char = *(content_prt + i);
         matched = find_match(&storage, current_readed_char, input_encoding);
 #ifdef DEBUG
-        printf("readed char is 0x%X ,matched symbol: 0x%lX \n", current_readed_char, matched);
+        printf("readed char is 0x%X ,matched symbol: 0x%X \n", current_readed_char, matched);
 #endif
         char8_t byteH_become0 = (char8_t)(matched);
         char8_t byteL_become1 = (char8_t)(matched >> 8);
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
         matched = (matched >> 8) | (matched << 8);
         *((char16_t*)current_position) = matched; // assign 2 bytes
 #ifdef DEBUG
-        printf("matched symbol---: 0x%lX \n", matched);
+        printf("matched symbol---: 0x%X \n", matched);
 #endif
         current_position = (((char8_t*)current_position) + 2); // current potion pointer + 2
         n_written += 2;
