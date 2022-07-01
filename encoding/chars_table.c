@@ -12,16 +12,11 @@ static inline multichar set_one_char(char16_t utf8c, char16_t koi8c,
     return some_char;
 }
 
-// assign_multichar(&mchar01,0xAA,0xAB,0xAC,0xAD);
 multichar_store multichar_collection_init()
 {
     multichar_store storage; // declare storage
     init_multichar_store(&storage); // init storage
                                     //
-    // multichar char01;
-    // init_multichar(&char01);
-
-    // assign_multichar(&char01,0xAA,0xAB,0xAC,0xAD)	;
     //---------------------1 - utf8-----2 - koi8----3 - iso8859-------4 - cp1251-----------------//
     unsigned i = 0x0;
     char16_t a_letter_utf8 = 0xD090;
@@ -30,32 +25,10 @@ multichar_store multichar_collection_init()
     char8_t a_letter_ko = 0x0;
 
     multichar a_char;
-    /*for (i = 0; i <= 63u; ++i) {
-            if (i == 48u) {
-                    a_letter_utf8+=0xC0u;
-                    //a_letter_iso8859+=0xC0u;
-                    //a_letter_cp1251+=0xC0u;
-                    //a_letter_ko+=0xC0u;
-
-            }
-    a_char = ((multichar) set_one_char(a_letter_utf8,0xE1,a_letter_iso8859,a_letter_cp1251));
-    append_to_multichar_store(&storage,\
-                    a_char); //
-                    printf("--------%d----------0x%X ",i,a_letter_cp1251);
-                    printf("-------utf8--------0x%X\n",a_letter_utf8);
-                    a_letter_utf8+=1u;
-                    a_letter_iso8859+=1u;
-                    a_letter_cp1251+=1u;
-                    a_letter_ko+=1u;
-    }
-    */
     for (i = 0; i <= 63u; ++i) {
         // append_to_multichar_store(&storage,
         if (i == 48u) {
             a_letter_utf8 += 0xC0u;
-            // a_letter_iso8859+=0xC0u;
-            // a_letter_cp1251+=0xC0u;
-            // a_letter_ko+=0xC0u;
         }
 
         if (i == 0)
@@ -189,7 +162,6 @@ multichar_store multichar_collection_init()
         if (i == 63)
             a_char = (set_one_char(a_letter_utf8, 0xF1u - 0x20u, a_letter_iso8859, a_letter_cp1251)); // ia
 
-        // a_char = ((multichar) set_one_char(a_letter_utf8,0x00,a_letter_iso8859,a_letter_cp1251));  //ia
         append_to_multichar_store(&storage,
             a_char); //
                      //
