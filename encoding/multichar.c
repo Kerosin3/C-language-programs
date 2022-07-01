@@ -66,6 +66,8 @@ char16_t find_match(multichar_store* storage, char8_t a_char, enum char_type c_t
 			break;
 			
 	}
+			printf("something gone wrong,exiting...\n");
+			exit(1);
 			
 }
 

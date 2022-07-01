@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	}
 	unsigned long byte_of_file = cl - 1u;
 	char16_t* to_write = (char16_t*) calloc(cl,sizeof(char16_t)); //assume all uft8 chars are 2 byte width
-	assert (to_write); // should be ok
+	assert (to_write != NULL); // should be ok
 	char8_t current_readed_char = 0x0;
 	rewind(fp_w);
 	assert(byte_of_file <= 0xFFFFFFF);
@@ -75,7 +75,6 @@ int main(int argc, char *argv[])
 	register char16_t matched = 0x00;
 	unsigned long n_written = 0;
 	for (size_t i = 0; i <= byte_of_file; ++i) {
-		current_position; // current potion pointer
 		current_readed_char = *(content_prt+i);
 		matched = find_match(&storage,current_readed_char,input_encoding);
 		#ifdef DEBUG
