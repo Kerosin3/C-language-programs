@@ -5,8 +5,6 @@
 #include <assert.h>
 #include <string.h>
 
-//typedef uint16_t char16_t;
-//typedef uint8_t char8_t;
 
 
 #include "multichar.h"
@@ -16,16 +14,8 @@
 	_Generic((word), char8_t: utf8_assign1BW, \
 			char16_t: utf8_assign2BW,) \
 			(word)
-*/
-
-
-/*! \enum name
- *
- *  Detailed description
  */
 enum bytewidth {onebyte= 1U, twobyte = 2U};
-
-unsigned long long total_symbols = 0;
 
 typedef struct { // base utf-8 16 bit wide char
 	char8_t zero_byte;
@@ -33,49 +23,43 @@ typedef struct { // base utf-8 16 bit wide char
 	unsigned short mark_byte;
 } utf8_two_bytes;
 
-
-void utf8_constr(utf8_two_bytes*); //contructor
-void utf8_init(utf8_two_bytes*,char8_t byte0, char8_t byte1);
-// use fwire t write one or two bytes
-unsigned utf8_write_8(utf8_two_bytes*,FILE*);
-unsigned utf8_write_16(utf8_two_bytes*,FILE*);
-// assign one or two byte width UTF-8 char
-void utf8_assign1BW(utf8_two_bytes*, char8_t byte0);
-void utf8_assign2BW(utf8_two_bytes*, char16_t byte01);
-char8_t* read_contend_file(FILE*,long unsigned*); 
-char8_t* process_koi8(char8_t*i, unsigned long);
+char8_t* read_contend_file(FILE* fp,long unsigned* content_length);
 enum char_type decide_encode(const char* input_encoding);
 
 int main(int argc, char *argv[])
 {
-	if (argc <= 1) {
-		printf("Please enter filename\n");
-		return 0;
-	}
 	if (argc < 2) {
-		printf("you must specify file to write\n");
-		return 0;
+		printf("Please enter filename\n");
+		return 1;
 	}
 	if (argc < 3) {
-		printf("you must specify readed file encoding\n");
-		return 0;
+		printf("you must specify file to write\n");
+		return 1;
 	}
-
+	if (argc < 4) {
+		printf("you must specify readed file encoding\n");
+		return 1;
+	}
+	if (argc > 4) {
+		printf(" Please specify filename, file to write, encoding of the readed file\n");
+		return 1;
+	}
 	FILE* fp; // all is ok
+	//printf("starting..\"%s\"....\n",__LINE__);
 	//open file
 	if ( (fp = fopen(argv[1],"rb")) == NULL ) {
 	//if ( (fp = fopen(argv[1],"a+b")) == NULL ) {
 		printf("error while reading the file, aborting..\n");
 		exit(1);
 	}
-	assert ( strlen(argv[2]) != 0 );
-	assert ( strlen(argv[2]) <= 25u ); // limit max length
+	assert ( strnlen(argv[2],25) != 0 );
+	assert ( strnlen(argv[2],25) <= 25u ); // limit max length
 	FILE* fp_w;
 	if ( (fp_w = fopen(argv[2],"w+b")) == NULL ) {
 		printf("error while creating the file, aborting..\n");
 		exit(1);
 	}
-	assert ( strlen(argv[3]) <= 25u ); // limit max length
+	assert ( strnlen(argv[3],10) <= 25u ); // limit max length
 	char* encoding_specified = argv[3];
 	enum char_type input_encoding;
 	input_encoding = decide_encode(encoding_specified);
@@ -85,9 +69,6 @@ int main(int argc, char *argv[])
 	}
 	multichar_store storage = multichar_collection_init(); // init char collections
 	unsigned long cl = 0;
-	//enum char_type encoding_type = koi;
-	/*char8_t gg = 0xE1;
-	printf("UTF8:0x%lX \n",find_match(&storage,gg,cp));*/
 	char8_t *content_prt = read_contend_file(fp,&cl);
 	if (content_prt == NULL) {
 		printf("error getting file\n");
@@ -149,44 +130,20 @@ enum char_type decide_encode(const char* input_encoding){
 
 	int (*cmp)(const char *,const char *,size_t);
 	cmp = strncmp;
-	if ( ( cmp(input_encoding,iso_c,val))==0) return iso;
-	if ( ( cmp(input_encoding,koi_c,val))==0) return koi;
-	if ( ( cmp(input_encoding,cp_c,val))==0)  return cp;			
+	if ( ( cmp(input_encoding,iso_c,val))==0) {
+		printf("Analyzing file with ISO-8859-5 encoding\n");
+		return iso;
+	}
+	if ( ( cmp(input_encoding,koi_c,val))==0) {
+		printf("Analyzing file with KOI8 encoding\n");
+		return koi;
+	}
+	if ( ( cmp(input_encoding,cp_c,val))==0){
+		printf("Analyzing file with CP1251 encoding\n");
+		return cp;			
+	}  
 	return err;
 }
-
-void utf8_constr(utf8_two_bytes* utf8word){
-	total_symbols++; // increment
-	utf8word->first_byte = 0x0;
-	utf8word->zero_byte= 0x0;	
-	utf8word->mark_byte = twobyte;
-}
-
-void utf8_init(utf8_two_bytes* utf8word,char8_t byte0, char8_t byte1){
-	utf8word -> first_byte = byte0;
-	utf8word -> first_byte = byte1;
-	utf8word -> mark_byte = twobyte;
-}
-void utf8_assign1BW(utf8_two_bytes* utf8word, char8_t byte0){
-	utf8word ->zero_byte = ( 0x80 & byte0);// mask out MSB
-	utf8word -> first_byte = 0x00;
-	utf8word -> mark_byte = twobyte;
-}
-void utf8_assign2BW(utf8_two_bytes* utf8_word, char16_t byte01){
-	unsigned b0 = byte01 | 0xFF; // take lower part
-	unsigned b1 = (byte01 >> 8 ) & 0xFF; // take high part
-	utf8_word ->zero_byte = b0;
-	utf8_word ->first_byte = b1;
-	utf8_word -> mark_byte = twobyte;
-}
-unsigned utf8_write_8(utf8_two_bytes* utf8_word,FILE* fp){
-	char8_t byte0 = utf8_word->first_byte;
-	return fwrite(&byte0,sizeof(char8_t),1,fp); // only 8 bits
-}
-unsigned utf8_write_16(utf8_two_bytes* utf8_word,FILE* fp){
-	return fwrite(utf8_word,sizeof(utf8_two_bytes),1,fp); // 16 bits
-}
-
 
 char8_t* read_contend_file(FILE* fp,long unsigned* content_length){
 	if ((fseek(fp, 0L, SEEK_END))) {
@@ -195,7 +152,7 @@ char8_t* read_contend_file(FILE* fp,long unsigned* content_length){
 			}
 	long int sz = ftell(fp); // total 
 	assert( sz >=0 );
-	//sz++; // size +1 NOT
+	//sz++; // size +1 NOT ????
 	*content_length = (unsigned long) sz; // change size value
 	char8_t *content = (char8_t *) calloc(sz,sizeof(char8_t));
 	if (content == NULL){
@@ -209,6 +166,3 @@ char8_t* read_contend_file(FILE* fp,long unsigned* content_length){
 
 }
 
-char8_t* process_koi8(char8_t* content_to_process,unsigned long size){
-	
-}
