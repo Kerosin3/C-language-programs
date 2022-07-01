@@ -8,3 +8,4 @@ build:
 clean:
 	rm -rfv out
 	rm -rfv build
+	rm *.txt

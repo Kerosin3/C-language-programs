@@ -1,5 +1,5 @@
 #include "includes.h"
-#define DEBUG 
+//#define DEBUG 
 /*#define assignUTF8g(word) \
         _Generic((word), char8_t: utf8_assign1BW, \
                         char16_t: utf8_assign2BW,) \
