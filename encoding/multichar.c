@@ -1,4 +1,3 @@
-//#include "multichar.h"
 #include "includes.h"
 
 
@@ -17,7 +16,7 @@ void assign_multichar(multichar* abstr_char,char16_t utf8c, char8_t koi8c,char8_
 void init_multichar_store(multichar_store* multichar_array){
 	multichar_array ->size =(unsigned) CHAR_STORE_LENGTH_MAX;
 	multichar* store_ptr = NULL;
-	(store_ptr =  (multichar*) calloc( CHAR_STORE_LENGTH_MAX,sizeof(multichar) )) ? printf("sucesfull allocation for array of chars\n"): printf("error while allocation\n"); ;
+	(store_ptr =  (multichar*) calloc( CHAR_STORE_LENGTH_MAX,sizeof(multichar) )) ? printf("succesfull allocation for an array of chars\n"): printf("error while allocation\n"); ;
 	multichar_array ->chars_store = store_ptr;
 	multichar_array -> used = 0;
 }

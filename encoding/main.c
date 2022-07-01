@@ -1,16 +1,5 @@
-//#include <stdio.h>
-//#include <stdint.h>
-//#include <stdlib.h>
-//#include <wctype.h>
-//#include <assert.h>
-//#include <string.h>
-
-
-
-//#include "multichar.h"
-//#include  "chars_table.h"
 #include "includes.h"
-
+//#define DEBUG
 /*#define assignUTF8g(word) \
 	_Generic((word), char8_t: utf8_assign1BW, \
 			char16_t: utf8_assign2BW,) \
@@ -82,45 +71,46 @@ int main(int argc, char *argv[])
 	char8_t current_readed_char = 0x0;
 	rewind(fp_w);
 	assert(byte_of_file <= 0xFFFFFFF);
-	char8_t* current_position = to_write; // current position in bytes !!!!!!!!!!!!
+	register char8_t* current_position = to_write; // current position in bytes !!!!!!!!!!!!
+	register char16_t matched = 0x00;
 	unsigned long n_written = 0;
 	for (size_t i = 0; i <= byte_of_file; ++i) {
 		current_position; // current potion pointer
 		current_readed_char = *(content_prt+i);
-		char16_t matched = find_match(&storage,current_readed_char,input_encoding);
-		printf("readed char is 0x%X ,matched symbol: 0x%lX \n",current_readed_char,matched);
+		matched = find_match(&storage,current_readed_char,input_encoding);
+		#ifdef DEBUG
+			printf("readed char is 0x%X ,matched symbol: 0x%lX \n",current_readed_char,matched);
+		#endif
 		char8_t byteH_become0 =(char8_t) (matched) ;
 		char8_t byteL_become1 =(char8_t) (matched>>8) ;
-		//printf("become0 is 0x%X, become1 is 0x%X\n",byteH_become0, byteL_become1);
 		if (byteL_become1 == 0x0) { // one byte
-			printf("heheh\n");
-			//fwrite(&byteH_become0,sizeof(char8_t),1,fp_w); // write one byte
+			#ifdef DEBUG
+				printf("one-byte char found\n");
+			#endif
 			*(current_position) = byteH_become0; //write one byte
 			current_position++; // current potion pointer + 1
 			n_written++;
 			continue;
 		}
-		//matched = (byteH_become0 << 8) | byteL_become1;
-		
 		matched = (matched>>8) | (matched<<8);
 		*((char16_t*) current_position) = matched; // assign 2 bytes
-		//*(((char8_t*) to_write) +i) = byteH_become0; //write one byte
-		printf("matched symbol---: 0x%lX \n",matched);
-		//fwrite(&matched,sizeof(char16_t),1,fp_w); // write one byte
+		#ifdef DEBUG
+			printf("matched symbol---: 0x%lX \n",matched);
+		#endif
 		current_position = (((char8_t*) current_position)+2) ; // current potion pointer + 2
 		n_written+=2;
-		//matched = (matched>>8) | (matched<<8);
-		//*(to_write+i) = matched;
 	}
 	current_position = NULL; // back
 	rewind(fp_w);
 	fwrite(to_write,n_written*sizeof(char8_t),1,fp_w);
 
-	printf("content length: %lu\n",cl);
+	printf("written : %lu characters\n",n_written);
 	free(content_prt);
 	destroy_multichar_store(&storage); // free storage
 	free(to_write);
 	fclose(fp);
+	fclose(fp_w);
+	printf("successful deallocation of resources, program complited\n");
 	return 0;
 }
 
