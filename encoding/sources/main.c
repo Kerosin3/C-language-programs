@@ -45,13 +45,13 @@ int main(int argc, char* argv[])
         exit(1);
     }
     assert(strnlen(argv[2], 25) != 0);
-    assert(strnlen(argv[2], 25) <= 25u); // limit max length
+    assert(strnlen(argv[2], 41) <= 40u); // limit max length to 40 symbols
     FILE* fp_w;
     if ((fp_w = fopen(argv[2], "w+b")) == NULL) {
         printf("error while creating the file, aborting..\n");
         exit(1);
     }
-    assert(strnlen(argv[3], 10) <= 25u); // limit max length
+    assert(strnlen(argv[3], 11) <= 10u); // limit max length
     char* encoding_specified = argv[3];
     enum char_type input_encoding;
     input_encoding = decide_encode(encoding_specified);
@@ -62,12 +62,16 @@ int main(int argc, char* argv[])
     multichar_store storage = multichar_collection_init(); // init char collections
     unsigned long cl = 0;
     char8_t* content_prt = read_contend_file(fp, &cl);
+    if (cl >0x1000000u) {
+    	printf("too big file, please load a file less than 16MB");
+	exit(1);
+    }
     if (content_prt == NULL) {
         printf("error getting file\n");
         exit(1);
     }
     unsigned long byte_of_file = cl - 1u;
-    (void)* to_write = (void*)calloc(cl, sizeof(char16_t)); // assume all uft8 chars are 2 byte width
+    void* to_write = (void*) calloc(cl, sizeof(char16_t)); // assume all uft8 chars are 2 byte width
     assert(to_write != NULL); // should be ok
     char8_t current_readed_char = 0x0;
     rewind(fp_w);
