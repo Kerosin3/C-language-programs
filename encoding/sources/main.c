@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
         exit(1);
     }
     unsigned long byte_of_file = cl - 1u;
-    char16_t* to_write = (char16_t*)calloc(cl, sizeof(char16_t)); // assume all uft8 chars are 2 byte width
+    (void)* to_write = (void*)calloc(cl, sizeof(char16_t)); // assume all uft8 chars are 2 byte width
     assert(to_write != NULL); // should be ok
     char8_t current_readed_char = 0x0;
     rewind(fp_w);
