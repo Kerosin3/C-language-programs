@@ -5,9 +5,11 @@
 #include <stdarg.h>
 //#include "spookyhash/src/spookyhash_api.h"
 #include "BSD_strings.c"
+#include "hash_f.h"
+
 
 #define DEBUG
-#define MAX_LORD_LENGTH 25
+#define MAX_WORD_LENGTH 25
 
 typedef struct {
 	long int begin;
@@ -33,12 +35,16 @@ int main(int argc, char *argv[])
 	}
 	rewind(fp_r);
 	word_pointers some_word;
+	unsigned long long hash_val = 0;
 	while ( (( some_word = find_a_word(fp_r) ).word)  ){ // WHILE NOT NULL
 		//some_word = find_a_word(fp_r);
 		printf("%d,your word is \"%s\"\n",END_REACHED,(char*) (some_word.word));
+		hash_val=calc_hash((char*) (some_word.word));
+		printf("value of has is %llu\n",hash_val);
 	}
 
 	fclose(fp_r);
+	free(some_word.word);
 	return 0;
 }
 
@@ -47,7 +53,7 @@ word_pointers find_a_word(FILE* fp){
 	long int beg = 0;
 	long int end = 0;
 	int width = 0;
-	uint8_t* a_word = (uint8_t*) calloc(MAX_LORD_LENGTH+1,sizeof(uint8_t) );
+	uint8_t* a_word = (uint8_t*) calloc(MAX_WORD_LENGTH+1,sizeof(uint8_t) );
 	beg = ftell(fp);// set beginning of the word
 	word_pointers out;
 	out.begin = beg; 
@@ -81,11 +87,3 @@ word_pointers find_a_word(FILE* fp){
 		return out;
 	
 }
-/*
-void* extract_a_word(word_pointers word_points){
-	int beginning = word_points.begin;
-	int endings = word_points.end;
-	endings--; // discard spac
-	unsigned width = (endings - beginning)+1; // add null symbol	
-
-}*/
