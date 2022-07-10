@@ -1,1 +1,2 @@
 gcc main.c -L. -lspookyhash -o app
+gcc --std=c11 main.c hash_f.c -lm

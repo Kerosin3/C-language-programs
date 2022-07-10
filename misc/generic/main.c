@@ -24,5 +24,7 @@ int main(int argc, char *argv[])
 	unsigned coeff = 5;
 	float f0 = 1.5;
 	printf("resultis %f \n",coeff_generic(coeff,f0));
+	unsigned a = 5;
+	printf("unsigned value is %u, negative is %i \n",a,(signed) (~a+1 ));
 	return 0;
 }

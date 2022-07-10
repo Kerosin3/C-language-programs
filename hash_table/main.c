@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 		free(some_word.word);
 		printf("value of has is %llu\n",hash_val);
 	}
-
+	test0();
 	fclose(fp_r);
 	//free(some_word.word);
 	return 0;
@@ -77,7 +77,10 @@ word_pointers find_a_word(FILE* fp){
 	} while ( !(isspace(read_char))  ); //not space or EOF
 	i--; //decrement last i, i+1 == total elements need
 	uint8_t* a_word = (uint8_t*) calloc(i+1,sizeof(uint8_t) );// one for NULL TERMINATOR
-	if (!(a_word)) printf("ERROR WHILE ASSIGNING WORD, WHAT IS ITS LENGTH???\ni");
+	if (!(a_word)) {
+		printf("ERROR WHILE ASSIGNING WORD, WHAT IS ITS LENGTH???\n");
+		exit(1);
+	}
 	uint8_t* ptr_a_word = a_word;
 	signed convert = ~i ; // convert = (-i + 1) ONE CHAR MORE
 	//printf("value of if is %u, negative is %d \n",i,convert);
