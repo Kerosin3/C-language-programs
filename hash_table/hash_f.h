@@ -9,12 +9,14 @@
 #define SALT 15
 unsigned long long calc_hash(char*);
 enum flag_empty {non_empty,empty};
+enum flag_written {not_written,written};
 
 
 typedef struct {
 	unsigned long long id; //aka hash
 	char* key;
 	unsigned long value;
+	enum flag_written flag;
 } record;
 
 typedef struct{

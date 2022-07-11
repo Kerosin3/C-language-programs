@@ -29,6 +29,7 @@ record init_a_record(){
 	a_record.id = 0;
 	a_record.key = '\0';
 	a_record.value = 0;
+	a_record.flag = not_written;
 	return a_record;
 }
 
@@ -50,6 +51,13 @@ void storage_destroy(record_storage* storage ){
 	free(*(storage->start_record));
 	free((storage->start_record));
 	//free(storage->key);
+	unsigned tp =0
+	for (size_t i = 0; i < storage->max_size; ++i) {
+		if (   ((*(*(storage->start_record)+tp)).flag) ) {
+			free(  ((*(*(storage->start_record)+i)).key)    );
+			tp++;
+		}
+	}
 }
 //create a destructor??..
 void set_a_record(record* rec_ptr,char* in_string){
@@ -100,7 +108,7 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		((*(*(storage->start_record)+tposition)).value)++;// add value
 	}
 	printf("going to copy %s\n",a_record.key);
-	printf("position is %d, inside: %s, position in table: %u, occur: %lu \n",cur_position,((record)  *((*(storage->start_record)+cur_position))).key,tposition, ((*(*(storage->start_record)+cur_position)).value)) ;
+	printf("position is %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",cur_position,((record)  *((*(storage->start_record)+cur_position))).key,tposition, ((*(*(storage->start_record)+cur_position)).value),   ((*(*(storage->start_record)+cur_position)).flag)  ) ;
 	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
 	printf("lenths in store after append %d,%s \n",strlen(  test ),test);
 	storage->current_size++;
@@ -120,6 +128,8 @@ void copy_obj(record_storage* storage,record a_record,unsigned long position){
 	(*((*(storage->start_record)+position))).key = s_tmp;
 	(*((*(storage->start_record)+position))).id = a_record.id;
 	(*((*(storage->start_record)+position))).value = a_record.value;
+	(*((*(storage->start_record)+position))).flag = written;
+
 	//printf("copying done, string= %s\n", (char*) (*((*(storage->start_record)+position))).value  );
 	printf("copying done, string= %s\n", s_tmp);
 }
