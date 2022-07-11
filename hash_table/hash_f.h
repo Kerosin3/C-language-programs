@@ -27,7 +27,7 @@ record init_a_record();
 record_storage init_storage();
 unsigned try_append_to_storage(record_storage*,record);
 void storage_destroy(record_storage*);
-unsigned check_position(record_storage*,record,unsigned long);
+unsigned check_position(record_storage*,record*,unsigned long);
 
 void set_a_record(record*,char*);
 //record get_a_record(char* key);
