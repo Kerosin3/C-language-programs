@@ -9,7 +9,7 @@
 #define SALT 15
 unsigned long long calc_hash(char*);
 enum flag_empty {non_empty,empty};
-enum flag_written {not_written,written};
+enum flag_written {not_written,written,moved};
 
 
 typedef struct {
