@@ -1,6 +1,8 @@
 #include "hash_f.h"
 #define IS_UNSIGNED(t) ((t)~1 > 0)
 
+
+
 unsigned long table_size = 10;
 unsigned long long calc_hash(char* input_string){
 	//printf("hash - %s \n",(char*) input_string);
@@ -23,6 +25,19 @@ unsigned long long calc_hash(char* input_string){
 	return temp_c;
 	
 }
+unsigned long long rehash(unsigned long long in_hash){
+	printf("calcing new has value.....\n");
+	int str_len = snprintf(NULL,0,"%u",in_hash);// get the size
+	str_len++ ;//space for null term
+	char* str_converted = malloc(str_len);
+	snprintf(str_converted,str_len,"%d",in_hash);
+	unsigned long long new_hash = calc_hash(str_converted);
+	printf("----------prev hash value %llu---------new hash value is %llu \n",in_hash,new_hash);
+	free(str_converted); // free memory
+	return new_hash;
+}
+
+
 
 record init_a_record(){
 	record a_record;
@@ -35,7 +50,7 @@ record init_a_record(){
 
 record_storage init_storage(){
 	record_storage storage;
-	storage.current_size = 1;
+	storage.current_size = 0;
 	storage.max_size= 10;
 	record** pt_first = calloc(sizeof(record*), 1); // allocate one main pointer
 	*pt_first = calloc(sizeof(record), 10);  // allocate space for 10 pointer to 1 record   calloc(sizeof(record)*n,10) -- 10 pointers to 10 record
@@ -48,16 +63,22 @@ record_storage init_storage(){
 	return storage;
 }
 void storage_destroy(record_storage* storage ){
-	free(*(storage->start_record));
-	//free((storage->start_record)); ??? OK??
+	printf("destroying..\n");
 	unsigned tp =0;
 	for (size_t i = 0; i < storage->max_size; ++i) {
-		if (   ((*(*(storage->start_record)+i)).flag) ) {
-			free(  ((*(*(storage->start_record)+i)).key)    );
+		if (   ((*(*(storage->start_record)+tp)).flag) ) {
+			printf("trying to free %d\n",tp);
+			free(  ((*(*(storage->start_record)+tp)).key)    );
 			tp++;
 		}
 	}
-	printf("freed %d objects\n",tp);
+	//free(*(storage->start_record));
+	//*(storage->start_record) = NULL;
+	//
+	//free((storage->start_record));// ??? OK??
+	//storage->start_record = NULL;
+	// CHECK WHETHER NOT DOUBLE FREEE
+	printf("freed %d objects\n",tp); 
 }
 //create a destructor??..
 void set_a_record(record* rec_ptr,char* in_string){
@@ -78,7 +99,11 @@ void set_a_record(record* rec_ptr,char* in_string){
 }
 
 signed check_occupy(record_storage* storage,unsigned long position){
-	enum flag_written flag = (*((*(storage->start_record)+position))).flag; //check whether its writtne
+	printf("checking.1. postition %d, storage:%p\n",position,storage);
+	printf("pointer is %p \n", &((*(*(storage->start_record)+position)).flag  ) );
+	enum flag_written flag = (*(*(storage->start_record)+position)).flag; //check whether its writtne
+	//enum flag_witten flag =  (*(*(storage->start_record)+position)).flag;
+	printf("checking.2..\n");
 	if (flag>0) { //written
 		return 1;
 	} else if (flag==0){
@@ -95,25 +120,40 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		printf("expanding the table by 10 entries!!!!!!!\n");
 		record* pt_old = * (storage->start_record); // store old ptr
 		record* pt_new = calloc(sizeof(record),(storage->max_size)+10 ) ;  // add 10 records
-		if (!(pt_new)){
+		unsigned prev_size = storage->max_size; // store old
+		storage->max_size+=10; // add value
+		if (!(pt_new) || !(pt_old)){ // check before copy
 			printf("error memory allocation, abouring..\n");
 			exit(1);
 		}
-		unsigned prev_size = storage->max_size; // store old
-		storage->max_size+=10; // add value
 		memcpy(pt_new,pt_old,sizeof(record)*prev_size);
 		storage->start_record = &pt_new;  //assign new
-		free(&pt_old); //free old
-	}	
-	unsigned long tposition =   (a_record.id) % ( (storage->max_size) -1 ); // calc position in the table
+		free(pt_old); //free old
+		pt_old = NULL;
+		enum flag_written flag = (*(*(storage->start_record)+7)).flag; //check whether its writtne
+		printf("pointer is %p \n", &((*(*(storage->start_record)+7)).flag  ) );
+		printf("we are here! max size now is %d, val=%d\n",storage->max_size,flag);
+
+	}
+	unsigned long long new_hash;
+	new_hash = 0;
+	//unsigned long long *hash_ptr = &record.id;
+jump_0:
+	unsigned long tposition =   (a_record.id) % ( (storage->max_size)  ); // calc position in the table MUNUS ONE?
+	printf("============has value after jump:%llu, position is %u, string %s \n",new_hash,tposition,a_record.key);
 	unsigned long cur_position = tposition;
-	signed occupied ;
+	signed occupied =0;
+	printf("element show:%d\n",a_record.flag);
+	printf("test, store adress %p \n",storage);
 	occupied =check_occupy(storage,cur_position); //check whether position is occupied???
 	if (occupied>0){
 		if (!(check_position(storage,&a_record,tposition))) { // not equal & occupied!
 			printf("collision!!!!\n");			
-			// ??	
-			(*((*(storage->start_record)+tposition))).flag = moved; // after all mark as moved
+			new_hash = rehash(a_record.id); // calc new hash value
+			a_record.id = new_hash; //assign new hash
+			printf("goto->>>>>\n");
+			goto jump_0; // go an find a space in table
+			//(*((*(storage->start_record)+tposition))).flag = moved; // after all mark as moved
 		//	*((*(storage->start_record)+cur_position)) = a_record; // copy value
 			//a_record.key[0]='A'; // change value
 		
@@ -124,15 +164,16 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 	
 
 	} else if (occupied==0) {// if not ocuppied
-		printf("add new entry\n");
+		printf("add new entry %s \n",a_record.key);
 		copy_obj(storage,a_record,cur_position);
 		storage->current_size++;
 	} else { //moved...
-
+		printf("I AM HERE________________________\n");
 	}
 	printf("position is %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",cur_position,((record)  *((*(storage->start_record)+cur_position))).key,tposition, ((*(*(storage->start_record)+cur_position)).value),   ((*(*(storage->start_record)+cur_position)).flag)  ) ;
 	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
-	printf("lenths in store after append %d,%s \n",strlen(  test ),test);
+	printf("size of table:%d\n",storage->current_size);
+	printf("-------------------------------------------\n");
 }
 
 void copy_obj(record_storage* storage,record a_record,unsigned long position){
@@ -180,26 +221,34 @@ unsigned check_position(record_storage* storage,record* a_record,unsigned long t
 //unsigned set_serial()
 	
 //}
-
+#define VVV 14
 void test0(){
 	record_storage store = init_storage();
 	{
-		char const*const some[8] = {
+		char const*const some[VVV] = {
 			"engl",
 			"fransis",
 			"fransis",
 			"bread",
+			"china",
 			"no_bread",
 			"bread",
-			"fransis",
-			"china",
+			"gagaga",
+			"dasd",
+	                "da",
+			"ttt",
+			"gg",
+			"clcd",
+			"krf",
+
+			//"fransis",
+	//		"china",
 		};
-	for (size_t i = 0; i < 8; ++i) {
+	for (size_t i = 0; i < VVV; ++i) {
 		record tmp_rec = init_a_record();
 		set_a_record(&tmp_rec,some[i]);
 		try_append_to_storage(&store,tmp_rec);
 	}
-	
 	//record t0 = init_a_record();
 	//char* str= "english";
 //	set_a_record(&t0,str);
@@ -224,14 +273,15 @@ void test0(){
 	}
 
 
-	printf("what is that?? %s\n", (*(*(store.start_record)+5 )).key) ;
-	printf("what is that?? %d\n", (*(*(store.start_record)+5 )).value) ;
-	printf("what is that?? %d\n", (*(*(store.start_record)+5 )).id) ;
-	printf("what is that?? %s\n", (*(*(store.start_record)+2 )).key) ;
-	printf("what is that?? %d\n", (*(*(store.start_record)+2 )).value) ;
-	printf("what is that?? %d\n", (*(*(store.start_record)+2 )).id) ;
+	//printf("what is that?? %s\n", (*(*(store.start_record)+0 )).key) ;
+//printf("what is that?? %d\n", (*(*(store.start_record)+5 )).value) ;
+	//printf("what is that?? %d\n", (*(*(store.start_record)+5 )).id) ;
 	//printf("what is that?? %s\n", (*(*(store.start_record)+2 )).key) ;
-
+	//printf("what is that?? %d\n", (*(*(store.start_record)+2 )).value) ;
+	//printf("what is that?? %d\n", (*(*(store.start_record)+2 )).id) ;
+	//printf("what is that?? %s\n", (*(*(store.start_record)+2 )).key) ;
+	//free(store.start_record);
+	//free(*(store.start_record));
 	//printf("what is that?? %s\n",((record) *(*(store.start_record)+1  )).value  );
 	//printf("what is that?? %llu \n",(store.start_record[0])->id);
 	//printf("what is that?? %llu \n",(store.start_record[0])->value);
