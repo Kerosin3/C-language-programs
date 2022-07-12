@@ -131,7 +131,8 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		free(pt_old); //free old
 		pt_old = NULL;
 		enum flag_written flag = (*(*(storage->start_record)+7)).flag; //check whether its writtne
-		printf("pointer is %p \n", &((*(*(storage->start_record)+7)).flag  ) );
+		printf("pointer to 7th after expand is %p \n", &((*(*(storage->start_record)+7)).flag  ) );
+		printf("pointer to main pointer %p ,assigned %p\n", storage->start_record,&pt_new);
 		printf("we are here! max size now is %d, val=%d\n",storage->max_size,flag);
 
 	}
