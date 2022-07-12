@@ -1,8 +1,9 @@
 #include "hash_f.h"
 #define IS_UNSIGNED(t) ((t)~1 > 0)
 
+static unsigned n_extends = 0;
 
-
+void rehash_table(record_storage* storage);
 unsigned long table_size = 10;
 unsigned long long calc_hash(char* input_string){
 	//printf("hash - %s \n",(char*) input_string);
@@ -137,6 +138,8 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		printf("pointer to 7th after expand is %p \n", &((*(*(storage->start_record)+7)).flag  ) );
 		printf("pointer to main pointer %p ,assigned %p\n", storage->start_record,&pt_new);
 		printf("we are here! max size now is %d, val=%d\n",storage->max_size,flag);
+		n_extends++;
+		rehash_table(storage);
 
 	}
 	unsigned long long new_hash;
@@ -159,7 +162,8 @@ jump_0:
 			goto jump_0; // go an find a space in table
 		} else { // equal  and occupied!  -> ADD COUNT!
 	        	printf("occur is storagexxxxxxxxxxxxxxxxxx: %ld\n",(*(*(storage->start_record)+tposition)).value  );
-			((*(*(storage->start_record)+tposition)).value)++;// add value
+			//((*(*(storage->start_record)+tposition)).value)++;// add value
+			(*(*(storage->start_record)+tposition)).value = ((*(*(storage->start_record)+tposition)).value)+1;
 		}
 	} else if (occupied==0) {// if not ocuppied
 		printf("add new entry %s \n",a_record.key);
@@ -172,6 +176,25 @@ jump_0:
 	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
 	printf("size of table:%d\n",storage->current_size);
 	printf("-------------------------------------------\n");
+}
+
+
+void rehash_table(record_storage* storage){
+	printf("rehashing the whole table\n");
+	unsigned index = 0;
+	do {
+		if (  (*(*(storage->start_record)+index)).key   !=0){ // not empty flag
+			printf("1 previous hash: :%llu, index %d\n",  (*(*(storage->start_record)+index)).id ,index );
+			for (size_t i = 0; i <    ((*(*(storage->start_record)+index)).value  ) ; ++i) {
+				(*(*(storage->start_record)+index)).id =  rehash(  (*(*(storage->start_record)+index)).key   ) ;
+				printf("2 analyzing string:%s, new hash:%llu\n",    (*(*(storage->start_record)+index)).key , (*(*(storage->start_record)+index)).id  );
+			}
+		} 
+		//c_hash = ( (*((*(storage->start_record)+index))).id);
+
+		index++;
+	} while( index < storage->max_size  );
+	printf("rehashing done\n");
 }
 
 unsigned long get_value(record_storage* storage,char* in_string){
@@ -274,8 +297,9 @@ void test0(){
 		set_a_record(&tmp_rec,some[i]);
 		try_append_to_storage(&store,tmp_rec);
 	}
-	printf("what is that?? %s\n", (*(*(store.start_record)+8 )).key) ;
-	printf("hmmmmmmm   %d\n",get_value(&store, some[3] ));
+	//unsigned tt = get_value(&store,some[2]);
+	//printf("nth positions:%d containts %s\n",tt, (*(*(store.start_record)+tt )).key) ;
+	//printf("hmmmmmmm   %d\n",some[get_value(&store, some[3] )]);
 	//record t0 = init_a_record();
 	//char* str= "english";
 //	set_a_record(&t0,str);
