@@ -22,6 +22,7 @@ unsigned long long calc_hash(char* input_string){
 		temp_c+=( ((uint8_t) str_ptr[i] ) * pow(((unsigned) SALT),i)  ); // unicode is always 7 byte with leading zero
 		//printf("value is 0x%X, your hash is %llu\n",(uint8_t) str_ptr[i],temp_c);
 	}
+	printf("calced hash value:%llu \n",temp_c);
 	return temp_c;
 	
 }
@@ -67,16 +68,16 @@ void storage_destroy(record_storage* storage ){
 	unsigned tp =0;
 	for (size_t i = 0; i < storage->max_size; ++i) {
 		if (   ((*(*(storage->start_record)+tp)).flag) ) {
-			printf("trying to free %d\n",tp);
+			//printf("trying to free %d\n",tp);
 			free(  ((*(*(storage->start_record)+tp)).key)    );
 			tp++;
 		}
 	}
-	//free(*(storage->start_record));
-	//*(storage->start_record) = NULL;
+	free(*(storage->start_record));
+	*(storage->start_record) = NULL;
 	//
-	//free((storage->start_record));// ??? OK??
-	//storage->start_record = NULL;
+	free((storage->start_record));// ??? OK??
+	storage->start_record = NULL;
 	// CHECK WHETHER NOT DOUBLE FREEE
 	printf("freed %d objects\n",tp); 
 }
@@ -118,16 +119,18 @@ signed check_occupy(record_storage* storage,unsigned long position){
 unsigned try_append_to_storage(record_storage* storage,record a_record){
 	if ((storage->current_size) >= (storage->max_size)){
 		printf("expanding the table by 10 entries!!!!!!!\n");
-		record* pt_old = * (storage->start_record); // store old ptr
-		record* pt_new = calloc(sizeof(record),(storage->max_size)+10 ) ;  // add 10 records
+		record** pt_old = storage->start_record; // store old ptr
+		record** pt_new = calloc(sizeof(record*), 1); // allocate one main pointer
+		*pt_new = calloc(sizeof(record),(storage->max_size)+10 ) ;  // add 10 records
 		unsigned prev_size = storage->max_size; // store old
 		storage->max_size+=10; // add value
 		if (!(pt_new) || !(pt_old)){ // check before copy
 			printf("error memory allocation, abouring..\n");
 			exit(1);
 		}
-		memcpy(pt_new,pt_old,sizeof(record)*prev_size);
-		storage->start_record = &pt_new;  //assign new
+		memcpy(*pt_new,*pt_old,sizeof(record)*prev_size);
+		storage->start_record = pt_new;  //assign new
+		free(*pt_old); //free old*
 		free(pt_old); //free old
 		pt_old = NULL;
 		enum flag_written flag = (*(*(storage->start_record)+7)).flag; //check whether its writtne
@@ -154,16 +157,10 @@ jump_0:
 			a_record.id = new_hash; //assign new hash
 			printf("goto->>>>>\n");
 			goto jump_0; // go an find a space in table
-			//(*((*(storage->start_record)+tposition))).flag = moved; // after all mark as moved
-		//	*((*(storage->start_record)+cur_position)) = a_record; // copy value
-			//a_record.key[0]='A'; // change value
-		
 		} else { // equal  and occupied!  -> ADD COUNT!
 	        	printf("occur is storagexxxxxxxxxxxxxxxxxx: %ld\n",(*(*(storage->start_record)+tposition)).value  );
 			((*(*(storage->start_record)+tposition)).value)++;// add value
 		}
-	
-
 	} else if (occupied==0) {// if not ocuppied
 		printf("add new entry %s \n",a_record.key);
 		copy_obj(storage,a_record,cur_position);
@@ -175,6 +172,33 @@ jump_0:
 	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
 	printf("size of table:%d\n",storage->current_size);
 	printf("-------------------------------------------\n");
+}
+
+unsigned long get_value(record_storage* storage,char* in_string){
+	unsigned long c_pos = 0;
+	unsigned long long hash = calc_hash(in_string);
+	unsigned magic_posit = (hash) % ( (storage->max_size)  ); // get position
+	printf("try to find %s its hash:%llu ,suggest position:%d\n",in_string,hash,magic_posit);
+	unsigned long limit = 0;
+	char* string_on_this_position = ( (*((*(storage->start_record)+magic_posit))).key);
+
+	printf("comparing %s with %s\n", string_on_this_position,in_string );
+	printf("len 0 is %d, len 1 is %d \n",strlen(string_on_this_position),strlen(in_string));
+	printf("first comp:%d\n", (strcmp(string_on_this_position,in_string))  );
+	int first_comp = (strcmp(string_on_this_position,in_string));
+	while ( (strcmp(string_on_this_position,in_string)) != 0  ) {
+		if (limit == (storage->max_size) ){
+			printf("no such word found");
+			return magic_posit;
+		}
+		hash = rehash(hash);
+		magic_posit = (hash) % ( (storage->max_size)  ); // get position
+		limit++;
+		string_on_this_position = ( (*((*(storage->start_record)+magic_posit))).key);
+		printf("nex pos is %d,finish\n",magic_posit);
+	}
+	printf("the limit is %d\n",limit--);
+	return magic_posit;
 }
 
 void copy_obj(record_storage* storage,record a_record,unsigned long position){
@@ -250,6 +274,8 @@ void test0(){
 		set_a_record(&tmp_rec,some[i]);
 		try_append_to_storage(&store,tmp_rec);
 	}
+	printf("what is that?? %s\n", (*(*(store.start_record)+8 )).key) ;
+	printf("hmmmmmmm   %d\n",get_value(&store, some[3] ));
 	//record t0 = init_a_record();
 	//char* str= "english";
 //	set_a_record(&t0,str);
@@ -274,7 +300,6 @@ void test0(){
 	}
 
 
-	//printf("what is that?? %s\n", (*(*(store.start_record)+0 )).key) ;
 //printf("what is that?? %d\n", (*(*(store.start_record)+5 )).value) ;
 	//printf("what is that?? %d\n", (*(*(store.start_record)+5 )).id) ;
 	//printf("what is that?? %s\n", (*(*(store.start_record)+2 )).key) ;
