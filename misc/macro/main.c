@@ -31,7 +31,9 @@ int main(int argc, char *argv[])
 	//printf("%s\n",input_user); 			//put to std
 	//---------------------------------------------------//
 	some_union zz;
-
-	
+	const char* some = "hahaha";
+	char* b = "hehehe";
+	int (*fcall)(char* a) = strcmp(a,some);
+	printf("value is %d \n",*fcall(b));
 	return 0;
 }
