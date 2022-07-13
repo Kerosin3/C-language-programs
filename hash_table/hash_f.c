@@ -25,7 +25,7 @@ unsigned long long calc_hash(char* input_string){
 	}
 	printf("calced hash value:%llu \n",temp_c);
 	return temp_c;
-	
+
 }
 unsigned long long rehash(unsigned long long in_hash){
 	printf("calcing new has value.....\n");
@@ -54,14 +54,16 @@ record_storage init_storage(){
 	record_storage storage;
 	storage.current_size = 0;
 	storage.max_size= 10;
-	record** pt_first = calloc(sizeof(record*), 1); // allocate one main pointer
-	*pt_first = calloc(sizeof(record), 10);  // allocate space for 10 pointer to 1 record   calloc(sizeof(record)*n,10) -- 10 pointers to 10 record
-	if ( !(pt_first) || !(*pt_first) ) {
+	storage.start_record = calloc(sizeof(record*), 1);
+	if (!storage.start_record) {
 		printf("error memory allocation, aborting\n");
 		exit(1);
-	}// WTF???
-	storage.start_record = pt_first;
-	//storage.start_record = (record*) calloc(1, sizeof(record));
+	}
+	*(storage.start_record) = calloc(sizeof(record), 10);
+	if (!(*(storage.start_record))) {
+		printf("error memory allocation, aborting\n");
+		exit(1);
+	}
 	return storage;
 }
 void storage_destroy(record_storage* storage ){
@@ -80,7 +82,7 @@ void storage_destroy(record_storage* storage ){
 	free((storage->start_record));// ??? OK??
 	storage->start_record = NULL;
 	// CHECK WHETHER NOT DOUBLE FREEE
-	printf("freed %d objects\n",tp); 
+	printf("freed %d objects\n",tp);
 }
 //create a destructor??..
 void set_a_record(record* rec_ptr,char* in_string){
@@ -113,25 +115,24 @@ signed check_occupy(record_storage* storage,unsigned long position){
 	} else {
 		return -1;
 	}
-	
-} 
+
+}
 
 
 unsigned try_append_to_storage(record_storage* storage,record a_record){
 	if ((storage->current_size) >= (storage->max_size)){
 		printf("expanding the table by 10 entries!!!!!!!\n");
-		record** pt_old = storage->start_record; // store old ptr
-		record** pt_new = calloc(sizeof(record*), 1); // allocate one main pointer
-		*pt_new = calloc(sizeof(record),(storage->max_size)+10 ) ;  // add 10 records
+		record* pt_old = *(storage->start_record); // store old ptr
+		record* pt_new = calloc(sizeof(record),(storage->max_size)+10 ) ;  // add 10 records
 		unsigned prev_size = storage->max_size; // store old
 		storage->max_size+=10; // add value
 		if (!(pt_new) || !(pt_old)){ // check before copy
 			printf("error memory allocation, abouring..\n");
 			exit(1);
 		}
-		memcpy(*pt_new,*pt_old,sizeof(record)*prev_size);
-		storage->start_record = pt_new;  //assign new
-		free(*pt_old); //free old*
+		memcpy(pt_new,pt_old,sizeof(record)*prev_size);
+		*(storage->start_record) = pt_new;  //assign new
+		//free(*pt_old); //free old*
 		free(pt_old); //free old
 		pt_old = NULL;
 		enum flag_written flag = (*(*(storage->start_record)+7)).flag; //check whether its writtne
@@ -155,7 +156,7 @@ jump_0:
 	occupied =check_occupy(storage,cur_position); //check whether position is occupied???
 	if (occupied>0){
 		if (!(check_position(storage,&a_record,tposition))) { // not equal & occupied!
-			printf("collision!!!!\n");			
+			printf("collision!!!!\n");
 			new_hash = rehash(a_record.id); // calc new hash value
 			a_record.id = new_hash; //assign new hash
 			printf("goto->>>>>\n");
@@ -163,7 +164,7 @@ jump_0:
 		} else { // equal  and occupied!  -> ADD COUNT!
 	        	printf("occur is storagexxxxxxxxxxxxxxxxxx: %ld\n",(*(*(storage->start_record)+tposition)).value  );
 			//((*(*(storage->start_record)+tposition)).value)++;// add value
-			(*(*(storage->start_record)+tposition)).value = ((*(*(storage->start_record)+tposition)).value)+1;
+			(*(*(storage->start_record)+tposition)).value++;
 		}
 	} else if (occupied==0) {// if not ocuppied
 		printf("add new entry %s \n",a_record.key);
@@ -173,7 +174,7 @@ jump_0:
 		printf("I AM HERE________________________\n");
 	}
 	printf("position is %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",cur_position,((record)  *((*(storage->start_record)+cur_position))).key,tposition, ((*(*(storage->start_record)+cur_position)).value),   ((*(*(storage->start_record)+cur_position)).flag)  ) ;
-	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
+	char* test = (*((*(storage->start_record)+cur_position))   ).key;
 	printf("size of table:%d\n",storage->current_size);
 	printf("-------------------------------------------\n");
 }
@@ -189,7 +190,7 @@ void rehash_table(record_storage* storage){
 				(*(*(storage->start_record)+index)).id =  rehash(  (*(*(storage->start_record)+index)).key   ) ;
 				printf("2 analyzing string:%s, new hash:%llu\n",    (*(*(storage->start_record)+index)).key , (*(*(storage->start_record)+index)).id  );
 			}
-		} 
+		}
 		//c_hash = ( (*((*(storage->start_record)+index))).id);
 
 		index++;
@@ -248,7 +249,7 @@ void copy_obj(record_storage* storage,record a_record,unsigned long position){
 unsigned check_position(record_storage* storage,record* a_record,unsigned long try_this_position){ // whether it is already occupied
 	char* string_on_this_position =  (*((*(storage->start_record)+try_this_position))).key ;
 	char* string_to_check =  a_record->key;
-//	if (!(string_on_this_position == NULL)) 
+//	if (!(string_on_this_position == NULL))
 	printf("--------------------------%s\n",string_on_this_position);
 	printf("--------------------------%s\n",string_to_check);
 	int rez = -1;
@@ -261,13 +262,13 @@ unsigned check_position(record_storage* storage,record* a_record,unsigned long t
 	}
 	printf("result of comparision is %d \n",rez);
 	if (rez){ // not equal,
-		return 0; // go and write	
+		return 0; // go and write
 	} else { //if collision, match
-		return 1; //ooccupied 
+		return 1; //ooccupied
 	}
 }
 //unsigned set_serial()
-	
+
 //}
 #define VVV 14
 void test0(){
@@ -312,11 +313,11 @@ void test0(){
 
 	printf("check is %s \n",t0.key);
 	printf("check is %s \n",t1.key);
-	**(store.start_record) = t0; 
+	**(store.start_record) = t0;
 	try_append_to_storage(&store,t0);
 	try_append_to_storage(&store,t0);
 	try_append_to_storage(&store,t1);
-	**(store.start_record) = t0; 
+	**(store.start_record) = t0;
 	store.start_record[0][1] = t0; //copy!!!!
 	*(*(store.start_record)+1) = t1;
 	store.start_record[0][2] = t1;
