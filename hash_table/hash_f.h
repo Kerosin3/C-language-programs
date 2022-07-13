@@ -26,7 +26,7 @@ typedef struct{
 } record_storage;
 
 record init_a_record();
-record_storage init_storage();
+record_storage init_storage(unsigned);
 unsigned try_append_to_storage(record_storage*,record);
 void storage_destroy(record_storage*);
 unsigned check_position(record_storage*,record*,unsigned long);

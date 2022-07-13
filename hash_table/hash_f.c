@@ -4,6 +4,7 @@
 static unsigned n_extends = 0;
 
 void rehash_table(record_storage* storage);
+record_storage* rehash_tablev2(record_storage* storage);
 unsigned long table_size = 10;
 unsigned long long calc_hash(char* input_string){
 	//printf("hash - %s \n",(char*) input_string);
@@ -50,10 +51,10 @@ record init_a_record(){
 	return a_record;
 }
 
-record_storage init_storage(){
+record_storage init_storage(unsigned max_size_init){
 	record_storage storage;
 	storage.current_size = 0;
-	storage.max_size= 10;
+	storage.max_size= max_size_init;
 	record** pt_first = calloc(sizeof(record*), 1); // allocate one main pointer
 	*pt_first = calloc(sizeof(record), 10);  // allocate space for 10 pointer to 1 record   calloc(sizeof(record)*n,10) -- 10 pointers to 10 record
 	if ( !(pt_first) || !(*pt_first) ) {
@@ -117,9 +118,11 @@ signed check_occupy(record_storage* storage,unsigned long position){
 
 
 unsigned try_append_to_storage(record_storage* storage,record a_record){
+	printf("aaa\n");
 	if ((storage->current_size) >= (storage->max_size)){
-		printf("expanding the table by 10 entries!!!!!!!\n");
-		record** pt_old = storage->start_record; // store old ptr
+		printf("==================================expanding the table by 10 entries!!!!!!!==================================\n");
+		//printf("hehehee\n");
+		/*record** pt_old = storage->start_record; // store old ptr
 		record** pt_new = calloc(sizeof(record*), 1); // allocate one main pointer
 		*pt_new = calloc(sizeof(record),(storage->max_size)+10 ) ;  // add 10 records
 		unsigned prev_size = storage->max_size; // store old
@@ -137,8 +140,12 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		printf("pointer to 7th after expand is %p \n", &((*(*(storage->start_record)+7)).flag  ) );
 		printf("pointer to main pointer %p ,assigned %p\n", storage->start_record,&pt_new);
 		printf("we are here! max size now is %d, val=%d\n",storage->max_size,flag);
+		*/
 		n_extends++;
-		rehash_table(storage);
+		storage->start_record =  &rehash_tablev2(storage);
+		storage->max_size+=10; // add value
+		//free(*storage->start_record); //free old*
+		//*storage->start_record = NULL;
 
 	}
 	unsigned long long new_hash;
@@ -185,10 +192,29 @@ jump_0:
 	}
 	printf("position is %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",cur_position,((record)  *((*(storage->start_record)+cur_position))).key,tposition, ((*(*(storage->start_record)+cur_position)).value),   ((*(*(storage->start_record)+cur_position)).flag)  ) ;
 	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
-	printf("size of table:%d\n",storage->current_size);
+	printf("size of table:%d, max size if %d\n",storage->current_size,storage->max_size);
 	printf("-------------------------------------------\n");
 }
 
+record_storage* rehash_tablev2(record_storage* storage){
+	printf("mark\n");
+	unsigned long index = 0;
+	record* stored_rec = (*(storage->start_record)+index);
+	//-------------
+	record_storage* new_storage = &(init_storage( (n_extends+1)*10 )  ); // create new storage 
+	//-------------
+	for (size_t i = 0; i < storage->max_size; ++i) { // iterate over old storage
+		if (stored_rec->key) { // if not empty
+			index = i;
+			record c_record = *stored_rec; // take record
+			try_append_to_storage(new_storage, c_record  ); // append to new storage with new size
+		}
+	}
+	//free(*pt_old); //free old*
+	//free(pt_old); //free old
+	//pt_old = NULL;
+	return new_storage;
+}
 
 
 void rehash_table(record_storage* storage){
@@ -256,29 +282,32 @@ unsigned long get_value(record_storage* storage,char* in_string){
 	//printf("input string %s, compared with %s\n",in_string, stored_rec -> key);
 	if (check_null_str(stored_rec->key)){ // if null
 		printf("go jump\n");
+		//_init_hash = rehash(_init_hash);
 		goto jump_rehash;
 	}
 	int first_comp = strcmp(stored_rec->key,in_string); // try first!
 	printf("try to find %s its hash:%llu ,suggest position:%d\n",in_string,_init_hash,magic_posit);
-	if (!(first_comp))  return magic_posit ; // the same ;!!!! WIN
+	if (!(first_comp))  return magic_posit ; // the same ;!!!! WIN FIRST OCCURENCE
 jump_rehash:
-	unsigned fl = 0;
-	int cond = 0;
-	do {
-	jump_begin:
-		_init_hash = rehash(_init_hash);
+	do{
 		magic_posit = _init_hash % ( storage->max_size ); 
+		_init_hash = rehash(_init_hash);
+
+	}while(check_null_str(stored_rec->key)); // work while NULL
+
+	while(  !( strcmp(stored_rec->key,in_string)    )) { // not null here! done when the same
+		if (stored_rec->key)  { //written or moved
+		//magic_posit = _init_hash % ( storage->max_size ); 
+		//_init_hash = rehash(_init_hash);
 		limit++;
-		fl = 0;
-		if (check_null_str(  (*(storage->start_record)+magic_posit)   )){ // if null
-			fl =1;
-			goto jump_begin;
-		}
-		printf("not null\n");
 		printf("suggest posit %d ,in string: %s value %s \n",magic_posit, in_string,  (*(storage->start_record)+magic_posit)->key  );
 		//cond = (fl) ? (1) : !( strcmp(stored_rec->key,in_string)  ) ; 
+		goto jump_rehash;
+		} else {
+			continue;
+		}
+	}
 
-	} while(  !( strcmp(stored_rec->key,in_string)    ));
 	return magic_posit;
 }
 
@@ -329,7 +358,7 @@ unsigned check_position(record_storage* storage,record* a_record,unsigned long t
 //}
 #define VVV 14
 void test0(){
-	record_storage store = init_storage();
+	record_storage store = init_storage(10);
 	{
 		char const*const some[VVV] = {
 			"engl",
@@ -360,12 +389,12 @@ void test0(){
 	//printf("nth positions:%d containts %s\n",12, (*(*(store.start_record)+12 )).key) ;
 //	printf("<><><><><><><><><><><><><><><> fransis position:   %d\n",get_value(&store, some[13] ));
 	printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
-	for (size_t i = 0; i < VVV-1; i++) {
+	/*for (size_t i = 0; i < VVV-1; i++) {
 	//printf("search %s, found on position %llu, \n",some[i], get_value(&store, some[i] ) ) ;
 	printf("search %s, found on position %llu, contains %s\n",some[i], get_value(&store, some[i] ) ,(*(*(store.start_record)+ get_value(&store,some[i])   )).key) ;
 
 	printf("----------\n");
-	}
+	}*/
 	//record t0 = init_a_record();
 	//char* str= "english";
 //	set_a_record(&t0,str);
