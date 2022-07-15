@@ -33,6 +33,10 @@ unsigned long long rehash(unsigned long long in_hash){
 	int str_len = snprintf(NULL,0,"%u",in_hash);// get the size
 	str_len++ ;//space for null term
 	char* str_converted = malloc(str_len);
+	if (!(str_converted)) {
+		printf("errror memory allocation\n");
+		exit(1);
+	}
 	snprintf(str_converted,str_len,"%d",in_hash);
 	unsigned long long new_hash = calc_hash(str_converted);
 	printf("----------prev hash value %llu---------new hash value is %llu \n",in_hash,new_hash);
@@ -122,7 +126,8 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 	if ((storage->current_size) >= (storage->max_size)){
 		printf("==================================expanding the table by 10 entries!!!!!!!==================================\n");
 		//printf("hehehee\n");
-		/*record** pt_old = storage->start_record; // store old ptr
+		record** pt_old = storage->start_record; // store old ptr
+		/*
 		record** pt_new = calloc(sizeof(record*), 1); // allocate one main pointer
 		*pt_new = calloc(sizeof(record),(storage->max_size)+10 ) ;  // add 10 records
 		unsigned prev_size = storage->max_size; // store old
@@ -133,9 +138,7 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		}
 		memcpy(*pt_new,*pt_old,sizeof(record)*prev_size);
 		storage->start_record = pt_new;  //assign new
-		free(*pt_old); //free old*
-		free(pt_old); //free old
-		pt_old = NULL;
+			pt_old = NULL;
 		enum flag_written flag = (*(*(storage->start_record)+7)).flag; //check whether its writtne
 		printf("pointer to 7th after expand is %p \n", &((*(*(storage->start_record)+7)).flag  ) );
 		printf("pointer to main pointer %p ,assigned %p\n", storage->start_record,&pt_new);
@@ -145,7 +148,11 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		storage->start_record =  rehash_tablev2(storage).start_record;
 		storage->max_size+=10; // add value
 		//free(*storage->start_record); //free old*
-		*storage->start_record = NULL;
+		free(*pt_old); //free old*
+		free(pt_old); //free old
+
+		*pt_old = NULL;
+		pt_old = NULL;
 
 	}
 	unsigned long long new_hash;
@@ -267,29 +274,58 @@ void rehash_table(record_storage* storage){
 }
 
 unsigned check_null_str(char* in_str){
+	printf("analyze null\n");
 	if ((in_str == NULL) || (in_str[0] == '\0')) {
 	   printf("c is empty\n");
 	   return 1;
 	}
+	printf("not epmty!\n");
 	return 0;
 }
 
-unsigned long get_value(record_storage* storage,char* in_string){
-	unsigned the_magic_limit = (n_extends+1) * 2000000;
+
+
+
+unsigned long get_value_v2(record_storage* storage,char* in_string){
+
 	unsigned long limit = 0;
 	unsigned long long _init_hash = calc_hash(in_string);
 	unsigned magic_posit = (_init_hash) % ( (storage->max_size)  ); // get first try
 	record* stored_rec = (*(storage->start_record)+magic_posit);
-	//printf("input string %s, compared with %s\n",in_string, stored_rec -> key);
 	if (check_null_str(stored_rec->key)){ // if null
 		printf("go jump\n");
 		//_init_hash = rehash(_init_hash);
+	} else {
+	int first_comp = strcmp(stored_rec->key,in_string); // try first!
+	if (!(first_comp))  return magic_posit ; // the same ;!!!! WIN FIRST OCCURENCE
+	}
+	unsigned flag = 0;
+	while((check_null_str(stored_rec->key)) || flag  ) {// work while NULL
+		_init_hash = rehash(_init_hash);
+		magic_posit = _init_hash % ( storage->max_size ); 
+		stored_rec = (*(storage->start_record)+magic_posit);
+		printf("magic=%d look  %p \n",magic_posit,stored_rec);
+		printf("asdasd\n");
+		flag = 0;
+	}
+	printf("blablal\n");
+	flag = 0;			 // not null here
+	printf("try to find %s its hash:%llu ,suggest position:%d\n",in_string,_init_hash,magic_posit);
+	printf("look %s \n",stored_rec->key);
+	if (!( strcmp(stored_rec->key,in_string))) { // not null here!!! 
+		return magic_posit;
+	} else { // not equal but not null!
+		flag = 1;
 		goto jump_rehash;
 	}
-	int first_comp = strcmp(stored_rec->key,in_string); // try first!
-	printf("try to find %s its hash:%llu ,suggest position:%d\n",in_string,_init_hash,magic_posit);
-	if (!(first_comp))  return magic_posit ; // the same ;!!!! WIN FIRST OCCURENCE
-jump_rehash:
+
+
+}
+/*
+unsigned long get_value(record_storage* storage,char* in_string){
+	unsigned the_magic_limit = (n_extends+1) * 2000000;
+	//printf("input string %s, compared with %s\n",in_string, stored_rec -> key);
+	jump_rehash:
 	do{
 		magic_posit = _init_hash % ( storage->max_size ); 
 		_init_hash = rehash(_init_hash);
@@ -311,7 +347,7 @@ jump_rehash:
 
 	return magic_posit;
 }
-
+*/
 void copy_obj(record_storage* storage,record a_record,unsigned long position){
 	unsigned s_len = strlen(a_record.key) +1 ; //add null t
 	char* s_tmp = calloc(sizeof(char), s_len); //allocate memory for string
@@ -390,12 +426,12 @@ void test0(){
 	//printf("nth positions:%d containts %s\n",12, (*(*(store.start_record)+12 )).key) ;
 //	printf("<><><><><><><><><><><><><><><> fransis position:   %d\n",get_value(&store, some[13] ));
 	printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
-	/*for (size_t i = 0; i < VVV-1; i++) {
+	for (size_t i = 0; i < VVV-1; i++) {
 	//printf("search %s, found on position %llu, \n",some[i], get_value(&store, some[i] ) ) ;
-	printf("search %s, found on position %llu, contains %s\n",some[i], get_value(&store, some[i] ) ,(*(*(store.start_record)+ get_value(&store,some[i])   )).key) ;
+	printf("search %s, found on position %llu, contains %s\n",some[i], get_value_v2(&store, some[i] ) ,(*(*(store.start_record)+ get_value_v2(&store,some[i])   )).key) ;
 
 	printf("----------\n");
-	}*/
+	}
 	//record t0 = init_a_record();
 	//char* str= "english";
 //	set_a_record(&t0,str);
