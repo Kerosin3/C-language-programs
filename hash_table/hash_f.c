@@ -4,7 +4,7 @@
 static unsigned n_extends = 0;
 
 void rehash_table(record_storage* storage);
-record_storage* rehash_tablev2(record_storage* storage);
+record_storage rehash_tablev2(record_storage* storage);
 unsigned long table_size = 10;
 unsigned long long calc_hash(char* input_string){
 	//printf("hash - %s \n",(char*) input_string);
@@ -142,10 +142,10 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		printf("we are here! max size now is %d, val=%d\n",storage->max_size,flag);
 		*/
 		n_extends++;
-		storage->start_record =  &rehash_tablev2(storage);
+		storage->start_record =  rehash_tablev2(storage).start_record;
 		storage->max_size+=10; // add value
 		//free(*storage->start_record); //free old*
-		//*storage->start_record = NULL;
+		*storage->start_record = NULL;
 
 	}
 	unsigned long long new_hash;
@@ -196,18 +196,19 @@ jump_0:
 	printf("-------------------------------------------\n");
 }
 
-record_storage* rehash_tablev2(record_storage* storage){
+record_storage rehash_tablev2(record_storage* storage){
 	printf("mark\n");
 	unsigned long index = 0;
 	record* stored_rec = (*(storage->start_record)+index);
 	//-------------
-	record_storage* new_storage = &(init_storage( (n_extends+1)*10 )  ); // create new storage 
+	printf("iterate over %d \n",storage->max_size);
+	record_storage new_storage = init_storage( (n_extends+1)*10 )  ; // create new storage 
 	//-------------
 	for (size_t i = 0; i < storage->max_size; ++i) { // iterate over old storage
 		if (stored_rec->key) { // if not empty
 			index = i;
 			record c_record = *stored_rec; // take record
-			try_append_to_storage(new_storage, c_record  ); // append to new storage with new size
+			try_append_to_storage(&new_storage, c_record  ); // append to new storage with new size
 		}
 	}
 	//free(*pt_old); //free old*
