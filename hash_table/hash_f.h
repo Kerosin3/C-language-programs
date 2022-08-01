@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <tgmath.h>
 #include <stdlib.h>
+#include <assert.h>
 //#include "BSD_strings.c"
 #define SALT 15
 unsigned long long calc_hash(char*);

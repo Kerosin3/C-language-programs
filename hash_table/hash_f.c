@@ -1,7 +1,7 @@
 #include "hash_f.h"
 #define IS_UNSIGNED(t) ((t)~1 > 0)
 
-static unsigned n_extends = 0;
+static unsigned n_extends = 1;
 
 void rehash_table(record_storage* storage);
 record_storage rehash_tablev2(record_storage* storage);
@@ -60,7 +60,7 @@ record_storage init_storage(unsigned max_size_init){
 	storage.current_size = 0;
 	storage.max_size= max_size_init;
 	record** pt_first = calloc(sizeof(record*), 1); // allocate one main pointer
-	*pt_first = calloc(sizeof(record), 10);  // allocate space for 10 pointer to 1 record   calloc(sizeof(record)*n,10) -- 10 pointers to 10 record
+	*pt_first = calloc(sizeof(record), max_size_init);  // allocate space for max_size pointers to 1 record   calloc(sizeof(record)*n,10) -- 10 pointers to 10 record
 	if ( !(pt_first) || !(*pt_first) ) {
 		printf("error memory allocation, aborting\n");
 		exit(1);
@@ -162,6 +162,7 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 jump_0:
 	unsigned long tposition =   (a_record.id) % ( (storage->max_size)  ); // calc position in the table MUNUS ONE?
 	printf("============has value after jump:%llu, position is %u, string %s \n",new_hash,tposition,a_record.key);
+	printf("positi hash is %llu \n",a_record.id);
 	unsigned long cur_position = tposition;
 	signed occupied =0;
 	unsigned flag_zero = 0;
@@ -213,7 +214,7 @@ record_storage rehash_tablev2(record_storage* storage){
 //	printf("hmmmm = %s\n",(*(storage->start_record)+1)->key);
 	//-------------
 	printf("iterate over %d \n",storage->max_size);
-	record_storage new_storage = init_storage( (n_extends+1)*10 )  ; // create new storage 
+	record_storage new_storage = init_storage( (n_extends++)*10 )  ; // create new storage 
 	//-------------
 	for (size_t i = 0; i < storage->max_size; ++i) { // iterate over old storage
 		//if (stored_rec->key) { // if not empty
@@ -323,11 +324,11 @@ jump_rehash:
 	do {// work while NULL
 		_init_hash = rehash(_init_hash);
 		magic_posit = _init_hash % ( storage->max_size ); 
-		//stored_rec = (*(storage->start_record)+magic_posit);
+		stored_rec = (*(storage->start_record)+magic_posit); // ???? hehe
 		printf("magic=%d look  %p \n",magic_posit,stored_rec);
-		printf("asdasd\n");
 	} while ((check_null_str(stored_rec->key))); // repeat while empty
 	printf("look %s \n",stored_rec->key);
+	//printf("string on postition %s base is  %s \n",stored_rec->key);
 	if (!( strcmp(stored_rec->key,in_string))) { // not null here!!! 
 		return magic_posit;
 	} else { // not equal but not null!
@@ -365,24 +366,22 @@ unsigned long get_value(record_storage* storage,char* in_string){
 */
 void copy_obj(record_storage* storage,record a_record,unsigned long position){
 	unsigned s_len = strlen(a_record.key)  ; //add null t
+	//int s_len = snprintf(NULL,0,"{data:%c}",a_record.key);// get the size
+	printf("the len is %d\n",s_len);
+	assert(s_len > 0);
 	char* s_tmp = calloc(sizeof(char), s_len); //allocate memory for string
 	if (!(s_tmp)) {
 		printf("error memeory allocation\n");
 		exit(1);
 	}
-	printf("--copying string= %s len = %d \n", a_record.key ,s_len);
-
 	strncpy( s_tmp,a_record.key, s_len );
 	s_tmp[s_len+1] = '\0';
-
-	printf("copied string= %s\n", s_tmp);
-	(*((*(storage->start_record)+position))).id = a_record.id;
-	(*((*(storage->start_record)+position))).value = a_record.value;
-	(*((*(storage->start_record)+position))).flag = a_record.flag;
-	(*((*(storage->start_record)+position))).key = s_tmp;
-	printf("copying done, string= %s\n", s_tmp);
-	printf("copying done, string= %s\n", (char*) (*((*(storage->start_record)+position))).key  );
-	//printf("copying done, hash %llu\n", (char*) (*((*(storage->start_record)+position))).id  );
+	record* target_record = ((*(storage->start_record)+position));
+	target_record->id = a_record.id;
+	target_record->value =  a_record.value;
+	target_record->flag = a_record.flag;
+	target_record->key =  s_tmp;
+	//printf("copying done, string= %s\n", (char*) (*((*(storage->start_record)+position))).key  );
 }
 
 //record get_a_record(char* check_this_input){
@@ -410,7 +409,7 @@ unsigned check_position(record_storage* storage,record* a_record,unsigned long t
 //unsigned set_serial()
 	
 //}
-#define VVV 14
+#define VVV 15
 void test0(){
 	record_storage store = init_storage(10);
 	{
@@ -429,11 +428,12 @@ void test0(){
 			"gg",
 			"clcd",
 			"krf",
+			"русское",
 
 			//"fransis",
 	//		"china",
 		};
-	for (size_t i = 0; i < VVV; ++i) {
+		for (size_t i = 0; i < VVV; ++i) {
 		record tmp_rec = init_a_record();
 		set_a_record(&tmp_rec,some[i]);
 		try_append_to_storage(&store,tmp_rec);
@@ -443,12 +443,12 @@ void test0(){
 	//printf("nth positions:%d containts %s\n",12, (*(*(store.start_record)+12 )).key) ;
 //	printf("<><><><><><><><><><><><><><><> fransis position:   %d\n",get_value(&store, some[13] ));
 	printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
-	for (size_t i = 0; i < VVV-1; i++) {
-		printf("we are searching %s \n",some[i]);
+	for (size_t i = 0; i < VVV; i++) {
+		printf("%d we are searching %s \n",i,some[i]);
 		unsigned long long getted_value = get_value_v2(&store, some[i] );  // position
 		printf("---\n");
-		char *contained = (*(*(store.start_record)+getted_value )).key ;
-		printf("searched %s, found on position %llu, contains %s\n",some[i], getted_value ,contained) ;
+		record contained = (*(*(store.start_record)+getted_value )) ;
+		printf("searched %s, found on position %llu, contains %s, meet %d \n",some[i], getted_value ,contained.key, contained.value) ;
 
 	printf("----------\n");
 	}
