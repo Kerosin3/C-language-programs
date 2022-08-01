@@ -364,7 +364,7 @@ unsigned long get_value(record_storage* storage,char* in_string){
 }
 */
 void copy_obj(record_storage* storage,record a_record,unsigned long position){
-	unsigned s_len = strlen(a_record.key) +1 ; //add null t
+	unsigned s_len = strlen(a_record.key)  ; //add null t
 	char* s_tmp = calloc(sizeof(char), s_len); //allocate memory for string
 	if (!(s_tmp)) {
 		printf("error memeory allocation\n");
@@ -372,8 +372,8 @@ void copy_obj(record_storage* storage,record a_record,unsigned long position){
 	}
 	printf("--copying string= %s len = %d \n", a_record.key ,s_len);
 
-	strcpy( s_tmp,a_record.key );
-	//s_tmp[s_len] = '\0';
+	strncpy( s_tmp,a_record.key, s_len );
+	s_tmp[s_len+1] = '\0';
 
 	printf("copied string= %s\n", s_tmp);
 	(*((*(storage->start_record)+position))).id = a_record.id;
