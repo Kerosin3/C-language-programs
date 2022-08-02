@@ -4,9 +4,12 @@
 static unsigned n_extends = 1;
 
 void rehash_table(record_storage* storage);
-record_storage rehash_tablev2(record_storage* storage);
+static record_storage rehash_tablev2(record_storage* storage);
+static void copy_obj(record_storage* storage,record a_record,unsigned long position);
+unsigned long get_value_v2(record_storage* storage,const char* in_string);
+
 unsigned long table_size = 10;
-unsigned long long calc_hash(char* input_string){
+unsigned long long calc_hash(const char* input_string){
 	//printf("hash - %s \n",(char*) input_string);
 	if ((sizeof(uint8_t) != (sizeof(char))) ) {
 		printf("platform error!,aborting...\n");
@@ -87,9 +90,10 @@ void storage_destroy(record_storage* storage ){
 	printf("freed %d objects\n",tp); 
 }
 //create a destructor??..
-void set_a_record(record* rec_ptr,char* in_string){
+void set_a_record(record* rec_ptr,const char* in_string){
 	unsigned str_l = strlen(in_string); // dangerous
 	str_l++; //null terminator
+	printf("here %s %d \n",in_string,str_l);
 	char* ptr = calloc(str_l,sizeof(uint8_t));
 	if (!(ptr)){
 		printf("cannot allocate memore, aborting\n");
@@ -207,7 +211,7 @@ jump_0:
 	printf("-------------------------------------------\n");
 }
 
-record_storage rehash_tablev2(record_storage* storage){
+static record_storage rehash_tablev2(record_storage* storage){
 	printf("mark\n");
 	unsigned long index = 0;
 //	record* stored_rec = (*(storage->start_record)+index); ?????
@@ -298,7 +302,7 @@ unsigned check_null_str(char* in_str){
 
 
 
-unsigned long get_value_v2(record_storage* storage,char* in_string){
+unsigned long get_value_v2(record_storage* storage,const char* in_string){
 
 	unsigned long limit = 0;
 	unsigned long long _init_hash = calc_hash(in_string);
@@ -364,7 +368,7 @@ unsigned long get_value(record_storage* storage,char* in_string){
 	return magic_posit;
 }
 */
-void copy_obj(record_storage* storage,record a_record,unsigned long position){
+static void copy_obj(record_storage* storage,record a_record,unsigned long position){
 	unsigned s_len = strlen(a_record.key)  ; //add null t
 	//int s_len = snprintf(NULL,0,"{data:%c}",a_record.key);// get the size
 	printf("the len is %d\n",s_len);
@@ -452,6 +456,7 @@ void test0(){
 
 	printf("----------\n");
 	}
+	//printout_content(&store);
 	//record t0 = init_a_record();
 	//char* str= "english";
 //	set_a_record(&t0,str);

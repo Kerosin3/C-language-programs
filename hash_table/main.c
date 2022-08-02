@@ -1,12 +1,10 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <stdarg.h>
-//#include "spookyhash/src/spookyhash_api.h"
-#include "BSD_strings.c"
+//#include <stdio.h>
+//#include <stdint.h>
+//#include <stdlib.h>
+//#include <ctype.h>
+//#include <stdarg.h>
+//#include "BSD_strings.c"
 #include "hash_f.h"
-
 
 #define DEBUG
 #define MAX_WORD_LENGTH 25
@@ -24,10 +22,6 @@ unsigned END_REACHED = 0;
 
 int main(int argc, char *argv[])
 {
-        //char u_input[21];
-	//fgets(u_input,21,stdin);
-	//unsigned len = strnlen(u_input,20);
-	//printf("you entered:%s, length is %d\n",u_input,len);
 	FILE* fp_r;
 	if ((fp_r = fopen(argv[1],"rb")) == NULL) {
 		printf("error opening file, aborting...\n");
@@ -36,16 +30,24 @@ int main(int argc, char *argv[])
 	rewind(fp_r);
 	word_pointers some_word;
 	unsigned long long hash_val = 0;
+	record_storage store = init_storage(10); // init storage
 	while ( (( some_word = find_a_word(fp_r) ).word)  ){ // WHILE NOT NULL
-		//some_word = find_a_word(fp_r);
 		printf("%d,your word is \"%s\"\n",END_REACHED,(char*) (some_word.word));
+
+		record tmp_rec = init_a_record();
+		printf("11111\n");
+		set_a_record(&tmp_rec,(const char*) some_word.word);
+		printf("22222\n");
+		try_append_to_storage(&store,tmp_rec);
+
 		hash_val=calc_hash((char*) (some_word.word)); // memory is assigned here
 		free(some_word.word);
 		printf("value of has is %llu\n",hash_val);
 	}
-	test0();
+	//test0();
+	//printout_content(&store);
 	fclose(fp_r);
-	//free(some_word.word);
+	storage_destroy(&store);
 	return 0;
 }
 
