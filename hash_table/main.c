@@ -35,9 +35,9 @@ int main(int argc, char *argv[])
 		printf("%d,your word is \"%s\"\n",END_REACHED,(char*) (some_word.word));
 
 		record tmp_rec = init_a_record();
-		printf("11111\n");
+		//printf("11111\n");
 		set_a_record(&tmp_rec,(const char*) some_word.word);
-		printf("22222\n");
+		//printf("22222\n");
 		try_append_to_storage(&store,tmp_rec);
 
 		hash_val=calc_hash((char*) (some_word.word)); // memory is assigned here

@@ -35,7 +35,8 @@ unsigned long long rehash(unsigned long long in_hash){
 	printf("calcing new has value.....\n");
 	int str_len = snprintf(NULL,0,"%u",in_hash);// get the size
 	str_len++ ;//space for null term
-	char* str_converted = malloc(str_len);
+	//char* str_converted = malloc(str_len);
+	char* str_converted = alloca(str_len);
 	if (!(str_converted)) {
 		printf("errror memory allocation\n");
 		exit(1);
@@ -43,7 +44,7 @@ unsigned long long rehash(unsigned long long in_hash){
 	snprintf(str_converted,str_len,"%d",in_hash);
 	unsigned long long new_hash = calc_hash(str_converted);
 	printf("----------prev hash value %llu---------new hash value is %llu \n",in_hash,new_hash);
-	free(str_converted); // free memory
+	//free(str_converted); // free memory
 	return new_hash;
 }
 
@@ -94,11 +95,15 @@ void set_a_record(record* rec_ptr,const char* in_string){
 	unsigned str_l = strlen(in_string); // dangerous
 	str_l++; //null terminator
 	printf("here %s %d \n",in_string,str_l);
-	char* ptr = calloc(str_l,sizeof(uint8_t));
+	//char* ptr = aligned_alloc(256,sizeof(uint8_t)*str_l);
+	//char* ptr = calloc(str_l,sizeof(char));
+	char* ptr = malloc(sizeof(char)* str_l); //-------------??????
+	printf("???????\n");
 	if (!(ptr)){
 		printf("cannot allocate memore, aborting\n");
 		exit(1);
 	}
+	ptr[str_l]='\0';
 	strcpy(ptr,in_string);
 	rec_ptr->key=ptr;
 	rec_ptr->id = calc_hash(ptr); //assign hash
@@ -108,6 +113,9 @@ void set_a_record(record* rec_ptr,const char* in_string){
 	rec_ptr->value = 1;
 }
 
+void destroy_a_record(record* rec_ptr){
+	
+}
 signed check_occupy(record_storage* storage,unsigned long position){
 	printf("checking.1. postition %d, storage:%p\n",position,storage);
 	printf("pointer is %p \n", &((*(*(storage->start_record)+position)).flag  ) );
@@ -128,7 +136,7 @@ signed check_occupy(record_storage* storage,unsigned long position){
 unsigned try_append_to_storage(record_storage* storage,record a_record){
 	printf("aaa\n");
 	if ((storage->current_size) >= (storage->max_size)){
-		printf("==================================expanding the table by 10 entries!!!!!!!==================================\n");
+		printf("===============current size %lu===================expanding the table by 10 entries!!!!!!!==================================\n",storage->max_size);
 		//printf("hehehee\n");
 		record** pt_old = storage->start_record; // store old ptr
 		/*
@@ -148,9 +156,14 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		printf("pointer to main pointer %p ,assigned %p\n", storage->start_record,&pt_new);
 		printf("we are here! max size now is %d, val=%d\n",storage->max_size,flag);
 		*/
-		n_extends++;
+		//n_extends++;
+		//unsigned long filled_size = storage->current_size;
 		storage->start_record =  rehash_tablev2(storage).start_record;
-		storage->max_size+=10; // add value
+//		storage_destroy(storage); // destroy the old storage
+					  //
+		storage->max_size = n_extends * 10;
+		storage->current_size = (n_extends-1) * 10;
+		//storage->current_size= filled_size; // add value
 		//free(*storage->start_record); //free old*
 		free(*pt_old); //free old*
 		free(pt_old); //free old
@@ -207,19 +220,22 @@ jump_0:
 	printf("<><><><><><><><>position is %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",cur_position,((record)  *((*(storage->start_record)+cur_position))).key,tposition, ((*(*(storage->start_record)+cur_position)).value),   ((*(*(storage->start_record)+cur_position)).flag)  ) ;
 	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
 	printf("hash: %llu\n",(*((*(storage->start_record)+cur_position))   ).id);
-	printf("append to an address %p , key is %s \n", ((*(storage->start_record)+cur_position)), (*((*(storage->start_record)+cur_position))).key  );
+	printf("append to a poisititon %lu , key is %s \n", cur_position, (*((*(storage->start_record)+cur_position))).key  );
+	printf("----------------table size is %d-------filled size is %llu--------------------\n",storage->max_size,storage->current_size);
 	printf("-------------------------------------------\n");
 }
 
 static record_storage rehash_tablev2(record_storage* storage){
-	printf("mark\n");
+	printf("statring table expansion!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 	unsigned long index = 0;
 //	record* stored_rec = (*(storage->start_record)+index); ?????
 //	printf("hmmmm = %s\n",(*(storage->start_record)+1)->key);
-	//-------------
+	//--////-----------
 	printf("iterate over %d \n",storage->max_size);
-	record_storage new_storage = init_storage( (n_extends++)*10 )  ; // create new storage 
+	n_extends++;
+	record_storage new_storage = init_storage( (n_extends)*10 )  ; // create new storage 
 	//-------------
+	size_t j = 0;
 	for (size_t i = 0; i < storage->max_size; ++i) { // iterate over old storage
 		//if (stored_rec->key) { // if not empty
 		//if (stored_rec->key) { // if not empty
@@ -227,13 +243,20 @@ static record_storage rehash_tablev2(record_storage* storage){
 			record* stored_rec = (*(storage->start_record)+index); // ????
 		//	record c_record = *stored_rec; // take record
 			printf("adress is %p \n",(void*) stored_rec);
-			printf("aapending %s i = %d \n", stored_rec->key,index );
+			printf("new storage size if %llu \n",new_storage.max_size);
+			printf("current index is %d\n",index);
+			printf("aapending %s \n", stored_rec->key );
 			try_append_to_storage(&new_storage, *stored_rec  ); // append to new storage with new size
-			printf("appended key %s, with an adress %p \n",stored_rec->key, stored_rec ) ;
+			printf("appended key %s  \n",stored_rec->key) ;
 //			printf("in storage %s \n",  ((*(*(new_storage.start_record)+index)).value));
+			//free(stored_rec->key);
+			//free(  ((*(*(storage->start_record)+i)).key)    );
+			j = i;
 	//-------------
 		//}
 	}
+	printf("iterated over %d items\n",j+1);
+	printf("table size after expand is %lu \n",new_storage.max_size);
 	//free(*pt_old); //free old*
 	//free(pt_old); //free old
 	//pt_old = NULL;
@@ -369,34 +392,43 @@ unsigned long get_value(record_storage* storage,char* in_string){
 }
 */
 static void copy_obj(record_storage* storage,record a_record,unsigned long position){
-	unsigned s_len = strlen(a_record.key)  ; //add null t
+	unsigned s_len = strlen(a_record.key)  ; 
+	printf("xxxcopying obj: %s\n",a_record.key);
 	//int s_len = snprintf(NULL,0,"{data:%c}",a_record.key);// get the size
 	printf("the len is %d\n",s_len);
 	assert(s_len > 0);
+	s_len++; // add space for null term
+	//char* s_tmp = aligned_alloc(2,s_len*sizeof(char));
 	char* s_tmp = calloc(sizeof(char), s_len); //allocate memory for string
+	//char* s_tmp = malloc(sizeof(char)* s_len); //allocate memory for string
+	printf("khe\n");
 	if (!(s_tmp)) {
 		printf("error memeory allocation\n");
 		exit(1);
 	}
-	strncpy( s_tmp,a_record.key, s_len );
-	s_tmp[s_len+1] = '\0';
+	strncpy( s_tmp,a_record.key, s_len-1 );
+	s_tmp[s_len] = '\0';
 	record* target_record = ((*(storage->start_record)+position));
 	target_record->id = a_record.id;
 	target_record->value =  a_record.value;
 	target_record->flag = a_record.flag;
 	target_record->key =  s_tmp;
-	//printf("copying done, string= %s\n", (char*) (*((*(storage->start_record)+position))).key  );
+	printf("copying done, string= %s\n", (char*) (*((*(storage->start_record)+position))).key  );
 }
 
 //record get_a_record(char* check_this_input){
 unsigned check_position(record_storage* storage,record* a_record,unsigned long try_this_position){ // whether it is already occupied
+	printf("gegege\n");
 	char* string_on_this_position =  (*((*(storage->start_record)+try_this_position))).key ;
 	char* string_to_check =  a_record->key;
 //	if (!(string_on_this_position == NULL)) 
-	printf("--------------------------%s\n",string_on_this_position);
-	printf("--------------------------%s\n",string_to_check);
+	printf("checkoing position %lu\n",try_this_position);
+	printf("string to check--------------------------%s\n",string_to_check);
+	printf("testx\n");
+	printf("string on position>>>>>>>>>>>>>>>>>>>>>>>>%s\n",string_on_this_position);
 	int rez = -1;
 	if (string_on_this_position != NULL ){
+		printf("kkkkkkkkkkkkkkkk\n");
 		printf("len 0 is %d, len 1 is %d \n",strlen(string_on_this_position),strlen(string_to_check));
 		rez = (strcmp(string_on_this_position,string_to_check));
 	} else {

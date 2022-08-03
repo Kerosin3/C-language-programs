@@ -8,8 +8,9 @@
 #include <assert.h>
 #include <string.h>
 #include <stdarg.h>
+#include <alloca.h>
 //#include "BSD_strings.c"
-#define SALT 15
+#define SALT 19
 enum flag_empty {non_empty,empty};
 enum flag_written {not_written,written,moved};
 
