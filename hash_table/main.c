@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 		set_a_record(&tmp_rec,(const char*) some_word.word);
 		//printf("22222\n");
 		try_append_to_storage(&store,tmp_rec);
-
+		printf("main storage address is %p \n",store.start_record);
 		hash_val=calc_hash((char*) (some_word.word)); // memory is assigned here
 		free(some_word.word);
 		printf("value of has is %llu\n",hash_val);

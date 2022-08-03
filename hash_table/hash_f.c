@@ -134,21 +134,27 @@ signed check_occupy(record_storage* storage,unsigned long position){
 
 
 unsigned try_append_to_storage(record_storage* storage,record a_record){
-	printf("aaa\n");
+	printf("supplied string is %s\n",a_record.key);
 	if ((storage->current_size) >= (storage->max_size)){
 		printf("===============current size %lu===================expanding the table by 10 entries!!!!!!!==================================\n",storage->max_size);
 		record** pt_old = storage->start_record; // store old ptr
-		storage->start_record =  rehash_tablev2(storage).start_record;
-//		storage_destroy(storage); // destroy the old storage
-		storage->max_size = n_extends * 10;
-		storage->current_size = (n_extends-1) * 10;
+//		storage->start_record =  
+
+		record_storage new_storage = rehash_tablev2(storage); // create new storage
+
+		storage_destroy(storage); // destroy the old storage
+					  //
+		new_storage.max_size = n_extends * 10;
+		new_storage.current_size = (n_extends-1) * 10;
+		*storage = new_storage;
 		//storage->current_size= filled_size; // add value
 		//free(*storage->start_record); //free old*
-		free(*pt_old); //free old*
-		free(pt_old); //free old
+		
+		//free(*pt_old); //free old*
+		//free(pt_old); //free old
 
-		*pt_old = NULL;
-		pt_old = NULL;
+		//*pt_old = NULL;
+		//pt_old = NULL;
 		printf("==================================expanding done==================================\n");
 
 	}
@@ -199,9 +205,9 @@ jump_0:
 	}
 	printf("storage address %p\n",(void*) storage);
 	printf("values are %p and %p \n",(void*) cur_rec_pos,(void*) &(*(*(storage->start_record)+tposition))  );
-	printf("<><><><><><><><>position is %d tpos %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",
+	printf("<><><><><><><><>position is %d filled_n %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",
 			cur_position,
-			tposition,
+			storage->current_size,
 			cur_rec_pos->key,
 			tposition, 
 			cur_rec_pos->value,   
@@ -225,19 +231,22 @@ static record_storage rehash_tablev2(record_storage* storage){
 	record_storage new_storage = init_storage( (n_extends)*10 )  ; // create new storage 
 	//-------------
 	size_t j = 0;
+	for (size_t i = 0; i < storage->max_size; ++i) { 
+		record* stored_rec = (*(storage->start_record)+i); // ????
+		printf("full cont %d is %s\n",i,stored_rec->key);
+	}
 	for (size_t i = 0; i < storage->max_size; ++i) { // iterate over old storage
 			index = i;
 			record* stored_rec = (*(storage->start_record)+index); // ????
 		//	record c_record = *stored_rec; // take record
-			printf("adress is %p \n",(void*) stored_rec);
+			printf("->cycle>>>>>>adress is %p \n",(void*) stored_rec);
+//			printf("kmh %s\n" (*(storage->start_record)+index).key);
 			printf("new storage size if %llu \n",new_storage.max_size);
 			printf("current index is %d\n",index);
-			printf("aapending %s \n", stored_rec->key );
+			printf("%d aapending %s \n",i, stored_rec->key );
 			try_append_to_storage(&new_storage, *stored_rec  ); // append to new storage with new size
-			printf("appended key %s  \n",stored_rec->key) ;
-//			printf("in storage %s \n",  ((*(*(new_storage.start_record)+index)).value));
+			printf("appended keyd %s  \n",stored_rec->key) ;
 			//free(stored_rec->key);
-			//free(  ((*(*(storage->start_record)+i)).key)    );
 			j = i;
 	//-------------
 		//}
@@ -460,6 +469,7 @@ void test0(){
 		record tmp_rec = init_a_record();
 		set_a_record(&tmp_rec,some[i]);
 		try_append_to_storage(&store,tmp_rec);
+		printf("asdf main storage adress is %p \n",(void*) &store );
 	}
 	//printf("fransis %s\n", (*(*(store.start_record)+2 )).key) ;
 	//printf("fransis %d\n", (*(*(store.start_record)+2 )).id) ;
