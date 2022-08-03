@@ -137,30 +137,9 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 	printf("aaa\n");
 	if ((storage->current_size) >= (storage->max_size)){
 		printf("===============current size %lu===================expanding the table by 10 entries!!!!!!!==================================\n",storage->max_size);
-		//printf("hehehee\n");
 		record** pt_old = storage->start_record; // store old ptr
-		/*
-		record** pt_new = calloc(sizeof(record*), 1); // allocate one main pointer
-		*pt_new = calloc(sizeof(record),(storage->max_size)+10 ) ;  // add 10 records
-		unsigned prev_size = storage->max_size; // store old
-		storage->max_size+=10; // add value
-		if (!(pt_new) || !(pt_old)){ // check before copy
-			printf("error memory allocation, abouring..\n");
-			exit(1);
-		}
-		memcpy(*pt_new,*pt_old,sizeof(record)*prev_size);
-		storage->start_record = pt_new;  //assign new
-			pt_old = NULL;
-		enum flag_written flag = (*(*(storage->start_record)+7)).flag; //check whether its writtne
-		printf("pointer to 7th after expand is %p \n", &((*(*(storage->start_record)+7)).flag  ) );
-		printf("pointer to main pointer %p ,assigned %p\n", storage->start_record,&pt_new);
-		printf("we are here! max size now is %d, val=%d\n",storage->max_size,flag);
-		*/
-		//n_extends++;
-		//unsigned long filled_size = storage->current_size;
 		storage->start_record =  rehash_tablev2(storage).start_record;
 //		storage_destroy(storage); // destroy the old storage
-					  //
 		storage->max_size = n_extends * 10;
 		storage->current_size = (n_extends-1) * 10;
 		//storage->current_size= filled_size; // add value
@@ -187,6 +166,8 @@ jump_0:
 	printf("test, store adress %p \n",storage);
 	occupied =check_occupy(storage,cur_position); //check whether position is occupied???
 	printf("occupied?= %d \n",occupied);
+	record* cur_rec_pos = &(*(*(storage->start_record)+tposition)); 
+	//printf("11 values are %p and %p \n",(void*) &cur_rec_pos,(void*) &(*(*(storage->start_record)+tposition))  );
 	if (occupied >= 1 && (!(flag_zero)))  { //written or moved
 		if (!(check_position(storage,&a_record,tposition))) { // not equal & occupied!
 			printf("collision!!!!\n");			
@@ -197,9 +178,8 @@ jump_0:
 			flag_zero = 1;
 			goto jump_0; // go an find a space in table
 		} else { // equal  and occupied!  -> ADD COUNT!
-	        	printf("occur is storagexxxxxxxxxxxxxxxxxx: %ld\n",(*(*(storage->start_record)+tposition)).value  );
-			//((*(*(storage->start_record)+tposition)).value)++;// add value
-			(*(*(storage->start_record)+tposition)).value = ((*(*(storage->start_record)+tposition)).value)+1;
+	        	printf("occur is storagexxxxxxxxxxxxxxxxxx: %ld\n",cur_rec_pos->value  );
+			cur_rec_pos->value++;
 		}
 	} else if (occupied==0) {// if not ocuppied
 		if (flag_zero) {
@@ -208,16 +188,25 @@ jump_0:
 			a_record.flag = written;
 		}
 		printf("add new entry %s \n",a_record.key);
+		printf("storage address %p\n",(void*) storage);
 		copy_obj(storage,a_record,cur_position);
 		storage->current_size++;
 	} else { //moved... and flag zero
 		a_record.flag = moved;
 		printf("add new entry moved %s \n",a_record.key);
 		copy_obj(storage,a_record,cur_position);
-		//storage->current_size++;
 		printf("I AM HERE________________________\n");
 	}
-	printf("<><><><><><><><>position is %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",cur_position,((record)  *((*(storage->start_record)+cur_position))).key,tposition, ((*(*(storage->start_record)+cur_position)).value),   ((*(*(storage->start_record)+cur_position)).flag)  ) ;
+	printf("storage address %p\n",(void*) storage);
+	printf("values are %p and %p \n",(void*) cur_rec_pos,(void*) &(*(*(storage->start_record)+tposition))  );
+	printf("<><><><><><><><>position is %d tpos %d, inside: %s, position in table: %u, occur: %lu ,written? = %d \n",
+			cur_position,
+			tposition,
+			cur_rec_pos->key,
+			tposition, 
+			cur_rec_pos->value,   
+			cur_rec_pos->flag
+			) ;
 	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
 	printf("hash: %llu\n",(*((*(storage->start_record)+cur_position))   ).id);
 	printf("append to a poisititon %lu , key is %s \n", cur_position, (*((*(storage->start_record)+cur_position))).key  );
@@ -237,8 +226,6 @@ static record_storage rehash_tablev2(record_storage* storage){
 	//-------------
 	size_t j = 0;
 	for (size_t i = 0; i < storage->max_size; ++i) { // iterate over old storage
-		//if (stored_rec->key) { // if not empty
-		//if (stored_rec->key) { // if not empty
 			index = i;
 			record* stored_rec = (*(storage->start_record)+index); // ????
 		//	record c_record = *stored_rec; // take record
