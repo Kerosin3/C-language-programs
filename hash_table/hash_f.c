@@ -18,26 +18,35 @@ unsigned long long calc_hash(const char* input_string){
 	}
 	char const *str_ptr = input_string; // its ok
 	size_t str_size= strlen(str_ptr); // size of analyzed string
+	printf("your string %s length is %lu \n",input_string,str_size);
 	unsigned long long temp_c= 0;
 	for (size_t i = 0; i < str_size; ++i) {// not includes null terminator
-		temp_c+=( ((uint8_t) str_ptr[i] ) * pow(((unsigned) SALT),i)  ); // unicode is always 7 byte with leading zero
+		temp_c=( (unsigned long long) 
+				(
+				((unsigned long long) ((uint8_t) str_ptr[i] )) 
+				*
+				( (unsigned long long)  pow(((unsigned) SALT),i)  ) 
+				)
+		       	); // unicode is always 7 byte with leading zero
+		printf("val is %llu\n",temp_c);
+		temp_c+=temp_c;
 	}
-	str_ptr = (void*)0;
+	printf("we calced hash value for input string %s :%llu\n",input_string,temp_c);
 	#ifdef DEBUG
-		printf("we calced hash value for input string %s :%llu\n",input_string,temp_c);
 	#endif
 	return temp_c;
 	
 }
 unsigned long long rehash(unsigned long long in_hash){
-	int str_len = snprintf(NULL,0,"%u",in_hash);// get the size
+	int str_len = snprintf(NULL,0,"%llu",in_hash);// get the size
 	str_len++ ;//space for null term
 	char* str_converted = alloca(str_len);
 	if (!(str_converted)) {
 		printf("errror memory allocation\n");
 		exit(1);
 	}
-	snprintf(str_converted,str_len,"%u",in_hash);
+	snprintf(str_converted,str_len,"%llu",in_hash);
+	str_converted[str_len] = '\0';
 	unsigned long long new_hash = calc_hash(str_converted);
 	printf("--rehash--previous hash value %llu,new hash value is %llu \n",in_hash,new_hash);
 	//free(str_converted); // free memory
