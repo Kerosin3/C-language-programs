@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
 	}
 	rewind(fp_r);
 	word_pointers some_word;
-	unsigned long long hash_val = 0;
 	record_storage store = init_storage(100); // init storage
 	while ( (( some_word = find_a_word(fp_r) ).word)  ){ // WHILE NOT NULL
 		if ( some_word.begin == some_word.end) continue; // if ???? zero length
@@ -37,8 +36,8 @@ int main(int argc, char *argv[])
 		record tmp_rec = init_a_record();
 		set_a_record(&tmp_rec,(const char*) some_word.word);
 		try_append_to_storage(&store,tmp_rec);
-		printf("main storage address is %p \n",store.start_record);
-		hash_val=calc_hash((char*) (some_word.word)); // memory is assigned here
+		//printf("main storage address is %p \n",store.start_record);
+		calc_hash((char*) (some_word.word)); // memory is assigned here
 		free(some_word.word);
 	}
 	//test0();
@@ -52,7 +51,6 @@ word_pointers find_a_word(FILE* fp){
 	uint8_t read_char = 0;
 	long int beg = 0;
 	long int end = 0;
-	int width = 0;
 	beg = ftell(fp);//set beginning to current position
 	word_pointers out;
 	out.begin = beg; 
@@ -78,12 +76,12 @@ word_pointers find_a_word(FILE* fp){
 	#ifdef DEBUG
 		printf("i is %d\n",i);
 	#endif
-	uint8_t* a_word = (uint8_t*) calloc(i+1,sizeof(uint8_t) );// one for NULL TERMINATOR
+	char* a_word = calloc(i+1,sizeof(char) );// one for NULL TERMINATOR
 	if (!(a_word)) {
 		printf("ERROR WHILE ASSIGNING WORD, WHAT IS ITS LENGTH???\n");
 		exit(1);
 	}
-	uint8_t* ptr_a_word = a_word;
+	char* ptr_a_word = a_word;
 	signed convert = ~i ; // convert = (-i + 1) ONE CHAR MORE
 	fseek(fp,convert,SEEK_CUR); // set cursor back
 	for (size_t j = 0; j < i; ++j) { //read content 0.1.2..6
@@ -93,8 +91,9 @@ word_pointers find_a_word(FILE* fp){
 	ptr_a_word[i]='\0'; // set null symbol
 	end = ftell(fp);
 	out.end = end; 
-	width = end - beg; // no need to add extra for null
-	a_word = (END_REACHED) ? NULL :  a_word; // i size is ok
+	//int width = 0;
+	//width = end - beg; // no need to add extra for null
+	a_word = (END_REACHED) ? (void*)0 :  a_word; // i size is ok
 	out.word = a_word;
 	do {//skip whitepaces
 		fread(&read_char,1,1,fp);

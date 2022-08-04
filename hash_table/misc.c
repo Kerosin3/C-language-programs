@@ -7,7 +7,7 @@ extern void printout_content(record_storage* storage){
 	printf("====================================================\n");
 	while(i < storage->max_size){
 		if (t_rec->flag) { //no empty
-			printf("%u item:%s, occur:%llu \n",j,t_rec->key,t_rec->value);
+			printf("%lu item:%s, occur:%lu \n",j,t_rec->key,t_rec->value);
 			j++;
 		} else {
 			;

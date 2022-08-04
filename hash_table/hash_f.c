@@ -37,7 +37,7 @@ unsigned long long rehash(unsigned long long in_hash){
 		printf("errror memory allocation\n");
 		exit(1);
 	}
-	snprintf(str_converted,str_len,"%d",in_hash);
+	snprintf(str_converted,str_len,"%u",in_hash);
 	unsigned long long new_hash = calc_hash(str_converted);
 	printf("--rehash--previous hash value %llu,new hash value is %llu \n",in_hash,new_hash);
 	//free(str_converted); // free memory
@@ -83,8 +83,8 @@ void storage_destroy(record_storage* storage ){
 	free((storage->start_record));// ??? OK??
 	storage->start_record = (void*)0;
 	// CHECK WHETHER NOT DOUBLE FREEE
-	printf("destroying. storage size is %d.\n",storage->max_size);
-	printf("freed %d objects\n",j); 
+	printf("destroying storage size is %lu.\n",storage->max_size);
+	printf("freed %lu objects\n",j); 
 }
 //create a destructor??..
 void set_a_record(record* rec_ptr,const char* in_string){
@@ -126,10 +126,10 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 	printf("supplied string is %s\n",a_record.key);
 	if ((storage->current_size) == ( (storage->max_size) ) ) {
 		printf("===============current size %lu===================expanding the table by 10 entries!!!!!!!==================================\n",storage->max_size);
-		record** pt_old = storage->start_record; // store old ptr
 		record_storage new_storage = rehash_tablev2(storage); // create new storage
 		storage_destroy(storage); // destroy the old storage
 		*storage = new_storage;
+		//record** pt_old = storage->start_record; // store old ptr
 		//free(*pt_old); //free old*
 		//free(pt_old); //free old
 		//*pt_old = NULL;
@@ -139,10 +139,10 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 	}
 	unsigned long long new_hash;
 	new_hash = 0;
-jump_0:
+jump_0: ;
 	unsigned long tposition =   (a_record.id) % ( (storage->max_size)  ); // calc position in the table MUNUS ONE?
-	printf("maxsizeis %lu,fulledsize is %llu \n",storage->max_size,storage->current_size);
-	printf("->hash value:%llu,c hash value is %llu,suggest position is %u, string %s \n",new_hash,a_record.id,tposition,a_record.key);
+	printf("maxsizeis %lu,fulledsize is %lu \n",storage->max_size,storage->current_size);
+	printf("->hash value:%llu,c hash value is %llu,suggest position is %lu, string %s \n",new_hash,a_record.id,tposition,a_record.key);
 	unsigned long cur_position = tposition;
 	signed occupied =0;
 	unsigned flag_zero = 0;
@@ -184,7 +184,8 @@ jump_0:
 		#endif
 		copy_obj(storage,a_record,cur_position);
 	}
-	printf("<><><><><><><>%d<>position is %d filled_n %d, inside: %s, position in table: %u, occur: %lu ,written? = %d  hash %llu\n",
+	#ifdef DEBUG
+	printf("<><><><><><><>%d<>position is %lu filled_n %lu, inside: %s, position in table: %lu, occur: %lu ,written? = %d  hash %llu\n",
 			n_extends,
 			cur_position,
 			storage->current_size,
@@ -194,19 +195,21 @@ jump_0:
 			cur_rec_pos->flag,
 			cur_rec_pos->id
 			) ;
-	char* test = (*((*(storage->start_record)+cur_position))   ).key;   
 	printf("-------------------------------------------\n");
+	#endif
+	return 1;
 }
 
 static record_storage rehash_tablev2(record_storage* storage){
 	printf("starting table expansion!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 	n_extends++;
 	record_storage new_storage = init_storage( (n_extends)*EXTENS_N )  ; // create new storage 
-	size_t j = 0;
+	#ifdef DEBUG
 	for (size_t i = 0; i < (storage->max_size); ++i) { 
 		record* stored_rec = (*(storage->start_record)+i); // ????
-		printf("full cont %d is %s\n",i,stored_rec->key);
+		printf("full cont %lu is %s\n",i,stored_rec->key);
 	}
+	#endif
 	for (size_t index = 0; index < (storage->max_size); ++index) { // iterate over old storage
 			record* stored_rec = (*(storage->start_record)+index); // ????
 			#ifdef DEBUG
@@ -238,13 +241,12 @@ unsigned check_null_str(const char* in_str){
 
 
 unsigned long get_value_v2(record_storage* storage,const char* in_string){
-	unsigned long limit = 0;
 	unsigned long long _init_hash = calc_hash(in_string);
 	unsigned magic_posit = (_init_hash) % ( (storage->max_size)  ); // get first try
 	record* stored_rec = (*(storage->start_record)+magic_posit);
-	printf("address is %p contain %s \n" , stored_rec,  (*(storage->start_record)+magic_posit)->key  );
+	printf("address is %p contain %s \n" ,(void*) stored_rec,  (*(storage->start_record)+magic_posit)->key  );
 	
-	printf("initial try to find %s its hash:%llu ,suggest position:%d  max_size = %d \n",in_string,_init_hash,magic_posit,storage->max_size);
+	printf("initial try to find %s its hash:%llu ,suggest position:%d  max_size = %lu \n",in_string,_init_hash,magic_posit,storage->max_size);
 	if (check_null_str(stored_rec->key)){ // if null
 		printf("go jump rehash\n");
 		goto jump_rehash;
@@ -262,7 +264,7 @@ jump_rehash:
 		_init_hash = rehash(_init_hash);
 		magic_posit = _init_hash % ( storage->max_size ); 
 		stored_rec = (*(storage->start_record)+magic_posit); // ???? hehe
-		printf("magic=%d look  %p \n",magic_posit,stored_rec);
+		printf("magic=%d look  %p \n",magic_posit,(void*) stored_rec);
 	} while ((check_null_str(stored_rec->key))); // repeat while empty
 	if (!( strcmp(stored_rec->key,in_string))) { // not null here!!! 
 		return magic_posit;
@@ -356,11 +358,11 @@ void test0(){
 //	printf("<><><><><><><><><><><><><><><> fransis position:   %d\n",get_value(&store, some[13] ));
 	printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
 	for (size_t i = 0; i < VVV; i++) {
-		printf("%d we are searching %s \n",i,some[i]);
+		printf("%lu we are searching %s \n",i,some[i]);
 		unsigned long long getted_value = get_value_v2(&store, some[i] );  // position
 		printf("---\n");
 		record contained = (*(*(store.start_record)+getted_value )) ;
-		printf("searched %s, found on position %llu, contains %s, meet %d \n",some[i], getted_value ,contained.key, contained.value) ;
+		printf("searched %s, found on position %llu, contains %s, meet %lu \n",some[i], getted_value ,contained.key, contained.value) ;
 
 	printf("----------\n");
 	}
