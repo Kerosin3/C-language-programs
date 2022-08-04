@@ -5,8 +5,8 @@
 //#include <stdarg.h>
 //#include "BSD_strings.c"
 #include "hash_f.h"
-
-#define DEBUG
+#include "misc.h"
+//#define DEBUG
 #define MAX_WORD_LENGTH 25
 
 typedef struct {
@@ -30,22 +30,19 @@ int main(int argc, char *argv[])
 	rewind(fp_r);
 	word_pointers some_word;
 	unsigned long long hash_val = 0;
-	record_storage store = init_storage(10); // init storage
+	record_storage store = init_storage(100); // init storage
 	while ( (( some_word = find_a_word(fp_r) ).word)  ){ // WHILE NOT NULL
-		printf("%d,your word is \"%s\"\n",END_REACHED,(char*) (some_word.word));
-
+		if ( some_word.begin == some_word.end) continue; // if ???? zero length
+		printf("--->your word is \"%s\"\n",(char*) (some_word.word));
 		record tmp_rec = init_a_record();
-		//printf("11111\n");
 		set_a_record(&tmp_rec,(const char*) some_word.word);
-		//printf("22222\n");
 		try_append_to_storage(&store,tmp_rec);
 		printf("main storage address is %p \n",store.start_record);
 		hash_val=calc_hash((char*) (some_word.word)); // memory is assigned here
 		free(some_word.word);
-		printf("value of has is %llu\n",hash_val);
 	}
 	//test0();
-	//printout_content(&store);
+	printout_content(&store);
 	fclose(fp_r);
 	storage_destroy(&store);
 	return 0;
@@ -77,7 +74,10 @@ word_pointers find_a_word(FILE* fp){
 			//printf("readed 0x%X, is space =%X \n",read_char,isspace(read_char));
 		#endif
 	} while ( !(isspace(read_char))  ); //not space or EOF
-	i--; //decrement last i, i+1 == total elements need
+	i=i-1; //decrement last i, i+1 == total elements need
+	#ifdef DEBUG
+		printf("i is %d\n",i);
+	#endif
 	uint8_t* a_word = (uint8_t*) calloc(i+1,sizeof(uint8_t) );// one for NULL TERMINATOR
 	if (!(a_word)) {
 		printf("ERROR WHILE ASSIGNING WORD, WHAT IS ITS LENGTH???\n");
@@ -85,7 +85,6 @@ word_pointers find_a_word(FILE* fp){
 	}
 	uint8_t* ptr_a_word = a_word;
 	signed convert = ~i ; // convert = (-i + 1) ONE CHAR MORE
-	//printf("value of if is %u, negative is %d \n",i,convert);
 	fseek(fp,convert,SEEK_CUR); // set cursor back
 	for (size_t j = 0; j < i; ++j) { //read content 0.1.2..6
 		fread(&read_char,1,1,fp); // read one byte 
