@@ -29,10 +29,12 @@ int main(int argc, char *argv[])
 	}
 	rewind(fp_r);
 	word_pointers some_word;
-	record_storage store = init_storage(1000); // init storage
+	record_storage store = init_storage(10000); // init storage
+	unsigned long counter = 0;
 	while ( (( some_word = find_a_word(fp_r) ).word)  ){ // WHILE NOT NULL
 		if ( some_word.begin == some_word.end) continue; // if ???? zero length
 		printf("--->your word is \"%s\"\n",(char*) (some_word.word));
+		counter++;
 		record tmp_rec = init_a_record();
 		set_a_record(&tmp_rec,(const char*) some_word.word);
 		try_append_to_storage(&store,tmp_rec);
@@ -40,6 +42,7 @@ int main(int argc, char *argv[])
 		calc_hash((char*) (some_word.word)); // memory is assigned here
 		free(some_word.word);
 	}
+	printf("processed %lu words\n",counter);
 	//test0();
 	printout_content(&store);
 	fclose(fp_r);

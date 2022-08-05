@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <alloca.h>
 #include <limits.h>
+#include "spookyhash_api.h"
 //#include "BSD_strings.c"
 #define SALT 19
 enum flag_empty {non_empty,empty};

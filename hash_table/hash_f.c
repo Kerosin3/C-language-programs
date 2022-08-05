@@ -1,18 +1,34 @@
 #include "hash_f.h"
 #define IS_UNSIGNED(t) ((t)~1 > 0)
-#define EXTENS_N 1000
-#define DEBUG
+#define EXTENS_N 10000
+//#define DEBUG
+
+#warning this programm runs on x86_64 arch 64 bit
+#pragma message "starting copilation!!"
+
+_Static_assert(sizeof(uint64_t)==sizeof(unsigned long long),"uint64_t and unsigned long sizes are not matched,aborting...\n");
+_Static_assert(sizeof(char)==sizeof(uint8_t),"uint8_t and char sizes are not matched,aborting...\n");
 
 static unsigned n_extends = 1;
+static uint64_t seed0 = 0xabcdef;
+
 
 void rehash_table(record_storage* storage);
 static record_storage rehash_tablev2(record_storage* storage);
 static void copy_obj(record_storage* storage,record a_record,unsigned long position);
 unsigned long get_value_v2(record_storage* storage,const char* in_string);
 unsigned long long raise_p(unsigned long long in_arg,size_t times);
+unsigned long long calc_hash2(const char*);
+unsigned long long rehash2(unsigned long long);
 
 unsigned long table_size = 10;
+
 unsigned long long calc_hash(const char* input_string){
+	uint64_t hash64 = spookyhash_64(input_string,strlen(input_string),seed0);
+	return (unsigned long long) hash64;
+}
+
+unsigned long long calc_hash_b(const char* input_string){
 	if ((sizeof(uint8_t) != (sizeof(char))) ) {
 		printf("platform error!,aborting...\n");
 		return 0;
@@ -20,12 +36,11 @@ unsigned long long calc_hash(const char* input_string){
 	char const *str_ptr = input_string; // its ok
 	size_t str_size= strlen(str_ptr); // size of analyzed string
 	printf("your string %s length is %lu \n",input_string,str_size);
-	//printf("ULL max is %llu\n",ULLONG_MAX);
 	unsigned long long temp_c= 0;
 	for (size_t i = 0; i < str_size; ++i) {// not includes null terminator
 		//printf("--------\n");
 		unsigned long long pow_rez = raise_p(SALT,i); 
-		//unsigned long long pow_rez = (unsigned long long)  pow(SALT,i); //double
+		//unsigned long long pow_rez = (unsigned long long)  pow(SALT,i); //double overflow error!!!
 		temp_c=( (unsigned long long) 
 				(
 				((unsigned long long) ((unsigned char) str_ptr[i] )) 
@@ -44,6 +59,8 @@ unsigned long long calc_hash(const char* input_string){
 	return temp_c;
 	
 }
+
+
 unsigned long long raise_p(unsigned long long in_arg,size_t times){
 	size_t i = 0;
 	unsigned long long base = in_arg;
@@ -58,7 +75,7 @@ unsigned long long raise_p(unsigned long long in_arg,size_t times){
 	return in_arg;
 }
 
-unsigned long long rehash(unsigned long long in_hash){
+unsigned long long rehash_b(unsigned long long in_hash){
 	int str_len = snprintf(NULL,0,"%llu",in_hash);// get the size
 	str_len++ ;//space for null term
 	char* str_converted = alloca(str_len);
@@ -74,6 +91,13 @@ unsigned long long rehash(unsigned long long in_hash){
 	return new_hash;
 }
 
+unsigned long long rehash(unsigned long long in_num){
+	char* str_placer = alloca(21+1);	
+	snprintf(str_placer,21+1,"%llu",in_num);
+	str_placer[21] = '\0';
+	uint64_t rehash = spookyhash_64((void*)str_placer,strlen(str_placer),seed0);
+	return (unsigned long long) rehash;
+}
 
 
 record init_a_record(){
@@ -120,7 +144,9 @@ void storage_destroy(record_storage* storage ){
 void set_a_record(record* rec_ptr,const char* in_string){
 	unsigned str_l = strlen(in_string); // dangerous
 	str_l++; //null terminator
-	printf("setting a record with key %s, its length is %u \n",in_string,str_l);
+	#ifdef DEBUG
+		printf("setting a record with key %s, its length is %u \n",in_string,str_l);
+	#endif
 	//char* ptr = aligned_alloc(256,sizeof(uint8_t)*str_l);
 	char* const ptr = calloc(str_l,sizeof(char));
 	//char* ptr = malloc(sizeof(char)* str_l); //-------------??????
@@ -153,7 +179,9 @@ signed check_occupy(record_storage* storage,unsigned long position){
 
 
 unsigned try_append_to_storage(record_storage* storage,record a_record){
+	#ifdef DEBUG
 	printf("supplied string is %s\n",a_record.key);
+	#endif
 	if ((storage->current_size) == ( (storage->max_size) ) ) {
 		printf("===============current size %lu===================expanding the table by 10 entries!!!!!!!==================================\n",storage->max_size);
 		record_storage new_storage = rehash_tablev2(storage); // create new storage
@@ -171,8 +199,10 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 	//new_hash = 0;
 jump_0: ;
 	unsigned long tposition =   (a_record.id) % ( (storage->max_size)  ); // calc position in the table MUNUS ONE?
-	printf("maxsizeis %lu,fulledsize is %lu \n",storage->max_size,storage->current_size);
-	printf("->hash rec hash value is %llu,suggest position is %lu, string %s \n",a_record.id,tposition,a_record.key);
+	#ifdef DEBUG
+		printf("maxsizeis %lu,fulledsize is %lu \n",storage->max_size,storage->current_size);
+		printf("->hash rec hash value is %llu,suggest position is %lu, string %s \n",a_record.id,tposition,a_record.key);
+	#endif
 	unsigned long cur_position = tposition;
 	signed occupied =0;
 	unsigned flag_zero = 0;
