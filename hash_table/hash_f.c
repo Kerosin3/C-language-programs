@@ -1,7 +1,7 @@
 #include "hash_f.h"
 #define IS_UNSIGNED(t) ((t)~1 > 0)
-#define EXTENS_N 100
-//#define DEBUG
+#define EXTENS_N 1000
+#define DEBUG
 
 static unsigned n_extends = 1;
 
@@ -9,6 +9,7 @@ void rehash_table(record_storage* storage);
 static record_storage rehash_tablev2(record_storage* storage);
 static void copy_obj(record_storage* storage,record a_record,unsigned long position);
 unsigned long get_value_v2(record_storage* storage,const char* in_string);
+unsigned long long raise_p(unsigned long long in_arg,size_t times);
 
 unsigned long table_size = 10;
 unsigned long long calc_hash(const char* input_string){
@@ -19,24 +20,44 @@ unsigned long long calc_hash(const char* input_string){
 	char const *str_ptr = input_string; // its ok
 	size_t str_size= strlen(str_ptr); // size of analyzed string
 	printf("your string %s length is %lu \n",input_string,str_size);
+	//printf("ULL max is %llu\n",ULLONG_MAX);
 	unsigned long long temp_c= 0;
 	for (size_t i = 0; i < str_size; ++i) {// not includes null terminator
+		//printf("--------\n");
+		unsigned long long pow_rez = raise_p(SALT,i); 
+		//unsigned long long pow_rez = (unsigned long long)  pow(SALT,i); //double
 		temp_c=( (unsigned long long) 
 				(
-				((unsigned long long) ((uint8_t) str_ptr[i] )) 
+				((unsigned long long) ((unsigned char) str_ptr[i] )) 
 				*
-				( (unsigned long long)  pow(((unsigned) SALT),i)  ) 
+				pow_rez
+				//( (unsigned long long)  pow(((unsigned) SALT),i)  ) 
 				)
 		       	); // unicode is always 7 byte with leading zero
-		printf("val is %llu\n",temp_c);
+		//printf("current char is %u calced val is %llu,i'th: %lu pow val is %llu \n",(unsigned char) ((str_ptr[i])),temp_c,i,pow_rez  );
 		temp_c+=temp_c;
 	}
+	temp_c+=str_size;
 	printf("we calced hash value for input string %s :%llu\n",input_string,temp_c);
 	#ifdef DEBUG
 	#endif
 	return temp_c;
 	
 }
+unsigned long long raise_p(unsigned long long in_arg,size_t times){
+	size_t i = 0;
+	unsigned long long base = in_arg;
+	if (!(times)) return 1; // zero times
+	times--;
+	//printf("times is %lu, base = %llu \n",times,in_arg);
+	for (i = 0; i < times; ++i) {
+		in_arg *= base;
+		//printf("%i-- %llu \n",i,in_arg);
+	}
+
+	return in_arg;
+}
+
 unsigned long long rehash(unsigned long long in_hash){
 	int str_len = snprintf(NULL,0,"%llu",in_hash);// get the size
 	str_len++ ;//space for null term
@@ -147,11 +168,11 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 
 	}
 	unsigned long long new_hash;
-	new_hash = 0;
+	//new_hash = 0;
 jump_0: ;
 	unsigned long tposition =   (a_record.id) % ( (storage->max_size)  ); // calc position in the table MUNUS ONE?
 	printf("maxsizeis %lu,fulledsize is %lu \n",storage->max_size,storage->current_size);
-	printf("->hash value:%llu,c hash value is %llu,suggest position is %lu, string %s \n",new_hash,a_record.id,tposition,a_record.key);
+	printf("->hash rec hash value is %llu,suggest position is %lu, string %s \n",a_record.id,tposition,a_record.key);
 	unsigned long cur_position = tposition;
 	signed occupied =0;
 	unsigned flag_zero = 0;
@@ -164,8 +185,8 @@ jump_0: ;
 				printf(">>>>collision occured, starting rehashing..\n");			
 				printf("goto->>>>>\n");
 			#endif
-			new_hash = rehash(a_record.id); // calc new hash value
-			a_record.id = new_hash; //assign new hash
+			//new_hash = rehash(a_record.id); // calc new hash value
+			a_record.id = rehash(a_record.id); //assign new hash
 			a_record.flag = moved; // mark as moved
 			flag_zero = 1;
 			goto jump_0; // go an find a space in table
@@ -219,13 +240,14 @@ static record_storage rehash_tablev2(record_storage* storage){
 		printf("full cont %lu is %s\n",i,stored_rec->key);
 	}
 	#endif
-	for (size_t index = 0; index < (storage->max_size); ++index) { // iterate over old storage
+	size_t index =0;
+	for (index = 0; index < (storage->max_size); ++index) { // iterate over old storage
 			record* stored_rec = (*(storage->start_record)+index); // ????
 			#ifdef DEBUG
 			printf("->cycle>>>>>>adress is %p \n",(void*) stored_rec);
 			printf("new storage size if %llu \n",new_storage.max_size);
 			printf("current index is %d\n",index);
-			printf("index=%d aapending %s \n",i, stored_rec->key );
+			printf("index=%d aapending %s \n",index, stored_rec->key );
 			#endif
 			try_append_to_storage(&new_storage, *stored_rec  ); // append to new storage with new size
 			#ifdef DEBUG
