@@ -1,0 +1,2 @@
+gcc --std=c11 main.c hash_f.c misc.c -lm -L . -lspookyhash
+clang --std=c11 -Wall -Wextra -Wpedantic main.c hash_f.c misc.c -lm -L . -lspookyhash -o app

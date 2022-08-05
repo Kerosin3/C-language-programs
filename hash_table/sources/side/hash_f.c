@@ -27,8 +27,8 @@ unsigned long long calc_hash(const char* input_string){
 	uint64_t hash64 = spookyhash_64(input_string,strlen(input_string),seed0);
 	return (unsigned long long) hash64;
 }
-
-unsigned long long calc_hash_b(const char* input_string){
+/*
+unsigned long long calc_hash(const char* input_string){
 	if ((sizeof(uint8_t) != (sizeof(char))) ) {
 		printf("platform error!,aborting...\n");
 		return 0;
@@ -59,7 +59,7 @@ unsigned long long calc_hash_b(const char* input_string){
 	return temp_c;
 	
 }
-
+*/
 
 unsigned long long raise_p(unsigned long long in_arg,size_t times){
 	size_t i = 0;
@@ -74,8 +74,8 @@ unsigned long long raise_p(unsigned long long in_arg,size_t times){
 
 	return in_arg;
 }
-
-unsigned long long rehash_b(unsigned long long in_hash){
+/*
+unsigned long long rehash(unsigned long long in_hash){
 	int str_len = snprintf(NULL,0,"%llu",in_hash);// get the size
 	str_len++ ;//space for null term
 	char* str_converted = alloca(str_len);
@@ -90,6 +90,7 @@ unsigned long long rehash_b(unsigned long long in_hash){
 	//free(str_converted); // free memory
 	return new_hash;
 }
+*/
 
 unsigned long long rehash(unsigned long long in_num){
 	char* str_placer = alloca(21+1);	
@@ -195,7 +196,6 @@ unsigned try_append_to_storage(record_storage* storage,record a_record){
 		printf("==================================expanding done==================================\n");
 
 	}
-	unsigned long long new_hash;
 	//new_hash = 0;
 jump_0: ;
 	unsigned long tposition =   (a_record.id) % ( (storage->max_size)  ); // calc position in the table MUNUS ONE?

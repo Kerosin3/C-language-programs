@@ -1,5 +1,5 @@
 #include "misc.h"
-
+#pragma message "including misc source"
 extern void printout_content(record_storage* storage){
 	record* t_rec = *(storage->start_record); // add index here
 	size_t i = 0;

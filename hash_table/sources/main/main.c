@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 	printout_content(&store);
 	fclose(fp_r);
 	storage_destroy(&store);
+	(void)argc;
 	return 0;
 }
 

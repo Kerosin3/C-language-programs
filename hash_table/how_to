@@ -1,4 +1,0 @@
-gcc --std=c11 main.c hash_f.c misc.c -lm -L . -lspookyhash
-gcc --std=c11 main.c hash_f.c misc.c -lm -L . -lspookyhash
-gcc --std=c11 main.c hash_f.c misc.c -lm -L . -lspookyhash
-gcc --std=c11 main.c hash_f.c misc.c -lm -L . -lspookyhash
