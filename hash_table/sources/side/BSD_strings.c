@@ -20,18 +20,16 @@
 
 #include <string.h>
 
-size_t
-strnlen(const char *str, size_t maxlen)
+size_t strnlen(const char *str, size_t maxlen)
 {
-	const char *cp;
+    const char *cp;
 
-	for (cp = str; maxlen != 0 && *cp != '\0'; cp++, maxlen--)
-		;
+    for (cp = str; maxlen != 0 && *cp != '\0'; cp++, maxlen--)
+        ;
 
-	return (size_t)(cp - str);
+    return (size_t)(cp - str);
 }
 DEF_WEAK(strnlen);
-
 
 /*	$OpenBSD: strlcpy.c,v 1.16 2019/01/25 00:19:25 millert Exp $	*/
 
@@ -51,38 +49,38 @@ DEF_WEAK(strnlen);
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 /*
  * Copy string src to buffer dst of size dsize.  At most dsize-1
  * chars will be copied.  Always NUL terminates (unless dsize == 0).
  * Returns strlen(src); if retval >= dsize, truncation occurred.
  */
-size_t
-strlcpy(char *dst, const char *src, size_t dsize)
+size_t strlcpy(char *dst, const char *src, size_t dsize)
 {
-	const char *osrc = src;
-	size_t nleft = dsize;
+    const char *osrc = src;
+    size_t nleft = dsize;
 
-	/* Copy as many bytes as will fit. */
-	if (nleft != 0) {
-		while (--nleft != 0) {
-			if ((*dst++ = *src++) == '\0')
-				break;
-		}
-	}
+    /* Copy as many bytes as will fit. */
+    if (nleft != 0)
+    {
+        while (--nleft != 0)
+        {
+            if ((*dst++ = *src++) == '\0')
+                break;
+        }
+    }
 
-	/* Not enough room in dst, add NUL and traverse rest of src. */
-	if (nleft == 0) {
-		if (dsize != 0)
-			*dst = '\0';		/* NUL-terminate dst */
-		while (*src++)
-			;
-	}
+    /* Not enough room in dst, add NUL and traverse rest of src. */
+    if (nleft == 0)
+    {
+        if (dsize != 0)
+            *dst = '\0'; /* NUL-terminate dst */
+        while (*src++)
+            ;
+    }
 
-	return(src - osrc - 1);	/* count does not include NUL */
+    return (src - osrc - 1); /* count does not include NUL */
 }
 DEF_WEAK(strlcpy);
-
 
 /*	$OpenBSD: strlcat.c,v 1.14 2015/01/15 03:54:12 millert Exp $	*/
 
@@ -102,7 +100,6 @@ DEF_WEAK(strlcpy);
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 /*
  * Appends src to string dst of size dsize (unlike strncat, dsize is the
  * full size of dst, not space left).  At most dsize-1 characters
@@ -110,30 +107,31 @@ DEF_WEAK(strlcpy);
  * Returns strlen(src) + MIN(dsize, strlen(initial dst)).
  * If retval >= siz, truncation occurred.
  */
-size_t
-strlcat(char *dst, const char *src, size_t dsize)
+size_t strlcat(char *dst, const char *src, size_t dsize)
 {
-	const char *odst = dst;
-	const char *osrc = src;
-	size_t n = dsize;
-	size_t dlen;
+    const char *odst = dst;
+    const char *osrc = src;
+    size_t n = dsize;
+    size_t dlen;
 
-	/* Find the end of dst and adjust bytes left but don't go past end. */
-	while (n-- != 0 && *dst != '\0')
-		dst++;
-	dlen = dst - odst;
-	n = dsize - dlen;
+    /* Find the end of dst and adjust bytes left but don't go past end. */
+    while (n-- != 0 && *dst != '\0')
+        dst++;
+    dlen = dst - odst;
+    n = dsize - dlen;
 
-	if (n-- == 0)
-		return(dlen + strlen(src));
-	while (*src != '\0') {
-		if (n != 0) {
-			*dst++ = *src;
-			n--;
-		}
-		src++;
-	}
-	*dst = '\0';
+    if (n-- == 0)
+        return (dlen + strlen(src));
+    while (*src != '\0')
+    {
+        if (n != 0)
+        {
+            *dst++ = *src;
+            n--;
+        }
+        src++;
+    }
+    *dst = '\0';
 
-	return(dlen + (src - osrc));	/* count does not include NUL */
+    return (dlen + (src - osrc)); /* count does not include NUL */
 }

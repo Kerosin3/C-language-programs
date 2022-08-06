@@ -46,11 +46,12 @@
 #define SPOOKYHASH_API_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #if defined(_WIN64) || defined(_WIN32)
 #define SPOOKYHASH_WINDOWS_EXPORT __declspec(dllexport)
@@ -58,47 +59,46 @@ extern "C" {
 #define SPOOKYHASH_WINDOWS_EXPORT
 #endif
 
-/***********************************************************************************************************************
- *                                                                                                                     *
- * SpookyHash data structures                                                                                          *
- *                                                                                                                     *
- ***********************************************************************************************************************/
+    /***********************************************************************************************************************
+     *                                                                                                                     *
+     * SpookyHash data structures *
+     *                                                                                                                     *
+     ***********************************************************************************************************************/
 
 #define SPOOKYHASH_VARIABLES (12)
 
-typedef struct {
-    uint64_t m_data[2 * SPOOKYHASH_VARIABLES];
-    uint64_t m_state[SPOOKYHASH_VARIABLES];
-    size_t m_length;
-    uint8_t m_remainder;
-} spookyhash_context;
+    typedef struct
+    {
+        uint64_t m_data[2 * SPOOKYHASH_VARIABLES];
+        uint64_t m_state[SPOOKYHASH_VARIABLES];
+        size_t m_length;
+        uint8_t m_remainder;
+    } spookyhash_context;
 
+    /***********************************************************************************************************************
+     *                                                                                                                     *
+     * SpookyHash version information *
+     *                                                                                                                     *
+     ***********************************************************************************************************************/
 
-/***********************************************************************************************************************
- *                                                                                                                     *
- * SpookyHash version information                                                                                      *
- *                                                                                                                     *
- ***********************************************************************************************************************/
+    /*
+     * Returns the major version
+     */
+    SPOOKYHASH_WINDOWS_EXPORT uint8_t spookyhash_version_major(void);
 
-/*
- * Returns the major version
- */
-SPOOKYHASH_WINDOWS_EXPORT uint8_t spookyhash_version_major(void);
+    /*
+     * Returns the minor version
+     */
+    SPOOKYHASH_WINDOWS_EXPORT uint8_t spookyhash_version_minor(void);
 
-/*
- * Returns the minor version
- */
-SPOOKYHASH_WINDOWS_EXPORT uint8_t spookyhash_version_minor(void);
-
-/*
- * Returns the revision
- */
-SPOOKYHASH_WINDOWS_EXPORT uint8_t spookyhash_version_revision(void);
+    /*
+     * Returns the revision
+     */
+    SPOOKYHASH_WINDOWS_EXPORT uint8_t spookyhash_version_revision(void);
 
 #ifdef __cplusplus
 }
 #endif
-
 
 /***********************************************************************************************************************
  *                                                                                                                     *
@@ -114,7 +114,6 @@ SPOOKYHASH_WINDOWS_EXPORT uint8_t spookyhash_version_revision(void);
  * @param seed_2 the last 8 bytes of the seed
  */
 SPOOKYHASH_WINDOWS_EXPORT void spookyhash_context_init(spookyhash_context *context, uint64_t seed_1, uint64_t seed_2);
-
 
 /***********************************************************************************************************************
  *                                                                                                                     *
