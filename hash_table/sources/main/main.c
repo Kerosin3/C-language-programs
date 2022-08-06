@@ -1,13 +1,6 @@
-//#include <stdio.h>
-//#include <stdint.h>
-//#include <stdlib.h>
-//#include <ctype.h>
-//#include <stdarg.h>
-//#include "BSD_strings.c"
 #include "hash_f.h"
 #include "misc.h"
 //#define DEBUG
-#define MAX_WORD_LENGTH 25
 
 typedef struct {
 	long int begin;
@@ -33,12 +26,13 @@ int main(int argc, char *argv[])
 	unsigned long counter = 0;
 	while ( (( some_word = find_a_word(fp_r) ).word)  ){ // WHILE NOT NULL
 		if ( some_word.begin == some_word.end) continue; // if ???? zero length
+		#ifdef DEBUG
 		printf("--->your word is \"%s\"\n",(char*) (some_word.word));
+		#endif
 		counter++;
 		record tmp_rec = init_a_record();
 		set_a_record(&tmp_rec,(const char*) some_word.word);
 		try_append_to_storage(&store,tmp_rec);
-		//printf("main storage address is %p \n",store.start_record);
 		calc_hash((char*) (some_word.word)); // memory is assigned here
 		free(some_word.word);
 	}

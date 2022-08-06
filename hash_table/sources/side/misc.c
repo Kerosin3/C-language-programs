@@ -7,7 +7,7 @@ extern void printout_content(record_storage* storage){
 	printf("====================================================\n");
 	while(i < storage->max_size){
 		if (t_rec->flag) { //no empty
-			printf("%lu item:%s, occur:%lu \n",j,t_rec->key,t_rec->value);
+			printf(">%5lu< | occurred:%5lu  times | word:%-35s  \n",j,t_rec->value,t_rec->key );
 			j++;
 		} else {
 			;
@@ -15,5 +15,5 @@ extern void printout_content(record_storage* storage){
 		t_rec++;
 		i++;
 	}
-	printf("====================================================\n");
+	printf("========================total %lu words counted============================\n",j);
 }

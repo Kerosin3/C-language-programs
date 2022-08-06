@@ -2,15 +2,18 @@
 #define IS_UNSIGNED(t) ((t)~1 > 0)
 #define EXTENS_N 10000
 //#define DEBUG
+#define SIDE_LIBS 1
 
-#warning this programm runs on x86_64 arch 64 bit
+//#warning this programm runs on x86_64 arch 64 bit
 #pragma message "starting copilation!!"
 
 _Static_assert(sizeof(uint64_t)==sizeof(unsigned long long),"uint64_t and unsigned long sizes are not matched,aborting...\n");
 _Static_assert(sizeof(char)==sizeof(uint8_t),"uint8_t and char sizes are not matched,aborting...\n");
 
 static unsigned n_extends = 1;
-static uint64_t seed0 = 0xabcdef;
+#if SIDE_LIBS == 1
+	static uint64_t seed0 = 0xabcdef;
+#endif
 
 
 void rehash_table(record_storage* storage);
@@ -21,13 +24,17 @@ unsigned long long raise_p(unsigned long long in_arg,size_t times);
 unsigned long long calc_hash2(const char*);
 unsigned long long rehash2(unsigned long long);
 
-unsigned long table_size = 10;
 
+#if SIDE_LIBS == 1
+#pragma message "sidelibs are included!"
 unsigned long long calc_hash(const char* input_string){
 	uint64_t hash64 = spookyhash_64(input_string,strlen(input_string),seed0);
 	return (unsigned long long) hash64;
 }
-/*
+#endif
+
+#if SIDE_LIBS == 0
+#pragma message "sidelibs are not included!"
 unsigned long long calc_hash(const char* input_string){
 	if ((sizeof(uint8_t) != (sizeof(char))) ) {
 		printf("platform error!,aborting...\n");
@@ -59,7 +66,8 @@ unsigned long long calc_hash(const char* input_string){
 	return temp_c;
 	
 }
-*/
+#endif
+
 
 unsigned long long raise_p(unsigned long long in_arg,size_t times){
 	size_t i = 0;
@@ -74,7 +82,8 @@ unsigned long long raise_p(unsigned long long in_arg,size_t times){
 
 	return in_arg;
 }
-/*
+
+#if SIDE_LIBS == 0
 unsigned long long rehash(unsigned long long in_hash){
 	int str_len = snprintf(NULL,0,"%llu",in_hash);// get the size
 	str_len++ ;//space for null term
@@ -90,8 +99,9 @@ unsigned long long rehash(unsigned long long in_hash){
 	//free(str_converted); // free memory
 	return new_hash;
 }
-*/
+#endif
 
+#if SIDE_LIBS == 1
 unsigned long long rehash(unsigned long long in_num){
 	char* str_placer = alloca(21+1);	
 	snprintf(str_placer,21+1,"%llu",in_num);
@@ -99,7 +109,7 @@ unsigned long long rehash(unsigned long long in_num){
 	uint64_t rehash = spookyhash_64((void*)str_placer,strlen(str_placer),seed0);
 	return (unsigned long long) rehash;
 }
-
+#endif
 
 record init_a_record(){
 	record a_record;
@@ -380,14 +390,11 @@ unsigned check_position(record_storage* storage,record* a_record,unsigned long t
 		return 1; //ooccupied 
 	}
 }
-//unsigned set_serial()
-	
-//}
+
 #define VVV 15
 void test0(){
 	record_storage store = init_storage(10);
-	{
-		char const*const some[VVV] = {
+	char const*const some[VVV] = {
 			"engl",
 			"fransis",
 			"fransis",
@@ -404,19 +411,13 @@ void test0(){
 			"русское",
 			"и",
 
-			//"fransis",
-	//		"china",
-		};
-		for (size_t i = 0; i < VVV; ++i) {
+	};
+	for (size_t i = 0; i < VVV; ++i) {
 		record tmp_rec = init_a_record();
 		set_a_record(&tmp_rec,some[i]);
 		try_append_to_storage(&store,tmp_rec);
-		printf("asdf main storage adress is %p \n",(void*) &store );
-	}
-	//printf("fransis %s\n", (*(*(store.start_record)+2 )).key) ;
-	//printf("fransis %d\n", (*(*(store.start_record)+2 )).id) ;
-	//printf("nth positions:%d containts %s\n",12, (*(*(store.start_record)+12 )).key) ;
-//	printf("<><><><><><><><><><><><><><><> fransis position:   %d\n",get_value(&store, some[13] ));
+		printf("main storage adress is %p \n",(void*) &store );
+		}
 	printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
 	for (size_t i = 0; i < VVV; i++) {
 		printf("%lu we are searching %s \n",i,some[i]);
@@ -424,56 +425,8 @@ void test0(){
 		printf("---\n");
 		record contained = (*(*(store.start_record)+getted_value )) ;
 		printf("searched %s, found on position %llu, contains %s, meet %lu \n",some[i], getted_value ,contained.key, contained.value) ;
-
-	printf("----------\n");
-	}
-	for (size_t i = 0; i < 5; ++i) {
-	calc_hash("и");	
-	}
-	//printout_content(&store);
-	//record t0 = init_a_record();
-	//char* str= "english";
-//	set_a_record(&t0,str);
-//	try_append_to_storage(&store,t0);
-//	try_append_to_storage(&store,t0);
-	/*
-	record t1 = init_a_record();
-	char* str1= "text.";
-	set_a_record(&t1,str1);
-
-	printf("check is %s \n",t0.key);
-	printf("check is %s \n",t1.key);
-	**(store.start_record) = t0; 
-	try_append_to_storage(&store,t0);
-	try_append_to_storage(&store,t0);
-	try_append_to_storage(&store,t1);
-	**(store.start_record) = t0; 
-	store.start_record[0][1] = t0; //copy!!!!
-	*(*(store.start_record)+1) = t1;
-	store.start_record[0][2] = t1;
-	*/
-	}
-
-
-//printf("what is that?? %d\n", (*(*(store.start_record)+5 )).value) ;
-	//printf("what is that?? %d\n", (*(*(store.start_record)+5 )).id) ;
-	//printf("what is that?? %s\n", (*(*(store.start_record)+2 )).key) ;
-	//printf("what is that?? %d\n", (*(*(store.start_record)+2 )).value) ;
-	//printf("what is that?? %d\n", (*(*(store.start_record)+2 )).id) ;
-	//printf("what is that?? %s\n", (*(*(store.start_record)+2 )).key) ;
-	//free(store.start_record);
-	//free(*(store.start_record));
-	//printf("what is that?? %s\n",((record) *(*(store.start_record)+1  )).value  );
-	//printf("what is that?? %llu \n",(store.start_record[0])->id);
-	//printf("what is that?? %llu \n",(store.start_record[0])->value);
-	//printf("what is that?? %llu \n",(store.start_record++)->value);
-	//printf("what is that?? %s\n",(char*) (store.start_record[1][0]).key);
-	//printf("what is that?? %llu \n",(store.start_record[1][0]).id);
-	//printf("what is that?? %u \n",(store.start_record[1][0]).value);
-
+		}
+//printout_content(&store);
 	storage_destroy(&store);
-}
-/*unsigned append_a_record_to_storage(record_storage* storage,record input_record){
-	storage->
 
-}*/
+}
