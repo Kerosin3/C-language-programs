@@ -1,8 +1,0 @@
-/home/ker0/C_lang/C_lang/hash_table/build/CMakeFiles/edit_cache.dir
-/home/ker0/C_lang/C_lang/hash_table/build/CMakeFiles/rebuild_cache.dir
-/home/ker0/C_lang/C_lang/hash_table/build/sources/main/CMakeFiles/app_complete.out.dir
-/home/ker0/C_lang/C_lang/hash_table/build/sources/main/CMakeFiles/edit_cache.dir
-/home/ker0/C_lang/C_lang/hash_table/build/sources/main/CMakeFiles/rebuild_cache.dir
-/home/ker0/C_lang/C_lang/hash_table/build/sources/side/CMakeFiles/side.dir
-/home/ker0/C_lang/C_lang/hash_table/build/sources/side/CMakeFiles/edit_cache.dir
-/home/ker0/C_lang/C_lang/hash_table/build/sources/side/CMakeFiles/rebuild_cache.dir

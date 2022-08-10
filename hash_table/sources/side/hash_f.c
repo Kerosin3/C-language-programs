@@ -460,7 +460,7 @@ void test0()
         unsigned long getted_value = get_value_v2(&store, some[i]); // position
         printf("---\n");
         record contained = (*(*(store.start_record) + getted_value));
-        printf("searched %s, found on position %llu, contains %s, meet %lu \n", some[i], getted_value, contained.key,
+        printf("searched %s, found on position %lu, contains %s, meet %lu \n", some[i], getted_value, contained.key,
                contained.value);
     }
     // printout_content(&store);

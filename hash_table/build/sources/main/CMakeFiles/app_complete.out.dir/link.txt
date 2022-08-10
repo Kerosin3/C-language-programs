@@ -1,1 +1,0 @@
-/usr/bin/cc -Wall -Wextra -Wpedantic -pedantic-errors CMakeFiles/app_complete.out.dir/main.c.o -o ../../../test/app_complete.out  ../side/libside.a ../../../sources/libs/libspookyhash.a 

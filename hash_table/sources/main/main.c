@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     char *some1 = "собой";
     // test0();
     printout_content(&store);
-    printf("search word %s, postition is  %lu \n",some1, get_value_v2(&store,some1));
+    //printf("search word %s, postition is  %lu \n",some1, get_value_v2(&store,some1)); // tos earch a word
     fclose(fp_r);
     storage_destroy(&store);
     (void)argc;
