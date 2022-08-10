@@ -2,7 +2,7 @@
 #define IS_UNSIGNED(t) ((t)~1 > 0)
 #define EXTENS_N 10000
 //#define DEBUG
-#define SIDE_LIBS 1
+#define SIDE_LIBS 1  // set 0 for "naive" hash function usage
 
 //#warning this programm runs on x86_64 arch 64 bit
 #pragma message "starting copilation!!"
@@ -218,15 +218,8 @@ unsigned try_append_to_storage(record_storage *storage, record a_record)
         record_storage new_storage = rehash_tablev2(storage); // create new storage
         storage_destroy(storage);                             // destroy the old storage
         *storage = new_storage;
-        // record** pt_old = storage->start_record; // store old ptr
-        // free(*pt_old); //free old*
-        // free(pt_old); //free old
-        //*pt_old = NULL;
-        // pt_old = NULL;
         printf("==================================expanding done==================================\n");
     }
-    // new_hash = 0;
-jump_0:;
     unsigned long tposition = (a_record.id) % ((storage->max_size)); // calc position in the table MUNUS ONE?
 #ifdef DEBUG
     printf("maxsizeis %lu,fulledsize is %lu \n", storage->max_size, storage->current_size);
@@ -236,7 +229,6 @@ jump_0:;
     signed occupied = 0;
     unsigned flag_zero = 0;
     occupied = check_occupy(storage, cur_position); // check whether position is occupied???
-    // printf("occupied?= %d \n",occupied);
     record *cur_rec_pos = &(*(*(storage->start_record) + tposition));
     if (occupied >= 1 && (!(flag_zero)))
     { // written or moved
@@ -247,10 +239,14 @@ jump_0:;
             printf("goto->>>>>\n");
 #endif
             // new_hash = rehash(a_record.id); // calc new hash value
-            a_record.id = rehash(a_record.id); // assign new hash
+	    unsigned ii = 0;
+	    unsigned k  = 7;
+	    do {
+		ii++;
+		tposition = (a_record.id + (ii*k)  ) % (storage->max_size); // some magic
+	       } while ( !(check_occupy(storage,tposition  ) ));
             a_record.flag = moved;             // mark as moved
             flag_zero = 1;
-            goto jump_0; // go an find a space in table
         }
         else
         { // equal  and occupied!  -> ADD COUNT!
@@ -364,11 +360,12 @@ unsigned long get_value_v2(record_storage *storage, const char *in_string)
             return magic_posit; // the same ;!!!! WIN FIRST OCCURENCE
         }                       //
     }
-jump_rehash:
+jump_rehash: ;
+    unsigned ii = 0;
+    unsigned k  = 7;
     do
     { // work while NULL
-        _init_hash = rehash(_init_hash);
-        magic_posit = _init_hash % (storage->max_size);
+	magic_posit = (_init_hash + (ii*k)  ) % (storage->max_size); // some magic
         stored_rec = (*(storage->start_record) + magic_posit); // ???? hehe
         printf("magic=%d look  %p \n", magic_posit, (void *)stored_rec);
     } while ((check_null_str(stored_rec->key))); // repeat while empty
@@ -387,8 +384,6 @@ static void copy_obj(record_storage *storage, record a_record, unsigned long pos
     // int s_len = snprintf(NULL,0,"{data:%c}",a_record.key);// get the size
     assert(s_len > 0);
     s_len++; // add space for null term
-    // char* s_tmp = aligned_alloc(2,s_len*sizeof(char));
-    // char* s_tmp = malloc(sizeof(char)* s_len); //allocate memory for string
     char *s_tmp = calloc(sizeof(char), s_len); // allocate memory for string
     if (!(s_tmp))
     {
@@ -436,7 +431,8 @@ unsigned check_position(record_storage *storage, record *a_record, unsigned long
         return 1; // ooccupied
     }
 }
-
+//--------------------TEST FUNCTIONS-------------------------//
+//----------------------------------------------------------//
 #define VVV 15
 void test0()
 {

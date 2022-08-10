@@ -16,6 +16,10 @@ unsigned END_REACHED = 0;
 
 int main(int argc, char *argv[])
 {
+    if (argc > 2) {
+	printf("please specify just a filename, exiting..");
+	exit(1);
+    }
     FILE *fp_r;
     if ((fp_r = fopen(argv[1], "rb")) == NULL)
     {
@@ -41,10 +45,12 @@ int main(int argc, char *argv[])
         free(some_word.word);
     }
     printf("processed %lu words\n", counter);
-    char *some1 = "собой";
     // test0();
     printout_content(&store);
-    //printf("search word %s, postition is  %lu \n",some1, get_value_v2(&store,some1)); // tos earch a word
+#ifdef DEBUG
+    char *some1 = "собой";
+    printf("search word %s, postition is  %lu \n",some1, get_value_v2(&store,some1)); // tos earch a word
+#endif
     fclose(fp_r);
     storage_destroy(&store);
     (void)argc;

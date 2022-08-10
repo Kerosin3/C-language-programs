@@ -18,5 +18,14 @@ int main(int argc, char *argv[])
 	snprintf(some_alloc,bufsz,"%llu",num);
 	some_alloc[bufsz]='\0';
 	printf("====%s\n",(char*) some_alloc);
+
+	char *str;
+	char* ggg = malloc(sizeof(char)*11);
+	if (ggg+5) {
+		printf("not null\n");
+	} else {
+		printf("null\n");
+	}
+
 	return 0;
 }
