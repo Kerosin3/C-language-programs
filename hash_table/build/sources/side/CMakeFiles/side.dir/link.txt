@@ -1,0 +1,2 @@
+/usr/bin/ar qc libside.a CMakeFiles/side.dir/hash_f.c.o CMakeFiles/side.dir/misc.c.o
+/usr/bin/ranlib libside.a

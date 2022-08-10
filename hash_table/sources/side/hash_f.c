@@ -457,7 +457,7 @@ void test0()
     for (size_t i = 0; i < VVV; i++)
     {
         printf("%lu we are searching %s \n", i, some[i]);
-        unsigned long long getted_value = get_value_v2(&store, some[i]); // position
+        unsigned long getted_value = get_value_v2(&store, some[i]); // position
         printf("---\n");
         record contained = (*(*(store.start_record) + getted_value));
         printf("searched %s, found on position %llu, contains %s, meet %lu \n", some[i], getted_value, contained.key,

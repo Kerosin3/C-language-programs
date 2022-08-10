@@ -47,6 +47,7 @@ unsigned long long calc_hash(const char *);
 unsigned try_append_to_storage(record_storage *, record);
 void storage_destroy(record_storage *);
 unsigned check_position(record_storage *, record *, unsigned long);
+unsigned long get_value_v2(record_storage *storage,const char* in_string);
 void set_a_record(record *, const char *);
 void test0();
 

@@ -41,8 +41,10 @@ int main(int argc, char *argv[])
         free(some_word.word);
     }
     printf("processed %lu words\n", counter);
+    char *some1 = "собой";
     // test0();
     printout_content(&store);
+    printf("search word %s, postition is  %lu \n",some1, get_value_v2(&store,some1));
     fclose(fp_r);
     storage_destroy(&store);
     (void)argc;
