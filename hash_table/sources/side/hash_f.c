@@ -201,9 +201,9 @@ unsigned append_to_storage(record_storage *storage, record a_record)
 {
     if ((storage->current_size) == ((storage->max_size)))
     {
-        printf("===============current size %lu===================expanding the table by 10 "
+        printf("===============current size %lu===================expanding the table by %d "
                "entries!!!!!!!==================================\n",
-               storage->max_size);
+               storage->max_size,EXTENS_N);
         record_storage new_storage = rehash_tablev2(storage); // create new storage
         storage_destroy(storage);                             // destroy the old storage
         *storage = new_storage;
@@ -221,12 +221,12 @@ unsigned append_to_storage(record_storage *storage, record a_record)
         { // not equal & occupied!
 	    unsigned ii = 0;
 	    unsigned k  = magic_number;
-	    printf("collision occured! %s \n",a_record.key);
+//	    printf("collision occured! %s \n",a_record.key);
 	    do {
 		ii++;
 		tposition = (a_record.id + (ii*k)  ) % (storage->max_size); // some magic
             	cur_rec_pos = &(*(*(storage->start_record) + tposition));
-	//		printf("------->>try %u, postition %lu contains %s \n",ii,tposition,cur_rec_pos->key);
+//		printf("------->>try %u, postition %lu contains %s \n",ii,tposition,cur_rec_pos->key);
 	       } while ( ( cur_rec_pos->key  )); // stop when string is NULL
             a_record.flag = moved;             // mark as moved
 	    cur_position = tposition;
@@ -257,13 +257,6 @@ unsigned append_to_storage(record_storage *storage, record a_record)
         a_record.flag = moved;
         copy_obj(storage, a_record, cur_position);
     }
-//#ifdef DEBUG
-    printf("<><><><><><><>%d<>position is %lu filled_n %lu, inside: %s, position in table: %lu, occur: %lu ,written? = "
-           "%d  hash %llu\n",
-           n_extends, cur_position, storage->current_size, cur_rec_pos->key, tposition, cur_rec_pos->value,
-           cur_rec_pos->flag, cur_rec_pos->id);
-    printf("-------------------------------------------\n");
-//#endif
     return 1;
 }
 

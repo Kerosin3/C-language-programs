@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
         free(some_word.word);
     }
     printf("processed total %lu words in the text file\n", counter);
-    //printout_content(&store);
+    printout_content(&store);
 #ifdef DEBUG
     //test0();
 #endif
