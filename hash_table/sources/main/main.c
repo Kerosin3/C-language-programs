@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
         //calc_hash((char *)(some_word.word)); // memory is assigned here
         free(some_word.word);
     }
-    printf("processed total %lu words in the text file\n", counter);
     printout_content(&store);
+    printf("processed total %lu words in the text file\n", counter);
 #ifdef DEBUG
     //test0();
 #endif
