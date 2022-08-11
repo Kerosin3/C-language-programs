@@ -38,21 +38,20 @@ int main(int argc, char *argv[])
         printf("--->your word is \"%s\"\n", (char *)(some_word.word));
 #endif
         counter++;
-    //    record tmp_rec = init_a_record();
-      //  set_a_record(&tmp_rec, (const char *)some_word.word);
-       // try_append_to_storage(&store, tmp_rec);
+        record tmp_rec = init_a_record();
+        set_a_record(&tmp_rec, (const char *)some_word.word);
+        append_to_storage(&store, tmp_rec);
         //calc_hash((char *)(some_word.word)); // memory is assigned here
-        //free(some_word.word);
+        free(some_word.word);
     }
-    printf("processed %lu words\n", counter);
-    test0();
-    printout_content(&store);
+    printf("processed total %lu words in the text file\n", counter);
+    //printout_content(&store);
 #ifdef DEBUG
-    char *some1 = "собой";
-    printf("search word %s, postition is  %lu \n",some1, get_value_v2(&store,some1)); // tos earch a word
+    //test0();
 #endif
     fclose(fp_r);
     storage_destroy(&store);
+    //test0();
     (void)argc;
     return 0;
 }

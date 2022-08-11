@@ -3,7 +3,6 @@
 #define EXTENS_N 10000
 //#define DEBUG
 #define SIDE_LIBS 1  // set 0 for "naive" hash function usage
-
 //#warning this programm runs on x86_64 arch 64 bit
 #pragma message "starting copilation!!"
 
@@ -15,6 +14,7 @@ static unsigned n_extends = 1;
 #if SIDE_LIBS == 1
 static uint64_t seed0 = 0xabcdef;
 #endif
+static const unsigned magic_number = 7;
 
 void rehash_table(record_storage *storage);
 static record_storage rehash_tablev2(record_storage *storage);
@@ -205,7 +205,7 @@ signed check_occupy(record_storage *storage, unsigned long position)
     }
 }
 
-unsigned try_append_to_storage(record_storage *storage, record a_record)
+unsigned append_to_storage(record_storage *storage, record a_record)
 {
 #ifdef DEBUG
     printf("supplied string is %s\n", a_record.key);
@@ -232,25 +232,27 @@ unsigned try_append_to_storage(record_storage *storage, record a_record)
     record *cur_rec_pos = &(*(*(storage->start_record) + tposition));
     if (occupied >= 1 && (!(flag_zero)))
     { // written or moved
-        if (!(check_position(storage, &a_record, tposition)))
+        if (!(check_the_position_occupied(storage, &a_record, tposition)))
         { // not equal & occupied!
 #ifdef DEBUG
             printf(">>>>collision occured, starting rehashing..\n");
             printf("goto->>>>>\n");
 #endif
-            // new_hash = rehash(a_record.id); // calc new hash value
 	    unsigned ii = 0;
-	    unsigned k  = 7;
+	    unsigned k  = magic_number;
 	    printf("collision occured! %s \n",a_record.key);
 	    do {
 		ii++;
 		tposition = (a_record.id + (ii*k)  ) % (storage->max_size); // some magic
             	cur_rec_pos = &(*(*(storage->start_record) + tposition));
-		printf("------->>try %u, postition %lu contains %s \n",ii,tposition,cur_rec_pos->key);
-	       } while ( ( cur_rec_pos->key  ));
+//		#ifdef DEBUG
+			printf("------->>try %u, postition %lu contains %s \n",ii,tposition,cur_rec_pos->key);
+//		#endif	
+	       } while ( ( cur_rec_pos->key  )); // stop when string is NULL
             a_record.flag = moved;             // mark as moved
 	    cur_position = tposition;
             copy_obj(storage, a_record, cur_position);
+	    storage->current_size++;
             flag_zero = 1;
         }
         else
@@ -317,7 +319,7 @@ static record_storage rehash_tablev2(record_storage *storage)
         printf("current index is %d\n", index);
         printf("index=%d aapending %s \n", index, stored_rec->key);
 #endif
-        try_append_to_storage(&new_storage, *stored_rec); // append to new storage with new size
+        append_to_storage(&new_storage, *stored_rec); // append to new storage with new size
 #ifdef DEBUG
         printf("appended keyd %s  \n", stored_rec->key);
 #endif
@@ -345,11 +347,9 @@ unsigned long get_value_v2(record_storage *storage, const char *in_string)
     unsigned long long _init_hash = calc_hash(in_string);
     unsigned long magic_posit = (_init_hash) % ((storage->max_size)); // get first try
     record *stored_rec = (*(storage->start_record) + magic_posit);
-    printf("address is %p contain %s \n", (void *)stored_rec, (*(storage->start_record) + magic_posit)->key);
-
     printf("initial try to find %s its hash:%llu ,suggest position:%lu  max_size = %lu \n", in_string, _init_hash,
            magic_posit, storage->max_size);
-    if (check_null_str(stored_rec->key))
+    if (!(stored_rec->key))
     { // if null
         printf("go jump rehash\n");
         goto jump_rehash;
@@ -361,23 +361,22 @@ unsigned long get_value_v2(record_storage *storage, const char *in_string)
         int first_comp = strcmp(stored_rec->key, in_string); // try first!
         if (!(first_comp))
         {
-            printf("found!!!\n");
+            printf("found first occurence!!!\n");
             return magic_posit; // the same ;!!!! WIN FIRST OCCURENCE
         }                       //
     }
     unsigned ii = 0;
-    unsigned k  = 7;
+    unsigned k  = magic_number;
 jump_rehash: ;
     do
     { // work while NULL
         ii++;
 	magic_posit = (_init_hash + (ii*k)  ) % (storage->max_size); // some magic
         stored_rec = (*(storage->start_record) + magic_posit); // ???? hehe
-        printf("magic=%lu look  %p \n", magic_posit, (void *)stored_rec);
-    } while ((check_null_str(stored_rec->key))); // repeat while empty
-    printf("%lu search %s -----looking %s\n",magic_posit,in_string,stored_rec->key);
+    } while ((!(stored_rec->key))); // repeat while empty
     if (!(strcmp(stored_rec->key, in_string)))
     { // not null here!!!
+        printf("found of position %lu, word: %s\n",magic_posit,in_string);
         return magic_posit;
     }
     else
@@ -409,7 +408,7 @@ static void copy_obj(record_storage *storage, record a_record, unsigned long pos
 #endif
 }
 
-unsigned check_position(record_storage *storage, record *a_record, unsigned long try_this_position)
+unsigned check_the_position_occupied(record_storage *storage, record *a_record, unsigned long try_this_position)
 { // whether it is already occupied
     char *string_on_this_position = (*((*(storage->start_record) + try_this_position))).key;
     char *string_to_check = a_record->key;
@@ -453,7 +452,7 @@ void test0()
     {
         record tmp_rec = init_a_record();
         set_a_record(&tmp_rec, some[i]);
-        try_append_to_storage(&store, tmp_rec);
+        append_to_storage(&store, tmp_rec);
     }
     printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
     for (size_t i = 0; i < VVV; i++)
