@@ -241,11 +241,16 @@ unsigned try_append_to_storage(record_storage *storage, record a_record)
             // new_hash = rehash(a_record.id); // calc new hash value
 	    unsigned ii = 0;
 	    unsigned k  = 7;
+	    printf("collision occured! %s \n",a_record.key);
 	    do {
 		ii++;
 		tposition = (a_record.id + (ii*k)  ) % (storage->max_size); // some magic
-	       } while ( !(check_occupy(storage,tposition  ) ));
+            	cur_rec_pos = &(*(*(storage->start_record) + tposition));
+		printf("------->>try %u, postition %lu contains %s \n",ii,tposition,cur_rec_pos->key);
+	       } while ( ( cur_rec_pos->key  ));
             a_record.flag = moved;             // mark as moved
+	    cur_position = tposition;
+            copy_obj(storage, a_record, cur_position);
             flag_zero = 1;
         }
         else
@@ -280,13 +285,13 @@ unsigned try_append_to_storage(record_storage *storage, record a_record)
 #endif
         copy_obj(storage, a_record, cur_position);
     }
-#ifdef DEBUG
+//#ifdef DEBUG
     printf("<><><><><><><>%d<>position is %lu filled_n %lu, inside: %s, position in table: %lu, occur: %lu ,written? = "
            "%d  hash %llu\n",
            n_extends, cur_position, storage->current_size, cur_rec_pos->key, tposition, cur_rec_pos->value,
            cur_rec_pos->flag, cur_rec_pos->id);
     printf("-------------------------------------------\n");
-#endif
+//#endif
     return 1;
 }
 
@@ -338,11 +343,11 @@ unsigned check_null_str(const char *in_str)
 unsigned long get_value_v2(record_storage *storage, const char *in_string)
 {
     unsigned long long _init_hash = calc_hash(in_string);
-    unsigned magic_posit = (_init_hash) % ((storage->max_size)); // get first try
+    unsigned long magic_posit = (_init_hash) % ((storage->max_size)); // get first try
     record *stored_rec = (*(storage->start_record) + magic_posit);
     printf("address is %p contain %s \n", (void *)stored_rec, (*(storage->start_record) + magic_posit)->key);
 
-    printf("initial try to find %s its hash:%llu ,suggest position:%d  max_size = %lu \n", in_string, _init_hash,
+    printf("initial try to find %s its hash:%llu ,suggest position:%lu  max_size = %lu \n", in_string, _init_hash,
            magic_posit, storage->max_size);
     if (check_null_str(stored_rec->key))
     { // if null
@@ -360,15 +365,17 @@ unsigned long get_value_v2(record_storage *storage, const char *in_string)
             return magic_posit; // the same ;!!!! WIN FIRST OCCURENCE
         }                       //
     }
-jump_rehash: ;
     unsigned ii = 0;
     unsigned k  = 7;
+jump_rehash: ;
     do
     { // work while NULL
+        ii++;
 	magic_posit = (_init_hash + (ii*k)  ) % (storage->max_size); // some magic
         stored_rec = (*(storage->start_record) + magic_posit); // ???? hehe
-        printf("magic=%d look  %p \n", magic_posit, (void *)stored_rec);
+        printf("magic=%lu look  %p \n", magic_posit, (void *)stored_rec);
     } while ((check_null_str(stored_rec->key))); // repeat while empty
+    printf("%lu search %s -----looking %s\n",magic_posit,in_string,stored_rec->key);
     if (!(strcmp(stored_rec->key, in_string)))
     { // not null here!!!
         return magic_posit;
@@ -436,7 +443,7 @@ unsigned check_position(record_storage *storage, record *a_record, unsigned long
 #define VVV 15
 void test0()
 {
-    record_storage store = init_storage(10);
+    record_storage store = init_storage(20);
     char const *const some[VVV] = {
         "engl", "fransis", "fransis", "bread", "china", "no_bread", "bread", "gagagat",
         "dasd", "da",      "ttt",     "clcd",  "krf",   "русское",  "и",
@@ -447,7 +454,6 @@ void test0()
         record tmp_rec = init_a_record();
         set_a_record(&tmp_rec, some[i]);
         try_append_to_storage(&store, tmp_rec);
-        printf("main storage adress is %p \n", (void *)&store);
     }
     printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
     for (size_t i = 0; i < VVV; i++)
