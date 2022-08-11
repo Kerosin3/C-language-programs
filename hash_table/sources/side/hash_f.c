@@ -166,10 +166,6 @@ void set_a_record(record *rec_ptr, const char *in_string)
 {
     unsigned str_l = strlen(in_string); // dangerous
     str_l++;                            // null terminator
-#ifdef DEBUG
-    printf("setting a record with key %s, its length is %u \n", in_string, str_l);
-#endif
-    // char* ptr = aligned_alloc(256,sizeof(uint8_t)*str_l);
     char *const ptr = calloc(str_l, sizeof(char));
     // char* ptr = malloc(sizeof(char)* str_l); //-------------??????
     if (!(ptr))
@@ -181,10 +177,6 @@ void set_a_record(record *rec_ptr, const char *in_string)
     ptr[str_l - 1] = '\0';
     rec_ptr->key = ptr;
     rec_ptr->id = calc_hash(ptr); // assign hash
-#ifdef DEBUG
-    printf("copied string is %s\n", rec_ptr->key);
-    printf("lenths are %d %d \n", strlen(in_string), strlen(rec_ptr->key));
-#endif
     rec_ptr->value = 1; // initial
 }
 
@@ -207,9 +199,6 @@ signed check_occupy(record_storage *storage, unsigned long position)
 
 unsigned append_to_storage(record_storage *storage, record a_record)
 {
-#ifdef DEBUG
-    printf("supplied string is %s\n", a_record.key);
-#endif
     if ((storage->current_size) == ((storage->max_size)))
     {
         printf("===============current size %lu===================expanding the table by 10 "
@@ -221,10 +210,6 @@ unsigned append_to_storage(record_storage *storage, record a_record)
         printf("==================================expanding done==================================\n");
     }
     unsigned long tposition = (a_record.id) % ((storage->max_size)); // calc position in the table MUNUS ONE?
-#ifdef DEBUG
-    printf("maxsizeis %lu,fulledsize is %lu \n", storage->max_size, storage->current_size);
-    printf("->hash rec hash value is %llu,suggest position is %lu, string %s \n", a_record.id, tposition, a_record.key);
-#endif
     unsigned long cur_position = tposition;
     signed occupied = 0;
     unsigned flag_zero = 0;
@@ -234,10 +219,6 @@ unsigned append_to_storage(record_storage *storage, record a_record)
     { // written or moved
         if (!(check_the_position_occupied(storage, &a_record, tposition)))
         { // not equal & occupied!
-#ifdef DEBUG
-            printf(">>>>collision occured, starting rehashing..\n");
-            printf("goto->>>>>\n");
-#endif
 	    unsigned ii = 0;
 	    unsigned k  = magic_number;
 	    printf("collision occured! %s \n",a_record.key);
@@ -245,9 +226,7 @@ unsigned append_to_storage(record_storage *storage, record a_record)
 		ii++;
 		tposition = (a_record.id + (ii*k)  ) % (storage->max_size); // some magic
             	cur_rec_pos = &(*(*(storage->start_record) + tposition));
-//		#ifdef DEBUG
-			printf("------->>try %u, postition %lu contains %s \n",ii,tposition,cur_rec_pos->key);
-//		#endif	
+	//		printf("------->>try %u, postition %lu contains %s \n",ii,tposition,cur_rec_pos->key);
 	       } while ( ( cur_rec_pos->key  )); // stop when string is NULL
             a_record.flag = moved;             // mark as moved
 	    cur_position = tposition;
@@ -257,9 +236,6 @@ unsigned append_to_storage(record_storage *storage, record a_record)
         }
         else
         { // equal  and occupied!  -> ADD COUNT!
-#ifdef DEBUG
-            printf("this word is already exisits, adding count: %ld\n", cur_rec_pos->value);
-#endif
             cur_rec_pos->value++;
         }
     }
@@ -273,18 +249,12 @@ unsigned append_to_storage(record_storage *storage, record a_record)
         {
             a_record.flag = written;
         }
-#ifdef DEBUG
-        printf("found empty entry, adding new entry %s \n", a_record.key);
-#endif
         copy_obj(storage, a_record, cur_position);
         storage->current_size++;
     }
     else
     { // moved... and flag zero
         a_record.flag = moved;
-#ifdef DEBUG
-        printf("adding entry moved %s \n", a_record.key);
-#endif
         copy_obj(storage, a_record, cur_position);
     }
 //#ifdef DEBUG
@@ -302,32 +272,12 @@ static record_storage rehash_tablev2(record_storage *storage)
     printf("starting table expansion!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     n_extends++;
     record_storage new_storage = init_storage((n_extends)*EXTENS_N); // create new storage
-#ifdef DEBUG
-    for (size_t i = 0; i < (storage->max_size); ++i)
-    {
-        record *stored_rec = (*(storage->start_record) + i); // ????
-        printf("full cont %lu is %s\n", i, stored_rec->key);
-    }
-#endif
     size_t index = 0;
     for (index = 0; index < (storage->max_size); ++index)
     {                                                            // iterate over old storage
         record *stored_rec = (*(storage->start_record) + index); // ????
-#ifdef DEBUG
-        printf("->cycle>>>>>>adress is %p \n", (void *)stored_rec);
-        printf("new storage size if %llu \n", new_storage.max_size);
-        printf("current index is %d\n", index);
-        printf("index=%d aapending %s \n", index, stored_rec->key);
-#endif
         append_to_storage(&new_storage, *stored_rec); // append to new storage with new size
-#ifdef DEBUG
-        printf("appended keyd %s  \n", stored_rec->key);
-#endif
     }
-#ifdef DEBUG
-    printf("iterated over %d items\n", index + 1);
-    printf("table size after expand is %llu, cur size is %llu \n", new_storage.max_size, new_storage.current_size);
-#endif
     return new_storage;
 }
 
@@ -403,9 +353,6 @@ static void copy_obj(record_storage *storage, record a_record, unsigned long pos
     target_record->value = a_record.value;
     target_record->flag = a_record.flag;
     target_record->key = s_tmp;
-#ifdef DEBUG
-    printf("copying done, string=%s\n", (char *)(*((*(storage->start_record) + position))).key);
-#endif
 }
 
 unsigned check_the_position_occupied(record_storage *storage, record *a_record, unsigned long try_this_position)
@@ -415,11 +362,6 @@ unsigned check_the_position_occupied(record_storage *storage, record *a_record, 
     int rez = -1;
     if (string_on_this_position != NULL)
     {
-#ifdef DEBUG
-        printf("len 0 is %d, len 1 is %d \n", strlen(string_on_this_position), strlen(string_to_check));
-        printf("checking string >>%s<< on posititon %lu, string to check is %s \n", string_on_this_position,
-               try_this_position, string_to_check);
-#endif
         rez = (strcmp(string_on_this_position, string_to_check));
     }
     else

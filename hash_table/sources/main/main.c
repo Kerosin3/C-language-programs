@@ -69,9 +69,6 @@ word_pointers find_a_word(FILE *fp)
     {
         if (feof(fp))
         {
-#ifdef DEBUG
-            printf("EOF REACHED!!\n");
-#endif
             end = ftell(fp);
             out.end = end;
             END_REACHED = 1;
@@ -80,14 +77,8 @@ word_pointers find_a_word(FILE *fp)
         }
         fread(&read_char, 1, 1, fp); // read one byte and move cursor
         i++;
-#ifdef DEBUG
-        // printf("readed 0x%X, is space =%X \n",read_char,isspace(read_char));
-#endif
     } while (!(isspace(read_char))); // not space or EOF
     i = i - 1;                       // decrement last i, i+1 == total elements need
-#ifdef DEBUG
-    printf("i is %d\n", i);
-#endif
     char *a_word = calloc(i + 1, sizeof(char)); // one for NULL TERMINATOR
     if (!(a_word))
     {
@@ -113,9 +104,5 @@ word_pointers find_a_word(FILE *fp)
     { // skip whitepaces
         fread(&read_char, 1, 1, fp);
     } while (!(isspace(read_char)));
-#ifdef DEBUG
-    printf("space chr  has been found!\n");
-    printf("beg=%lu,end=%lu \n", out.begin, out.end);
-#endif
     return out;
 }
