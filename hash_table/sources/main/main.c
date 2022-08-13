@@ -32,8 +32,10 @@ int main(int argc, char *argv[])
     unsigned long counter = 0;
     while (((some_word = find_a_word(fp_r)).word))
     { // WHILE NOT NULL
-        if (some_word.begin == some_word.end)
+        if (some_word.begin == some_word.end){
+	    free(some_word.word);//free memory
             continue; // if ???? zero length
+	    }
 #ifdef DEBUG
         printf("--->your word is \"%s\"\n", (char *)(some_word.word));
 #endif
@@ -41,9 +43,9 @@ int main(int argc, char *argv[])
         record tmp_rec = init_a_record();
         set_a_record(&tmp_rec, (const char *)some_word.word);
         append_to_storage(&store, tmp_rec);
-        //calc_hash((char *)(some_word.word)); // memory is assigned here
         free(some_word.word);
     }
+    free(some_word.word); // free the last iteration
     printout_content(&store);
     printf("processed total %lu words in the text file\n", counter);
 #ifdef DEBUG

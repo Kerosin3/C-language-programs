@@ -13,11 +13,6 @@
 #include <tgmath.h>
 //#include "BSD_strings.c"
 #define SALT 19
-enum flag_empty
-{
-    non_empty,
-    empty
-};
 enum flag_written
 {
     not_written,

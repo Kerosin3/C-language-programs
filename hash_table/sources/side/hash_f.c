@@ -37,11 +37,6 @@ unsigned long long calc_hash(const char *input_string)
 #pragma message "sidelibs are not included!"
 unsigned long long calc_hash(const char *input_string)
 {
-    if ((sizeof(uint8_t) != (sizeof(char))))
-    {
-        printf("platform error!,aborting...\n");
-        return 0;
-    }
     char const *str_ptr = input_string; // its ok
     size_t str_size = strlen(str_ptr);  // size of analyzed string
     printf("your string %s length is %lu \n", input_string, str_size);
@@ -146,7 +141,7 @@ void storage_destroy(record_storage *storage)
     size_t j = 0;
     for (i = 0; i < storage->max_size; ++i)
     {
-        if (((*(*(storage->start_record) + i)).flag) > 0)
+        if (((*(*(storage->start_record) + i)).key)  ) // string is not null
         {
             free(((*(*(storage->start_record) + i)).key));
             (*(*(storage->start_record) + i)).key = (void *)0;
@@ -278,10 +273,8 @@ unsigned check_null_str(const char *in_str)
 {
     if ((in_str == NULL) || (in_str[0] == '\0'))
     {
-        // printf("c is empty\n");
         return 1;
     }
-    // printf("not empty!\n");
     return 0;
 }
 
@@ -305,17 +298,21 @@ unsigned long get_value_v2(record_storage *storage, const char *in_string)
         if (!(first_comp))
         {
             printf("found first occurence!!!\n");
-            return magic_posit; // the same ;!!!! WIN FIRST OCCURENCE
-        }                       //
+            return magic_posit; // found on firs try
+        }                       
     }
     unsigned ii = 0;
     unsigned k  = magic_number;
 jump_rehash: ;
     do
     { // work while NULL
+	if (ii == (storage->max_size - 1) ) {
+		printf("number of tries are exeeded, this word has not been found!\n");
+		return (storage->max_size + 1);
+	} 
         ii++;
 	magic_posit = (_init_hash + (ii*k)  ) % (storage->max_size); // some magic
-        stored_rec = (*(storage->start_record) + magic_posit); // ???? hehe
+        stored_rec = (*(storage->start_record) + magic_posit); 
     } while ((!(stored_rec->key))); // repeat while empty
     if (!(strcmp(stored_rec->key, in_string)))
     { // not null here!!!
@@ -330,7 +327,6 @@ jump_rehash: ;
 static void copy_obj(record_storage *storage, record a_record, unsigned long position)
 {
     unsigned s_len = strlen(a_record.key);
-    // int s_len = snprintf(NULL,0,"{data:%c}",a_record.key);// get the size
     assert(s_len > 0);
     s_len++; // add space for null term
     char *s_tmp = calloc(sizeof(char), s_len); // allocate memory for string
@@ -390,15 +386,20 @@ void test0()
         append_to_storage(&store, tmp_rec);
     }
     printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
+    unsigned long getted_value = 0;
     for (size_t i = 0; i < VVV; i++)
     {
         printf("%lu we are searching %s \n", i, some[i]);
-        unsigned long getted_value = get_value_v2(&store, some[i]); // position
+	if (  (getted_value = get_value_v2(&store, some[i])  ) > (store.max_size  )  ) {
+		continue; // word not found
+	}
         printf("---\n");
         record contained = (*(*(store.start_record) + getted_value));
         printf("searched %s, found on position %lu, contains %s, meet %lu \n", some[i], getted_value, contained.key,
                contained.value);
     }
+    printf("================\n");	
+    get_value_v2(&store, "iamnotinthetable"); // position
     // printout_content(&store);
     storage_destroy(&store);
 }
