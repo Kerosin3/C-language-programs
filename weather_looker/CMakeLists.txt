@@ -8,5 +8,5 @@ set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -pedantic-errors")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 add_subdirectory(sources/main)
-add_subdirectory(sources/side)
+add_subdirectory(sources/curl-7.84.0)
 
