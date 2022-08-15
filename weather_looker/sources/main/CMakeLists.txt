@@ -13,7 +13,7 @@ find_library(curl_lib curl)
 target_link_libraries( ${PROJECT_NAME}
 	PRIVATE
 	"${curl_lib}"
-	#	${CMAKE_BINARY_DIR}/libcurl.a
+	#	${CMAKE_BINARY_DIR}/libcurl.a  #link with static
 	)
 #add_custom_command(TARGET app_complete.out
 #                   POST_BUILD
