@@ -8,7 +8,7 @@ set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -pedantic-errors")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 set(BUILD_CURL_EXE OFF)
-set(BUILD_SHARED_LIBS on)  #off to compile static
+set(BUILD_SHARED_LIBS OFF)  #off to compile static
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/)
 
