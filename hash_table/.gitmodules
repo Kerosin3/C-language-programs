@@ -1,3 +1,0 @@
-[submodule "hash_table/sources/spookyhash"]
-	path = hash_table/sources/spookyhash
-	url = https://github.com/k0dai/spookyhash.git

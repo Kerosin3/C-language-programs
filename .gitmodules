@@ -1,0 +1,6 @@
+[submodule "weather_looker/sources/cJSON"]
+	path = weather_looker/sources/cJSON
+	url = https://github.com/DaveGamble/cJSON.git
+[submodule "hash_table/sources/spookyhash"]
+	path = hash_table/sources/spookyhash
+	url = https://github.com/k0dai/spookyhash
