@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 	CURLcode response;//response
 
 	curl = curl_easy_init();
-	curl_easy_setopt(curl,CURLOPT_URL,"https://yandex.ru");
+	curl_easy_setopt(curl,CURLOPT_URL,"https://wttr.in/Moscow?format=j1");
 	
 
 	response = curl_easy_perform(curl);
