@@ -9,17 +9,17 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} 
 	PUBLIC 
 	"${CMAKE_CURRENT_SOURCE_DIR}/../cJSON"
-	#"${CMAKE_CURRENT_SOURCE_DIR}/../curl-7.84.0/include/curl"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../curl-7.84.0/include/curl"
 	)
 
 #link_directories(${CMAKE_BINARY_DIR})
-find_library(curl_lib 
-	    libcurl.a
-	    PATH ${CMAKE_SOURCE_DIR}/sources/libs 
-	    NO_DEFAULT_PATH
-	    )
-message(CMAKE_SOURCEDIR IS ${CMAKE_SOURCE_DIR})
-message(FATAL_ERROR "${curl_lib}")
+#find_library(curl_lib 
+#	    curl
+#	    HINTS ${CMAKE_SOURCE_DIR}/sources/libs 
+#	    NO_DEFAULT_PATH
+#	    )
+#message(CMAKE_SOURCEDIR IS ${CMAKE_SOURCE_DIR})
+#message(FATAL_ERROR "${curl_lib}")
 
 
 #find_library(cjsonlibrary 
@@ -28,11 +28,12 @@ message(FATAL_ERROR "${curl_lib}")
 #
 #	)
 
-message(CURRENTSOURCE_DIR IS ${CMAKE_CURRENT_SOURCE_DIR})
+#message(CURRENTSOURCE_DIR IS ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries( ${PROJECT_NAME}
 	cjson
-	curl
+	libcurl
+	#${CMAKE_SOURCE_DIR}/sources/libs/libcurl.a
 	#"${curl_lib}"
 	#"${cjsonlibrary}"
 	#${CMAKE_BINARY_DIR}/libcurl.a  #link with static
