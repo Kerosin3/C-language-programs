@@ -7,16 +7,15 @@ set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -pedantic-errors")
 #set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../test) #copy
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-
-set(BUILD_CURL_EXE OFF)
-set(BUILD_SHARED_LIBS ON)  #off to compile static
+set(CMAKE_EXE_LINKER_FLAGS "-static")
 
 #set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/)
 
-add_subdirectory(sources/curl-7.84.0)
+#add_subdirectory(sources/curl-7.84.0)
 
-set(DENABLE_CJSON_TEST OFF)
-set(DBUILD_SHARED_AND_STATIC_LIBS ON)
+set(ENABLE_CJSON_TEST OFF)
+#set(DBUILD_SHARED_AND_STATIC_LIBS OFF)
+set(BUILD_SHARED_LIBS OFF)
 set(ENABLE_CJSON_UNINSTALL OFF)
 
 add_subdirectory(sources/cJSON)
