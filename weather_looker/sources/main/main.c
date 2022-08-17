@@ -11,11 +11,11 @@ typedef struct MemoryStruct {
 } MemoryStruct;
 
 static size_t WriteMemoryCallback(void *,size_t,size_t,void*);
+static unsigned ParseThisResponse(size_t len, char response[static 1]);
 // ??static size_t;
 
 int main(int argc, char *argv[])
 {
-	const cJSON *resolution = NULL;
 	CURL* curl;	
 	CURLcode response;//response
 
@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
 	  else {
 	    printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
 	}
+	ParseThisResponse(chunk.size,chunk.memory);
 	//fprintf(stdout,"%s \n",chunk.memory);
 	curl_easy_cleanup(curl);
 	free(chunk.memory);
@@ -64,4 +65,32 @@ static size_t WriteMemoryCallback(void *contents,size_t size,size_t nmemb,void *
 	mem->size+=realsize;
 	mem->memory[mem->size] = 0;
 	return realsize;
+}
+
+static unsigned ParseThisResponse(size_t len,char response[static 1]){
+	if (!len){
+		return 0;
+	} 
+	cJSON *json = cJSON_ParseWithLength(response,len);
+	char *parse_out = cJSON_Print(json);
+	fprintf(stdout,"your result is %s \n",parse_out);
+	cJSON *conditions = (void*)0;
+	cJSON *a_condition = (void*)0;
+	conditions = cJSON_GetObjectItemCaseSensitive(json,"current_condition");
+	a_condition = cJSON_GetObjectItemCaseSensitive(conditions,"FeelsLikeC");
+	if (cJSON_IsInvalid(a_condition)){
+		printf("wrong data \n");
+	}
+	if (cJSON_StringIsConst(a_condition)){
+		printf("asdasd\n");
+		//printf("---->%f\n",a_condition->valueint);
+
+	} else {
+		printf("something wrong \n");
+	}
+	cJSON_Delete(json);
+	//cJSON_Delete(conditions);
+	//cJSON_Delete(a_condition);
+	return 1;
+
 }
