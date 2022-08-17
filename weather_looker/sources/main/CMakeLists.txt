@@ -6,15 +6,43 @@ project(main_app)
 add_executable(${PROJECT_NAME}
 	main.c
 )
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../curl-7.84.0/include/curl)
+target_include_directories(${PROJECT_NAME} 
+	PUBLIC 
+	"${CMAKE_CURRENT_SOURCE_DIR}/../cJSON"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../curl-7.84.0/include/curl"
+	)
 
 #link_directories(${CMAKE_BINARY_DIR})
-find_library(curl_lib curl)
+#find_library(curl_lib 
+#	    curl
+	    #	    PATHS ${CMAKE_SOURCE_DIR}/build
+	    #	    NO_DEFAULT_PATH
+	    #	    )
+message(CMAKE_SOURCEDIR IS ${CMAKE_SOURCE_DIR})
+#message(FATAL_ERROR "${curl_lib}")
+
+
+#find_library(cjsonlibrary 
+#	NAMES cJSON cjson 
+#	HINTS ${CMAKE_SOURCE_DIR}
+#
+#	)
+
+message(CURRENTSOURCE_DIR IS ${CMAKE_CURRENT_SOURCE_DIR})
+
+set_target_properties (${PROJECT_NAME} PROPERTIES LINK_SEARCH_START_STATIC OFF)
 target_link_libraries( ${PROJECT_NAME}
-	PRIVATE
+	cjson
 	#"${curl_lib}"
-	${CMAKE_BINARY_DIR}/libcurl.a  #link with static
+	#"${cjsonlibrary}"
+	#${CMAKE_BINARY_DIR}/libcurl.a  #link with static
 	)
+
+set_target_properties (${PROJECT_NAME} PROPERTIES LINK_SEARCH_START_STATIC ON)
+target_link_libraries ( ${PROJECT_NAME}
+	curli.a
+	)
+set_target_properties (${PROJECT_NAME} PROPERTIES LINK_SEARCH_START_STATIC OFF)
 #add_custom_command(TARGET app_complete.out
 #                   POST_BUILD
 #                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:MyExe> SomeOtherDir)

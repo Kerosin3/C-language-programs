@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "curl.h"
+#include "cJSON.h"
 
 
 typedef struct MemoryStruct {
@@ -14,6 +15,7 @@ static size_t WriteMemoryCallback(void *,size_t,size_t,void*);
 
 int main(int argc, char *argv[])
 {
+	const cJSON *resolution = NULL;
 	CURL* curl;	
 	CURLcode response;//response
 
@@ -25,13 +27,21 @@ int main(int argc, char *argv[])
 	curl = curl_easy_init();
 	curl_easy_setopt(curl,CURLOPT_URL,"https://wttr.in/Moscow?format=j1");
 	
-//	curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,WriteMemoryCallback)
+	curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,WriteMemoryCallback);
 	curl_easy_setopt(curl,CURLOPT_WRITEDATA,(void*) &chunk);
 	curl_easy_setopt(curl,CURLOPT_USERAGENT,"libcurl-agent/1.0");
 
 	response = curl_easy_perform(curl); // get response
-	printf("%lu bytes retriever \n", (unsigned long) chunk.size);				    //
 
+/* check for errors */
+  	if(response != CURLE_OK) {
+	    fprintf(stderr, "curl_easy_perform() failed: %s\n",
+            curl_easy_strerror(response));
+  	}
+	  else {
+	    printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
+	}
+	//fprintf(stdout,"%s \n",chunk.memory);
 	curl_easy_cleanup(curl);
 	free(chunk.memory);
 	curl_global_cleanup();
