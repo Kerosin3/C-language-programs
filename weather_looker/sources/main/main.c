@@ -77,11 +77,13 @@ static unsigned ParseThisResponse(size_t len,char response[static 1]){
 	cJSON *conditions = (void*)0;
 	cJSON *a_condition = (void*)0;
 	conditions = cJSON_GetObjectItemCaseSensitive(json,"current_condition");
+	if (cJSON_IsInvalid(conditions))
+		printf("wrong data \n");
 	a_condition = cJSON_GetObjectItemCaseSensitive(conditions,"FeelsLikeC");
 	if (cJSON_IsInvalid(a_condition)){
 		printf("wrong data \n");
 	}
-	if (cJSON_StringIsConst(a_condition)){
+	if (cJSON_IsNumber(a_condition)){
 		printf("asdasd\n");
 		//printf("---->%f\n",a_condition->valueint);
 
