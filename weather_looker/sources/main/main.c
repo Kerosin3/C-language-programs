@@ -16,7 +16,7 @@ typedef struct MemoryStruct {
 
 static size_t WriteMemoryCallback(void *,size_t,size_t,void*);
 static unsigned ParseThisResponse(size_t len, char response[static 1]);
-static const char* RequestString(size_t len,char *city_name);
+static const char* RequestString(char city_name[static 1]);
 // ??static size_t;
 
 int main(int argc, char *argv[])
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
    	assert(strnlen(argv[1], CITY_NAME_MAX ) <=CITY_NAME_MAX);
 
 	fprintf(stdout,"searching weather conditions for city %s \n",argv[1]);
+	const char *cityname = RequestString(argv[1]);
 	CURL* curl;	
 	CURLcode response;//response
 
@@ -39,7 +40,7 @@ int main(int argc, char *argv[])
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl = curl_easy_init();
-	curl_easy_setopt(curl,CURLOPT_URL,"https://wttr.in/Moscow?format=j1");
+	curl_easy_setopt(curl,CURLOPT_URL,cityname);
 	
 	curl_easy_setopt(curl,CURLOPT_WRITEFUNCTION,WriteMemoryCallback);
 	curl_easy_setopt(curl,CURLOPT_WRITEDATA,(void*) &chunk);
@@ -51,15 +52,20 @@ int main(int argc, char *argv[])
   	if(response != CURLE_OK) {
 	    fprintf(stderr, "curl_easy_perform() failed: %s\n",
             curl_easy_strerror(response));
+	    goto end_main;
   	}
 	  else {
+	    #ifdef DEBUG
 	    printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
+	    #endif
 	}
 	ParseThisResponse(chunk.size,chunk.memory);
+end_main:
 	//fprintf(stdout,"%s \n",chunk.memory);
 	curl_easy_cleanup(curl);
 	free(chunk.memory);
 	curl_global_cleanup();
+	free((char*)cityname);
 	return 0;
 
 }
@@ -98,9 +104,9 @@ static unsigned ParseThisResponse(size_t len,char response[static 1]){
 		goto end;
 	}
 	char *parse_out = cJSON_Print(json); // parse response
-	#ifdef DEBUG
+	//#ifdef DEBUG
 		fprintf(stdout,"your result is %s \n",parse_out);
-	#endif
+	//#endif
 	cJSON *conditions = (void*)0;
 	conditions = cJSON_GetObjectItemCaseSensitive(json,"current_condition");
 	if (!conditions || cJSON_IsInvalid(conditions)) {
@@ -164,16 +170,21 @@ end:
 
 }
 
-static const char* RequestString(size_t len,char *city_name){
-	static const char *beg ="https://wttr.in/";
-	size_t beg_size = strlen(beg);
-	static const char *end ="?format=j1";
-	size_t end_size = strlen(end);
-	static char string_req[beg_size+end_size+len+1];
-	char *strcat(char string_req[], beg);	
-	char *strcat(char string_req[],city_name );	
-	char *strcat(char string_req[],end);	
-	string_req[beg_size+end_size+len] = '\0';
+static const char* RequestString(char city_name[static 1]){
+	const char *beg ="https://wttr.in/";
+	size_t total_l = strnlen(beg,20);
+	const char *end ="?format=j1";
+	total_l += strnlen(end,20);
+	total_l += strnlen(city_name,CITY_NAME_MAX);
+	char *string_req = calloc(total_l+1,sizeof(char));
+	if (!string_req) {
+		fprintf(stderr,"error while memory allocation\n");
+	}
+	strcat(string_req,beg);	
+	strcat(string_req,city_name );	
+	strcat(string_req,end);	
+	string_req[total_l] = '\0';
+	return string_req;
 }
 
 
