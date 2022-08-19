@@ -145,7 +145,7 @@ static unsigned ParseThisResponse(size_t len,char response[static 1]){
 				}
 			cJSON *a_weather = (void*)0;
 			cJSON_ArrayForEach(a_weather,w_conditions){
-				cJSON *weather_disc = cJSON_GetObjectItemCaseSensitive(a_weather, "value");
+			cJSON *weather_disc = cJSON_GetObjectItemCaseSensitive(a_weather, "value");
 			if (cJSON_IsString(weather_disc)  ) { 
 				fprintf(stdout,"current weather discription is %s \n",weather_disc->valuestring) ;
 			} else  {
@@ -163,3 +163,17 @@ end:
 	return status;
 
 }
+
+static const char* RequestString(size_t len,char *city_name){
+	static const char *beg ="https://wttr.in/";
+	size_t beg_size = strlen(beg);
+	static const char *end ="?format=j1";
+	size_t end_size = strlen(end);
+	static char string_req[beg_size+end_size+len+1];
+	char *strcat(char string_req[], beg);	
+	char *strcat(char string_req[],city_name );	
+	char *strcat(char string_req[],end);	
+	string_req[beg_size+end_size+len] = '\0';
+}
+
+
