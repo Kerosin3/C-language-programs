@@ -4,6 +4,7 @@
 #include <curl/curl.h>
 #include "cJSON.h"
 
+#define n_lookups 3
 
 typedef struct MemoryStruct {
 	char *memory;
@@ -68,31 +69,82 @@ static size_t WriteMemoryCallback(void *contents,size_t size,size_t nmemb,void *
 }
 
 static unsigned ParseThisResponse(size_t len,char response[static 1]){
+	char const *const lookup[n_lookups] = { // parameters
+		"temp_C", "winddir16Point","windspeedKmph",
+	};
+	size_t flag_wr = 0;
+	unsigned status = 1;
 	if (!len){
 		return 0;
 	} 
 	cJSON *json = cJSON_ParseWithLength(response,len);
-	char *parse_out = cJSON_Print(json);
+	if (!json) {
+		const char *errror_ptr = cJSON_GetErrorPtr();
+		if (!errror_ptr) fprintf(stderr, "Error while getting json %s \n",errror_ptr);
+		status = 1;
+		goto end;
+	}
+	char *parse_out = cJSON_Print(json); // parse response
 	fprintf(stdout,"your result is %s \n",parse_out);
 	cJSON *conditions = (void*)0;
-	cJSON *a_condition = (void*)0;
 	conditions = cJSON_GetObjectItemCaseSensitive(json,"current_condition");
-	if (cJSON_IsInvalid(conditions))
-		printf("wrong data \n");
-	a_condition = cJSON_GetObjectItemCaseSensitive(conditions,"FeelsLikeC");
-	if (cJSON_IsInvalid(a_condition)){
-		printf("wrong data \n");
+	if (!conditions || cJSON_IsInvalid(conditions)) {
+		fprintf(stderr,"error while parsing weather conditions\n");
+		status = 1;
+		goto end;
 	}
-	if (cJSON_IsNumber(a_condition)){
-		printf("asdasd\n");
-		//printf("---->%f\n",a_condition->valueint);
-
-	} else {
-		printf("something wrong \n");
+	cJSON *a_parameter = (void*)0;
+	cJSON_ArrayForEach(a_parameter,conditions){
+		for (size_t i = 0; i < n_lookups; ++i) {
+		cJSON *w_condititon = cJSON_GetObjectItemCaseSensitive(a_parameter, lookup[i]);
+		if (cJSON_IsInvalid(w_condititon) && (!(w_condititon->valuestring)  )) fprintf(stderr,"error getting w_condititon\n");
+		switch (i) {
+			case 0: 
+			if (cJSON_IsString(w_condititon)  ) fprintf(stdout,"current temperature is %s degress of Celsius\n",w_condititon->valuestring) ;
+			else fprintf(stderr,"error while reading value of temperature\n");	
+			status = 1;
+			break;
+			case 1: 
+			if (cJSON_IsString(w_condititon)  ) fprintf(stdout,"current wind direction is %s\n",w_condititon->valuestring) ;
+			else fprintf(stderr,"error while reading value of wind direction\n");	
+			status = 1;
+			break;
+			case 2: 
+			if (cJSON_IsString(w_condititon)  ) fprintf(stdout,"current wind speed is %s km/h\n",w_condititon->valuestring) ;
+			else fprintf(stderr,"error while reading value of speed of wind\n");	
+			status = 1;
+			break;
+			default:
+				fprintf(stderr,"something wrong happended,exiting..\n");
+				status = 1;
+				goto end;
+			}
+		if (!flag_wr){ // weather discription read
+			flag_wr = 1;
+			cJSON *w_conditions = (void*)0;
+			w_conditions = cJSON_GetObjectItemCaseSensitive(a_parameter, "weatherDesc");
+			if ((!w_conditions) || cJSON_IsInvalid(w_conditions)) {
+				fprintf(stderr,"error while getting weather conditions\n");
+				status = 0;
+				goto end;
+				}
+			cJSON *a_weather = (void*)0;
+			cJSON_ArrayForEach(a_weather,w_conditions){
+				cJSON *weather_disc = cJSON_GetObjectItemCaseSensitive(a_weather, "value");
+			if (cJSON_IsString(weather_disc)  ) { 
+				fprintf(stdout,"current weather discription is %s \n",weather_disc->valuestring) ;
+			} else  {
+				fprintf(stderr,"error while reading weaher discriptios\n");
+				status = 0;
+				goto end;
+				}
+			}
+			}
+		}
 	}
+	status = 0; // OK!
+end:
 	cJSON_Delete(json);
-	//cJSON_Delete(conditions);
-	//cJSON_Delete(a_condition);
-	return 1;
+	return status;
 
 }
