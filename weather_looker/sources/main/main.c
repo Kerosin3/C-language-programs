@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 {
 		
     	if (argc > 2 || (argc == 1)) {
-		printf("please specify just an exising city name, terminating the program...\n");
+		printf("please specify just an exising city name \(25 char limit\), terminating the program...\n");
 		exit(1);
 	    }
    	assert(strnlen(argv[1], CITY_NAME_MAX ) != 0);
@@ -104,9 +104,9 @@ static unsigned ParseThisResponse(size_t len,char response[static 1]){
 		goto end;
 	}
 	char *parse_out = cJSON_Print(json); // parse response
-	//#ifdef DEBUG
+	#ifdef DEBUG
 		fprintf(stdout,"your result is %s \n",parse_out);
-	//#endif
+	#endif
 	cJSON *conditions = (void*)0;
 	conditions = cJSON_GetObjectItemCaseSensitive(json,"current_condition");
 	if (!conditions || cJSON_IsInvalid(conditions)) {
@@ -118,7 +118,7 @@ static unsigned ParseThisResponse(size_t len,char response[static 1]){
 	cJSON_ArrayForEach(a_parameter,conditions){
 		for (size_t i = 0; i < n_lookups; ++i) {
 		cJSON *w_condititon = cJSON_GetObjectItemCaseSensitive(a_parameter, lookup[i]);
-		if (cJSON_IsInvalid(w_condititon) && (!(w_condititon->valuestring)  )) fprintf(stderr,"error getting w_condititon\n");
+		if (cJSON_IsInvalid(w_condititon) || (!(w_condititon->valuestring)  )) fprintf(stderr,"error getting w_condititon\n");
 		switch (i) {
 			case 0: 
 			if (cJSON_IsString(w_condititon)  ) fprintf(stdout,"current temperature is %s degress of Celsius\n",w_condititon->valuestring) ;
@@ -163,6 +163,40 @@ static unsigned ParseThisResponse(size_t len,char response[static 1]){
 			}
 		}
 	}
+	//--read region
+	unsigned flag_reg = 0;
+	cJSON *region_field = cJSON_GetObjectItemCaseSensitive(json,"nearest_area");
+	if (!region_field || cJSON_IsInvalid(region_field)) {
+		fprintf(stderr,"error while parsing region\n");
+		status = 1;
+		goto end;
+	}
+	cJSON *a_field = (void*)0;
+	cJSON_ArrayForEach(a_field,region_field){
+		cJSON *region_info = cJSON_GetObjectItemCaseSensitive(a_field, "region");
+		if (cJSON_IsInvalid(region_info) ) fprintf(stderr,"error getting region info\n");
+
+		if (!flag_reg){
+			flag_reg = 1;
+			cJSON *reg_name = (void*)0;
+			cJSON_ArrayForEach(reg_name,region_info){
+				reg_name = cJSON_GetObjectItemCaseSensitive(reg_name, "value");
+			if (cJSON_IsString(reg_name)  ) { 
+				fprintf(stdout,">>searched region/city is %s <<\n",reg_name->valuestring) ;
+			} else  {
+				fprintf(stderr,"error while reading region\n");
+				status = 0;
+				goto end;
+				}
+
+
+			}
+
+		}
+	}
+	
+
+
 	status = 0; // OK!
 end:
 	cJSON_Delete(json);
