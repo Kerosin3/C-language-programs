@@ -3,8 +3,11 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "cJSON.h"
+#include <assert.h>
 
 #define n_lookups 3
+#define CITY_NAME_MAX 25
+//#define DEBUG
 
 typedef struct MemoryStruct {
 	char *memory;
@@ -17,6 +20,15 @@ static unsigned ParseThisResponse(size_t len, char response[static 1]);
 
 int main(int argc, char *argv[])
 {
+		
+    	if (argc > 2 || (argc == 1)) {
+		printf("please specify just an exising city name, terminating the program...\n");
+		exit(1);
+	    }
+   	assert(strnlen(argv[1], CITY_NAME_MAX ) != 0);
+   	assert(strnlen(argv[1], CITY_NAME_MAX ) <=CITY_NAME_MAX);
+
+	fprintf(stdout,"searching weather conditions for city %s \n",argv[1]);
 	CURL* curl;	
 	CURLcode response;//response
 
@@ -85,7 +97,9 @@ static unsigned ParseThisResponse(size_t len,char response[static 1]){
 		goto end;
 	}
 	char *parse_out = cJSON_Print(json); // parse response
-	fprintf(stdout,"your result is %s \n",parse_out);
+	#ifdef DEBUG
+		fprintf(stdout,"your result is %s \n",parse_out);
+	#endif
 	cJSON *conditions = (void*)0;
 	conditions = cJSON_GetObjectItemCaseSensitive(json,"current_condition");
 	if (!conditions || cJSON_IsInvalid(conditions)) {
