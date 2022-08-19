@@ -16,6 +16,7 @@ typedef struct MemoryStruct {
 
 static size_t WriteMemoryCallback(void *,size_t,size_t,void*);
 static unsigned ParseThisResponse(size_t len, char response[static 1]);
+static const char* RequestString(size_t len,char *city_name);
 // ??static size_t;
 
 int main(int argc, char *argv[])
