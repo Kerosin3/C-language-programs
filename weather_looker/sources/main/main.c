@@ -252,6 +252,7 @@ static const char *RequestString(char city_name[static 1])
     if (!string_req)
     {
         fprintf(stderr, "error while memory allocation\n");
+	exit(1);
     }
     strcat(string_req, beg);
     strcat(string_req, city_name);
