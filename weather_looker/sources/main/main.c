@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
         printf("please specify just an exising city name (25 char limit), terminating the program...\n");
         exit(1);
     }
-    assert(strnlen(argv[1], CITY_NAME_MAX) != 0);
-    assert(strnlen(argv[1], CITY_NAME_MAX) <= CITY_NAME_MAX);
+    assert(strnlen(argv[1], CITY_NAME_MAX) == 0 && "error, please enter valid cityname");
+    assert(strnlen(argv[1], CITY_NAME_MAX) <= CITY_NAME_MAX && "error, max city name length is 25 chars");
 
     fprintf(stdout, "searching weather conditions for city >> %s << \n", argv[1]);
     const char *cityname = RequestString(argv[1]);
