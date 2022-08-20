@@ -130,9 +130,11 @@ static unsigned ParseThisResponse(size_t len, char response[static 1],const char
     cJSON_ArrayForEach(a_field, region_field)
     {
         cJSON *region_info = cJSON_GetObjectItemCaseSensitive(a_field, "region");
-        if (cJSON_IsInvalid(region_info))
+	if (cJSON_IsInvalid(region_info)){
             fprintf(stderr, "error getting region info\n");
-
+	    status = 1;
+	    goto end;
+	}
         if (!flag_reg)
         {
             flag_reg = 1;
@@ -143,6 +145,7 @@ static unsigned ParseThisResponse(size_t len, char response[static 1],const char
                 if (cJSON_IsString(reg_name))
                 {
 		    if (!strstr(reg_name->valuestring,acityname)) {
+			status = 1;
 		    	goto end;
 		    }
     		    fprintf(stdout, "searching weather conditions for city >> %s << \n", reg_name->valuestring);
@@ -170,8 +173,11 @@ static unsigned ParseThisResponse(size_t len, char response[static 1],const char
         for (size_t i = 0; i < n_lookups; ++i)
         {
             cJSON *w_condititon = cJSON_GetObjectItemCaseSensitive(a_parameter, lookup[i]);
-            if (cJSON_IsInvalid(w_condititon) || (!(w_condititon->valuestring)))
+            if (cJSON_IsInvalid(w_condititon) || (!(w_condititon->valuestring))){
                 fprintf(stderr, "error getting w_condititon\n");
+	    	status = 1;
+		goto end;
+	    }
             switch (i)
             {
             case 0:
