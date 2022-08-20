@@ -8,7 +8,7 @@
 #define n_lookups 3
 #define CITY_NAME_MAX 25
 //#define DEBUG
-
+//#define NDEBUG
 typedef struct MemoryStruct
 {
     char *memory;
@@ -16,7 +16,7 @@ typedef struct MemoryStruct
 } MemoryStruct;
 
 static size_t WriteMemoryCallback(void *, size_t, size_t, void *);
-static unsigned ParseThisResponse(size_t len, char response[static 1]);
+static unsigned ParseThisResponse(size_t len, char response[static 1],const char* cityname);
 static const char *RequestString(char city_name[static 1]);
 
 int main(int argc, char *argv[])
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
         printf("please specify just an exising city name (25 char limit), terminating the program...\n");
         exit(1);
     }
-    assert(strnlen(argv[1], CITY_NAME_MAX) == 0 && "error, please enter valid cityname");
+    assert(strnlen(argv[1], CITY_NAME_MAX) != 0 && "error, please enter valid cityname");
     assert(strnlen(argv[1], CITY_NAME_MAX) <= CITY_NAME_MAX && "error, max city name length is 25 chars");
 
     fprintf(stdout, "searching weather conditions for city >> %s << \n", argv[1]);
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     /* check for errors */
     if (response != CURLE_OK)
     {
-        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(response));
+        fprintf(stderr, "curl_easy_perform() failed: %s\nPlease check you internet connction and request format\n", curl_easy_strerror(response));
         goto end_main;
     }
     else
@@ -61,9 +61,9 @@ int main(int argc, char *argv[])
         printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
 #endif
     }
-    if (ParseThisResponse(chunk.size, chunk.memory))
+    if (ParseThisResponse(chunk.size, chunk.memory,argv[1]))
     {
-        fprintf(stderr, "There were some errors while getting the information\n");
+        fprintf(stderr, "There were some errors while getting the information\nPlease, check the entered data\n");
     }
 end_main:
     curl_easy_cleanup(curl);
@@ -91,7 +91,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
     return realsize;
 }
 
-static unsigned ParseThisResponse(size_t len, char response[static 1])
+static unsigned ParseThisResponse(size_t len, char response[static 1],const char *acityname)
 {
     char const *const lookup[n_lookups] = {
         // parameters
@@ -118,6 +118,45 @@ static unsigned ParseThisResponse(size_t len, char response[static 1])
     char *parse_out = cJSON_Print(json); // parse response
     fprintf(stdout, "your result is %s \n", parse_out);
 #endif
+    //--read region
+    unsigned flag_reg = 0;
+    cJSON *region_field = cJSON_GetObjectItemCaseSensitive(json, "nearest_area");
+    if (!region_field || cJSON_IsInvalid(region_field))
+    {
+        fprintf(stderr, "error while parsing region\n");
+        status = 1;
+        goto end;
+    }
+    cJSON *a_field = (void *)0;
+    cJSON_ArrayForEach(a_field, region_field)
+    {
+        cJSON *region_info = cJSON_GetObjectItemCaseSensitive(a_field, "region");
+        if (cJSON_IsInvalid(region_info))
+            fprintf(stderr, "error getting region info\n");
+
+        if (!flag_reg)
+        {
+            flag_reg = 1;
+            cJSON *reg_name = (void *)0;
+            cJSON_ArrayForEach(reg_name, region_info)
+            {
+                reg_name = cJSON_GetObjectItemCaseSensitive(reg_name, "value");
+                if (cJSON_IsString(reg_name))
+                {
+		    if (!strstr(reg_name->valuestring,acityname)) {
+		    	goto end;
+		    }
+                    fprintf(stdout, "searched region/city is >>%s<<\n", reg_name->valuestring);
+                }
+                else
+                {
+                    fprintf(stderr, "error while reading region\n");
+                    status = 0;
+                    goto end;
+                }
+            }
+        }
+    }
     cJSON *conditions = (void *)0;
     conditions = cJSON_GetObjectItemCaseSensitive(json, "current_condition");
     if (!conditions || cJSON_IsInvalid(conditions))
@@ -191,43 +230,6 @@ static unsigned ParseThisResponse(size_t len, char response[static 1])
             }
         }
     }
-    //--read region
-    unsigned flag_reg = 0;
-    cJSON *region_field = cJSON_GetObjectItemCaseSensitive(json, "nearest_area");
-    if (!region_field || cJSON_IsInvalid(region_field))
-    {
-        fprintf(stderr, "error while parsing region\n");
-        status = 1;
-        goto end;
-    }
-    cJSON *a_field = (void *)0;
-    cJSON_ArrayForEach(a_field, region_field)
-    {
-        cJSON *region_info = cJSON_GetObjectItemCaseSensitive(a_field, "region");
-        if (cJSON_IsInvalid(region_info))
-            fprintf(stderr, "error getting region info\n");
-
-        if (!flag_reg)
-        {
-            flag_reg = 1;
-            cJSON *reg_name = (void *)0;
-            cJSON_ArrayForEach(reg_name, region_info)
-            {
-                reg_name = cJSON_GetObjectItemCaseSensitive(reg_name, "value");
-                if (cJSON_IsString(reg_name))
-                {
-                    fprintf(stdout, "searched region/city is >>%s<<\n", reg_name->valuestring);
-                }
-                else
-                {
-                    fprintf(stderr, "error while reading region\n");
-                    status = 0;
-                    goto end;
-                }
-            }
-        }
-    }
-
     status = 0; // OK!
 end:
     cJSON_Delete(json);
