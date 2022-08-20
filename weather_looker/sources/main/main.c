@@ -30,7 +30,6 @@ int main(int argc, char *argv[])
     assert(strnlen(argv[1], CITY_NAME_MAX) != 0 && "error, please enter valid cityname");
     assert(strnlen(argv[1], CITY_NAME_MAX) <= CITY_NAME_MAX && "error, max city name length is 25 chars");
 
-    fprintf(stdout, "searching weather conditions for city >> %s << \n", argv[1]);
     const char *cityname = RequestString(argv[1]);
     CURL *curl;
     CURLcode response; // response
@@ -146,7 +145,7 @@ static unsigned ParseThisResponse(size_t len, char response[static 1],const char
 		    if (!strstr(reg_name->valuestring,acityname)) {
 		    	goto end;
 		    }
-                    fprintf(stdout, "searched region/city is >>%s<<\n", reg_name->valuestring);
+    		    fprintf(stdout, "searching weather conditions for city >> %s << \n", reg_name->valuestring);
                 }
                 else
                 {
