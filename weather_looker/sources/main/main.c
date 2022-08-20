@@ -153,7 +153,7 @@ static unsigned ParseThisResponse(size_t len, char response[static 1],const char
                 else
                 {
                     fprintf(stderr, "error while reading region\n");
-                    status = 0;
+                    status = 1;
                     goto end;
                 }
             }
