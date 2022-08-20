@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     assert(strnlen(argv[1], CITY_NAME_MAX) != 0);
     assert(strnlen(argv[1], CITY_NAME_MAX) <= CITY_NAME_MAX);
 
-    fprintf(stdout, "searching weather conditions for city %s \n", argv[1]);
+    fprintf(stdout, "searching weather conditions for city >> %s << \n", argv[1]);
     const char *cityname = RequestString(argv[1]);
     CURL *curl;
     CURLcode response; // response
@@ -114,8 +114,8 @@ static unsigned ParseThisResponse(size_t len, char response[static 1])
         status = 1;
         goto end;
     }
-    char *parse_out = cJSON_Print(json); // parse response
 #ifdef DEBUG
+    char *parse_out = cJSON_Print(json); // parse response
     fprintf(stdout, "your result is %s \n", parse_out);
 #endif
     cJSON *conditions = (void *)0;
