@@ -244,9 +244,9 @@ end:
 static const char *RequestString(char city_name[static 1])
 {
     const char *beg = "https://wttr.in/";
-    size_t total_l = strnlen(beg, 20);
+    size_t total_l = strlen(beg);
     const char *end = "?format=j1";
-    total_l += strnlen(end, 20);
+    total_l += strlen(end);
     total_l += strnlen(city_name, CITY_NAME_MAX);
     char *string_req = calloc(total_l + 1, sizeof(char));
     if (!string_req)
