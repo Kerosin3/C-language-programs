@@ -4,3 +4,6 @@
 [submodule "hash_table/sources/spookyhash"]
 	path = hash_table/sources/spookyhash
 	url = https://github.com/k0dai/spookyhash
+[submodule "deamons/sources/jzon"]
+	path = deamons/sources/jzon
+	url = https://github.com/karl-zylinski/jzon-c.git
