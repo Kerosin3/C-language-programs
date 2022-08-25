@@ -38,7 +38,7 @@ int main(){
 			fprintf(stderr,"cannot get n of max files\n");
 			exit(1);
 			}
-	openlog("test_log",LOG_CONS,LOG_DAEMON);
+	openlog("my_deamon_test",LOG_CONS | LOG_PID,LOG_DAEMON);
 	umask(007);
 	if  ( (pid = fork() ) < 0 ){
 		perror("error fork execution\n");
@@ -74,13 +74,20 @@ int main(){
 		syslog(LOG_CRIT,"cannot change home dir \n");
 	}
 	fprintf(stdout,"closing file descriptors\n");
-	for (size_t i; i< rlim.rlim_max; i++) close(i);
+	for (size_t i=0; i< rlim.rlim_max; i++) {
+		int ret_fd = close(i);
+		//syslog(LOG_INFO," %d closing fd %d",i,ret_fd);
+	}
+	syslog(LOG_INFO, "running deamon with pid %d",getpid() );
 	int fd0,fd1,fd2;
-	fd0 = open("/dev/null",O_RDWR);
+	fd0 = fd1 = fd2 = -1;
+	fd0 = open("/dev/null",O_RDWR | 0666);
+	if (fd0 < 0) syslog(LOG_ERR,"cannot open std fd");
+	syslog(LOG_INFO,"std in fd is %d",fd0);
 	fd1 = dup(0);
 	fd2 = dup(0);
 	if (fd0 != 0 || fd1 != 1 || fd2 !=2) {
-		syslog(LOG_CRIT,"error with fd0-fd2 creation");
+		syslog(LOG_CRIT,"error with fd0-fd2 creation fd0:%d,fd1:%d,fd2:%d",fd0,fd1,fd2);
 	}
 	sleep(30);
 
