@@ -32,6 +32,14 @@ nested_table: {
 	]
 }
 
+daemon_settings: {
+	files_to_watch: [
+		{ val: "path1" }
+		{ val: "path2" }
+	]
+}
+
+
 list_of_lists: [
     [ "first thing in first list in list"]
     [ "list00" "list01" "list02" ]
