@@ -13,7 +13,7 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include "deamon_magic.h"
 
 typedef  signed pid_t;
 typedef struct rusage rusage;

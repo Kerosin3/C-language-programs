@@ -1,4 +1,5 @@
 #include "deamonize.h"
+#include "deamon_magic.h"
 
 
 
@@ -69,8 +70,8 @@ void deamonize(const char *){
 		syslog(LOG_CRIT,"error with fd0-fd2 creation fd0:%d,fd1:%d,fd2:%d",fd0,fd1,fd2);
 	}
 	syslog(LOG_INFO, "running deamon with pid %d",getpid() );
-	sleep(90);
-
+	test();
+	sleep(50);
 }
 
 
@@ -78,4 +79,8 @@ void self_mon(rusage *usage_p){
 	getrusage(RUSAGE_SELF, usage_p);
 	//getrusage(RUSAGE_CHILDREN, &usage_p);
 }
+
+
+
+
 
