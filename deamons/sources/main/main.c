@@ -12,19 +12,22 @@
 
 int main(){
 	char *deamon_name = "some_test_deamon";
-	//deamonize(deamon_name);
 	_Bool denable = false;
-	char** pathz = paths_to_analyze(&denable);		
+	const char** pathz = paths_to_analyze(&denable);		
+
 	if (denable){
 		printf("enabling demonization\n");
-		test();
+		//deamonize(deamon_name,pathz);
+		test(pathz);
 	}
 	size_t j = 0;
+	/*
 	while (pathz[j]) {
 		printf("a path is %s\n",pathz[j]);
+		printf("size of file is %u \n",calc_filesize(pathz[j]));
 		j++;
 	}
-	destroy_paths(pathz);   	 
+	destroy_paths(pathz);   	 */
 	return 0;
 }
 

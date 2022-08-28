@@ -2,9 +2,8 @@
 enable_deamonization: true
 daemon_settings: {
 	files_to_watch: [
-		{ val: "path1" }
-		{ val: "path2" }
-		{ val: "path2" }
+		{ val: "testfile" }
+		{ val: "testfile1" }
 		{ val: "END_PATH" } #end mark, do not touch
 	]
 }

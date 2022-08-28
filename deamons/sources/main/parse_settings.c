@@ -55,7 +55,7 @@ char** paths_to_analyze(_Bool* denable){
 	    fprintf(stderr,"cannot allocate memory!\n" );
 	    exit(4);
     }
-    for (size_t t =0; t< jj - 1; t++) { //END -1
+    for (size_t t =0; t< jj ; t++) { //END -1
 	    char *temp_str = jzon_get(things_arr->array_val + t,"val")-> string_val;
 	    size_t size_of_temp_str = strlen(temp_str);
 	    size_of_temp_str;
@@ -66,8 +66,9 @@ char** paths_to_analyze(_Bool* denable){
 	    }
 	    strcpy(paths[t], temp_str);
 	    paths[t][size_of_temp_str] = '\0';
+	    printf("->>%s \n",paths[t]);
     }
-    paths[jj-1]= NUL;
+    paths[jj]= NUL;
     JzonValue* deamon_enable = jzon_get(&result.output, "enable_deamonization");
     assert(deamon_enable->is_bool);
     *denable = deamon_enable->bool_val;
