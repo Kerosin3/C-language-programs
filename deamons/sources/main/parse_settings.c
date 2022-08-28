@@ -1,4 +1,6 @@
 #include "parse_settings.h"
+#include "jzon.h"
+#include <assert.h>
 
 
 void destroy_paths(char** pathz){
@@ -11,7 +13,7 @@ void destroy_paths(char** pathz){
 	free(pathz);
 }
 
-char** paths_to_analyze(){
+char** paths_to_analyze(_Bool* denable){
     FILE* fp = NUL;
     if (!(fp = fopen("settings.jzon", "rb"))) {
 	    fprintf(stderr,"cannon open config file,aborting\n");
@@ -66,5 +68,8 @@ char** paths_to_analyze(){
 	    paths[t][size_of_temp_str] = '\0';
     }
     paths[jj-1]= NUL;
+    JzonValue* deamon_enable = jzon_get(&result.output, "enable_deamonization");
+    assert(deamon_enable->is_bool);
+    *denable = deamon_enable->bool_val;
     return paths;
 }

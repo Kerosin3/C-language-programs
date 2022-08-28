@@ -5,10 +5,11 @@
 #include "jzon.h"
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #define NUL (void*)0
 
-char** paths_to_analyze();
+char** paths_to_analyze(_Bool*);
 void destroy_paths(char** pathz);
 
 #endif

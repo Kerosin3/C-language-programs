@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 #define MAX_CONNECTIONS 10
-#define SOCKNAME my_socket.socket
+#define SOCKNAME "my_socket.socket"
 
 void test(){
 	syslog(LOG_WARNING,"starting server app");
@@ -19,7 +19,7 @@ void test(){
 	char buf[1024];
 	sock = socket(AF_UNIX,SOCK_STREAM,0);
 	if (sock <0 ){
-		syslog(LOG_CRIT,"cannot open socker stream");
+		syslog(LOG_CRIT,"cannot open socket stream");
 		goto end_sock;
 	}
 	server.sun_family = AF_UNIX;
@@ -39,7 +39,7 @@ void test(){
 		}
 		else do {
 			bzero(buf,sizeof(buf));
-			if (rval = read(msgsock,buf,1024) <0 )
+			if (( rval = read(msgsock,buf,1024))  < 0 )
 				syslog(LOG_CRIT,"error reading sock msg");
 			else if (rval ==0)
 				syslog(LOG_ALERT,"closing connection");
