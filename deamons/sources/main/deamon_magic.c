@@ -1,5 +1,7 @@
 #include "deamonize.h"
 #include <errno.h>
+#include <sys/socket.h>
+#include <sys/syslog.h>
 
 #define MAX_CONNECTIONS 10
 #define SOCKNAME "my_socket.socket"
@@ -33,35 +35,27 @@ void test(const char** paths){
 			syslog(LOG_CRIT,"error  reading socket");
 			break;
 		}
-		else do {
-			bzero(buf,sizeof(buf));
-			if (( rval = read(msgsock,buf,1024))  < 0 )
-				syslog(LOG_CRIT,"error reading sock msg");
-			else if (rval ==0)
-				syslog(LOG_ALERT,"closing connection");
-			else
 				j = 0;
 				while (paths[j]) {
 					if (!(filesize = calc_filesize(paths[j]))) {
-						bufs = snprintf(NUL,0,"error while processing %s file, check whether it exists\n",paths[j]);
+						bufs = snprintf(NUL,0,"error while processing >>%s<< file, check whether it exists\n",paths[j]);
 						msg = calloc((bufs+1),sizeof(char));
-						snprintf(msg,bufs+1,"error while processing %s file, check whether it exists\n",paths[j]);
+						snprintf(msg,bufs+1,"error while processing >>%s<< file, check whether it exists\n",paths[j]);
 			   			send(msgsock,msg,bufs+1,0);
 					} else {
-					bufs = snprintf(NUL,0,"filename is %s, filesize is %lu bytes\n",paths[j],filesize);
+					bufs = snprintf(NUL,0,"filename is %s, filesize is >>%lu<< bytes\n",paths[j],filesize);
 					msg = calloc((bufs+1),sizeof(char));
-					snprintf(msg,bufs+1,"filename is %s, filesize is %lu bytes\n",paths[j],filesize);
+					snprintf(msg,bufs+1,"filename is %s, filesize is >>%lu<< bytes\n",paths[j],filesize);
 			   		send(msgsock,msg,bufs+1,0);
 					}
 					free(msg);
 					msg= (void*)0;
 					j++;
 				}
-			   	//send(msgsock,buf,strlen(buf),0);
-		} while(rval >0);
-
+		if (shutdown(sock,SHUT_RDWR)) syslog(LOG_CRIT,"some errors while shutdowning the socket");
 		close(msgsock);
 		unlink(SOCKNAME);
+		break;
 	}
 
 
