@@ -9,7 +9,8 @@
 
 #define NUL (void*)0
 
-char** paths_to_analyze(_Bool*);
+char** paths_to_analyze();
 void destroy_paths(char** pathz);
+_Bool if_deamon();
 
 #endif

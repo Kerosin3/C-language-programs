@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include "parse_settings.h"
 
-void start_server(const char**);
+void start_server();
 size_t calc_filesize(char pathname[static 1]);
 
 #endif

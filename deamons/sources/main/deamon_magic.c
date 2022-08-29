@@ -1,4 +1,5 @@
 #include "deamonize.h"
+#include "parse_settings.h"
 #include <sys/syslog.h>
 
 #define MAX_CONNECTIONS 10
@@ -14,7 +15,7 @@ typedef struct {
 static int send_filesize(int msgsock, char **paths);
 static void wrap_send(thrd_temp_s *data);
 
-void start_server(const char **paths) {
+void start_server() {
   syslog(LOG_WARNING, "starting server app");
   int sock, msgsock, rval;
   struct sockaddr_un server;
@@ -35,7 +36,7 @@ void start_server(const char **paths) {
   syslog(LOG_ALERT, "lunched socket has a name: %s", server.sun_path);
   listen(sock, MAX_CONNECTIONS);
   thrd_temp_s pass_struct;
-  pass_struct.pathzz = (char**) paths;
+  pass_struct.pathzz = NUL;
   for (;;) {
 //    if (acnt == (4 - 1))
 //      break; // limit connections
@@ -50,7 +51,7 @@ void start_server(const char **paths) {
       continue;
     }
     pass_struct->sock = msgsock;
-    pass_struct->pathzz = (char**) paths;
+    pass_struct->pathzz = (char**) paths_to_analyze();
 
     thrd_t thread;
     thrd_create(&thread, (void*) wrap_send, (void *)pass_struct);

@@ -13,8 +13,8 @@
 int main(){
 	char *deamon_name = "some_test_deamon";
 	_Bool denable = false;
-	const char** pathz = paths_to_analyze(&denable);		
-
+	const char** pathz = paths_to_analyze();		
+	denable = if_deamon();
 	if (denable){
 		printf("enabling demonization\n");
 		deamonize(pathz);

@@ -53,7 +53,9 @@ void deamonize(const char **paths){
 	}
 	fprintf(stdout,"child 2 pid is %d \n",getpid());
 	//child code here	
-	if (chdir("/") < 0) {
+	char cwd[129];
+	getcwd(cwd,sizeof(cwd));
+	if (chdir(cwd) < 0) {
 		syslog(LOG_CRIT,"cannot change home dir \n");
 	}
 	fprintf(stdout,"closing file descriptors\n");

@@ -13,7 +13,7 @@ void destroy_paths(char** pathz){
 	free(pathz);
 }
 
-char** paths_to_analyze(_Bool* denable){
+char** paths_to_analyze(){
     FILE* fp = NUL;
     if (!(fp = fopen("settings.jzon", "rb"))) {
 	    fprintf(stderr,"cannon open config file,aborting\n");
@@ -69,8 +69,39 @@ char** paths_to_analyze(_Bool* denable){
 	    printf("->>%s \n",paths[t]);
     }
     paths[jj]= NUL;
+    return paths;
+}
+
+_Bool if_deamon(){
+    FILE* fp = NUL;
+    if (!(fp = fopen("settings.jzon", "rb"))) {
+	    fprintf(stderr,"cannon open config file,aborting\n");
+	    exit(5);
+    }
+    fseek(fp, 0, SEEK_END);
+    size_t filesize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    char* data = malloc(filesize);
+    if (!data) {
+	    fprintf(stderr,"error while memory allocation \n" );
+	    exit(4);
+    }
+    fread(data, 1, filesize, fp);
+    data[filesize] = 0; // WHY?
+    if (fclose(fp)) {
+	    fprintf(stderr,"error while closing file \n" );
+	    exit(4);
+    }
+
+    JzonParseResult result = jzon_parse(data);
+    free(data);
+    if(!result.ok) {
+	    fprintf(stderr,"cannot parse settings file\n" );
+	    exit(3);
+    }
     JzonValue* deamon_enable = jzon_get(&result.output, "enable_deamonization");
     assert(deamon_enable->is_bool);
-    *denable = deamon_enable->bool_val;
-    return paths;
+    return deamon_enable->bool_val;
+
+
 }
