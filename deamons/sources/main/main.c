@@ -17,8 +17,8 @@ int main(){
 
 	if (denable){
 		printf("enabling demonization\n");
-		//deamonize(deamon_name,pathz);
-		test(pathz);
+		deamonize(pathz);
+//		start_server(pathz);
 	}
 	size_t j = 0;
 	/*
@@ -28,6 +28,7 @@ int main(){
 		j++;
 	}
 	destroy_paths(pathz);   	 */
+	//destroy_paths(pathz);  	 
 	return 0;
 }
 

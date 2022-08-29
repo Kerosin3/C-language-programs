@@ -16,6 +16,8 @@
 #include <fcntl.h>
 #include "deamon_magic.h"
 #include "parse_settings.h"
+#include <threads.h>
+#include <stdatomic.h>
 
 typedef  signed pid_t;
 typedef struct rusage rusage;

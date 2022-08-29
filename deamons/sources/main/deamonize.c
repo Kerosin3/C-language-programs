@@ -1,10 +1,11 @@
 #include "deamonize.h"
 #include "deamon_magic.h"
+#include <assert.h>
 
 
 
 static void self_mon(rusage *usage_p);
-void deamonize(const char **){
+void deamonize(const char **paths){
 	pid_t pid;
 	rusage usage_p;
 	rlimit rlim;
@@ -69,7 +70,7 @@ void deamonize(const char **){
 		syslog(LOG_CRIT,"error with fd0-fd2 creation fd0:%d,fd1:%d,fd2:%d",fd0,fd1,fd2);
 	}
 	syslog(LOG_INFO, "running deamon with pid %d",getpid() );
-	sleep(50);
+	start_server(paths);
 }
 
 
