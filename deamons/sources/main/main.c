@@ -9,15 +9,18 @@
 
 int main()
 {
+    
     _Bool denable = false;
     denable = if_deamon();
     if (denable)
     {
         printf("starting the deamon...\n");
+    	openlog("filesize tracker deamon", LOG_CONS | LOG_PID, LOG_DAEMON);
         deamonize();
     }
     else
     {
+    	openlog("filesize tracker", LOG_CONS | LOG_PID, LOG_DAEMON);
         char **paths = paths_to_analyze();
         size_t j = 0;
         size_t filesize = 0;

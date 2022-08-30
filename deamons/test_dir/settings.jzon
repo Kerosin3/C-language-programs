@@ -5,6 +5,7 @@ daemon_settings: {
 		{ val: "testfile" }
 		{ val: "testfile1" }
 		{ val: "testfile2" }
+		{ val: "testfile5" }
 		{ val: "END_PATH" } #end mark, do not touch
 	]
 }
