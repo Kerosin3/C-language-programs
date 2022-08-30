@@ -1,107 +1,124 @@
 #include "parse_settings.h"
-#include "jzon.h"
-#include <assert.h>
 
-
-void destroy_paths(char** pathz){
-	size_t j = 0;
-	while (pathz[j]) {
-		free(pathz[j]);
-		pathz[j] = NUL;
-		j++;
-	}
-	free(pathz);
+void destroy_paths(char **pathz)
+{
+    size_t j = 0;
+    while (pathz[j])
+    {
+        free(pathz[j]);
+        pathz[j] = NUL;
+        j++;
+    }
+    free(pathz[j]);
+    pathz[j] = NUL;
+    free(pathz);
 }
 
-char** paths_to_analyze(){
-    FILE* fp = NUL;
-    if (!(fp = fopen("settings.jzon", "rb"))) {
-	    fprintf(stderr,"cannon open config file,aborting\n");
-	    exit(5);
+char **paths_to_analyze()
+{
+    FILE *fp = NUL;
+    if (!(fp = fopen("settings.jzon", "rb")))
+    {
+        syslog(LOG_ERR, "cannon open config file");
+        exit(5);
     }
     fseek(fp, 0, SEEK_END);
     size_t filesize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    char* data = malloc(filesize);
-    if (!data) {
-	    fprintf(stderr,"error while memory allocation \n" );
-	    exit(4);
+    char *data = malloc(sizeof(char) * filesize);
+    if (!data)
+    {
+        syslog(LOG_ERR, "error while memory allocation ");
+        exit(4);
     }
     fread(data, 1, filesize, fp);
     data[filesize] = 0; // WHY?
-    if (fclose(fp)) {
-	    fprintf(stderr,"error while closing file \n" );
-	    exit(4);
+    if (fclose(fp))
+    {
+        syslog(LOG_ERR, "error while closing file ");
+        exit(4);
     }
 
     JzonParseResult result = jzon_parse(data);
-    free(data);
-    if(!result.ok) {
-	    fprintf(stderr,"cannot parse settings file\n" );
-	    exit(3);
+    if (!result.ok)
+    {
+        syslog(LOG_ERR, "cannot parse settings file");
+        exit(3);
     }
-    JzonValue* nested_table_val = jzon_get(&result.output, "daemon_settings");
+    JzonValue *nested_table_val = jzon_get(&result.output, "daemon_settings");
     assert(nested_table_val->is_table);
-    JzonValue* things_arr = jzon_get(nested_table_val, "files_to_watch");
+    JzonValue *things_arr = jzon_get(nested_table_val, "files_to_watch");
     assert(things_arr->is_array);
-    char *valt = jzon_get(things_arr->array_val ,"val")-> string_val;
-    size_t jj= 0;
-    while ( strncmp(valt,"END_PATH",50)){
-	jj++;
-	valt = jzon_get(things_arr->array_val + jj,"val")-> string_val;
+    char *valt = jzon_get(things_arr->array_val, "val")->string_val;
+    size_t jj = 0;
+    while (strncmp(valt, "END_PATH", 50))
+    {
+        jj++;
+        valt = jzon_get(things_arr->array_val + jj, "val")->string_val;
     }
-    char **paths = malloc(sizeof(char*) * (jj) ); // add exter for NULL
-    if (!paths){
-	    fprintf(stderr,"cannot allocate memory!\n" );
-	    exit(4);
+    char **paths = malloc(sizeof(char *) * (jj + 1)); // add extra for NULL, main point
+    if (!paths)
+    {
+        syslog(LOG_ERR, "cannot allocate memory!");
+        exit(4);
     }
-    for (size_t t =0; t< jj ; t++) { //END -1
-	    char *temp_str = jzon_get(things_arr->array_val + t,"val")-> string_val;
-	    size_t size_of_temp_str = strlen(temp_str);
-	    size_of_temp_str;
-	    paths[t] = malloc(sizeof(char) *(size_of_temp_str+1 ) );
-	    if (! (paths[t])) {
-	    	fprintf(stderr,"cannot allocate memory!\n" );
-	    	exit(4);
-	    }
-	    strcpy(paths[t], temp_str);
-	    paths[t][size_of_temp_str] = '\0';
-	    printf("->>%s \n",paths[t]);
+    for (size_t t = 0; t < jj; t++)
+    { // END -1
+        char *temp_str = jzon_get(things_arr->array_val + t, "val")->string_val;
+        size_t size_of_temp_str = strlen(temp_str);
+        paths[t] = malloc(sizeof(char) * (size_of_temp_str + 1)); // sub points
+        if (!(paths[t]))
+        {
+            syslog(LOG_ERR, "cannot allocate memory!");
+            exit(4);
+        }
+        strcpy(paths[t], temp_str);
+        paths[t][size_of_temp_str] = '\0';
     }
-    paths[jj]= NUL;
+    paths[jj] = NUL;
+    jzon_free(&result.output);
+    free(data);
     return paths;
 }
 
-_Bool if_deamon(){
-    FILE* fp = NUL;
-    if (!(fp = fopen("settings.jzon", "rb"))) {
-	    fprintf(stderr,"cannon open config file,aborting\n");
-	    exit(5);
+_Bool if_deamon()
+{
+    FILE *fp = NUL;
+    if (!(fp = fopen("settings.jzon", "rb")))
+    {
+        syslog(LOG_ERR, "cannon open config file,aborting");
+        exit(5);
     }
     fseek(fp, 0, SEEK_END);
     size_t filesize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    char* data = malloc(filesize);
-    if (!data) {
-	    fprintf(stderr,"error while memory allocation \n" );
-	    exit(4);
+    char *data = malloc(sizeof(char) * filesize);
+    _Bool ret = false;
+    if (!data)
+    {
+        syslog(LOG_ERR, "error while memory allocation");
+        free(data);
+        exit(4);
     }
     fread(data, 1, filesize, fp);
     data[filesize] = 0; // WHY?
-    if (fclose(fp)) {
-	    fprintf(stderr,"error while closing file \n" );
-	    exit(4);
+    if (fclose(fp))
+    {
+        syslog(LOG_ERR, "error while closing file");
+        free(data);
+        exit(4);
     }
 
     JzonParseResult result = jzon_parse(data);
-    free(data);
-    if(!result.ok) {
-	    fprintf(stderr,"cannot parse settings file\n" );
-	    exit(3);
+    if (!result.ok)
+    {
+        syslog(LOG_ERR, "cannot parse settings file");
+        exit(3);
     }
-    JzonValue* deamon_enable = jzon_get(&result.output, "enable_deamonization");
+    JzonValue *deamon_enable = jzon_get(&result.output, "enable_deamonization");
     assert(deamon_enable->is_bool);
-    return deamon_enable->bool_val;
-
-
+    ret = deamon_enable->bool_val;
+    jzon_free(&result.output);
+    free(data);
+    return ret;
 }

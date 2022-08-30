@@ -6,6 +6,8 @@
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <syslog.h>
+#include <sys/syslog.h>
 
 #define NUL (void*)0
 

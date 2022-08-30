@@ -8,7 +8,7 @@ extern "C"
 #endif
 
 #include <stdint.h>
-#include <stdio.h>
+#include <stddef.h>
 
 struct JzonKeyValuePair;
 typedef struct JzonKeyValuePair JzonKeyValuePair;

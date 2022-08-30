@@ -2,19 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 // String helpers
 
-static char* copy_str(const char* str, unsigned len, JzonAllocator* allocator)
+static char *copy_str(const char *str, unsigned len, JzonAllocator *allocator)
 {
     unsigned size = len + 1;
-    char* new_str = (char*)allocator->allocate(size);
+    char *new_str = (char *)allocator->allocate(size);
     memcpy(new_str, str, len);
     new_str[len] = '\0';
     return new_str;
 }
 
-static bool is_str(const char* input, char* str)
+static bool is_str(const char *input, char *str)
 {
     for (uint32_t i = 0; i < strlen(str); ++i)
     {
@@ -28,26 +27,26 @@ static bool is_str(const char* input, char* str)
     return true;
 }
 
-static bool str_equals(char* str, char* other)
+static bool str_equals(char *str, char *other)
 {
     return strcmp(str, other) == 0;
 }
 
-static char* concat_str(JzonAllocator* allocator, const char* str1, unsigned str1_len, const char* str2, unsigned str2_len)
+static char *concat_str(JzonAllocator *allocator, const char *str1, unsigned str1_len, const char *str2,
+                        unsigned str2_len)
 {
     unsigned size = str1_len + str2_len;
-    char* new_str = (char*)allocator->allocate(size + 1);
+    char *new_str = (char *)allocator->allocate(size + 1);
     memcpy(new_str, str1, str1_len);
     memcpy(new_str + str1_len, str2, str2_len);
     new_str[size] = '\0';
     return new_str;
 }
 
-
 // Hash function used for hashing object keys.
 // From http://murmurhash.googlepages.com/
 
-static uint64_t hash_str(const char* str)
+static uint64_t hash_str(const char *str)
 {
     size_t len = strlen(str);
     uint64_t seed = 0;
@@ -57,8 +56,8 @@ static uint64_t hash_str(const char* str)
 
     uint64_t h = seed ^ (len * m);
 
-    const uint64_t * data = (const uint64_t *)str;
-    const uint64_t * end = data + (len / 8);
+    const uint64_t *data = (const uint64_t *)str;
+    const uint64_t *end = data + (len / 8);
 
     while (data != end)
     {
@@ -72,17 +71,24 @@ static uint64_t hash_str(const char* str)
         h *= m;
     }
 
-    const unsigned char * data2 = (const unsigned char*)data;
+    const unsigned char *data2 = (const unsigned char *)data;
 
     switch (len & 7)
     {
-    case 7: h ^= ((uint64_t)data2[6]) << 48;
-    case 6: h ^= ((uint64_t)data2[5]) << 40;
-    case 5: h ^= ((uint64_t)data2[4]) << 32;
-    case 4: h ^= ((uint64_t)data2[3]) << 24;
-    case 3: h ^= ((uint64_t)data2[2]) << 16;
-    case 2: h ^= ((uint64_t)data2[1]) << 8;
-    case 1: h ^= ((uint64_t)data2[0]);
+    case 7:
+        h ^= ((uint64_t)data2[6]) << 48;
+    case 6:
+        h ^= ((uint64_t)data2[5]) << 40;
+    case 5:
+        h ^= ((uint64_t)data2[4]) << 32;
+    case 4:
+        h ^= ((uint64_t)data2[3]) << 24;
+    case 3:
+        h ^= ((uint64_t)data2[2]) << 16;
+    case 2:
+        h ^= ((uint64_t)data2[1]) << 8;
+    case 1:
+        h ^= ((uint64_t)data2[0]);
         h *= m;
     };
 
@@ -93,25 +99,24 @@ static uint64_t hash_str(const char* str)
     return h;
 }
 
-
 // Jzon implementation
 
-static void next(const char** input)
+static void next(const char **input)
 {
     ++*input;
 }
 
-static char current(const char** input)
+static char current(const char **input)
 {
     return **input;
 }
 
-static bool is_multiline_string_quotes(const char* str)
+static bool is_multiline_string_quotes(const char *str)
 {
     return *str == '"' && *(str + 1) == '"' && *(str + 1) == '"';
 }
 
-static uint32_t find_pair_insertion_index(JzonKeyValuePair* objects, uint32_t size, uint64_t key_hash)
+static uint32_t find_pair_insertion_index(JzonKeyValuePair *objects, uint32_t size, uint64_t key_hash)
 {
     if (size == 0)
         return 0;
@@ -130,13 +135,13 @@ static bool is_whitespace(char c)
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
-static void skip_whitespace(const char** input)
+static void skip_whitespace(const char **input)
 {
     while (current(input))
     {
         while (current(input) && (current(input) <= ' ' || current(input) == ','))
             next(input);
-        
+
         // Skip comment.
         if (current(input) == '#')
         {
@@ -146,16 +151,16 @@ static void skip_whitespace(const char** input)
         else
             break;
     }
-};
+}
 
-static char* parse_multiline_string(const char** input, JzonAllocator* allocator)
+static char *parse_multiline_string(const char **input, JzonAllocator *allocator)
 {
     if (!is_multiline_string_quotes(*input))
         return NULL;
-    
+
     *input += 3;
-    char* start = (char*)*input;
-    char* result = "";
+    char *start = (char *)*input;
+    char *result = "";
 
     while (current(input))
     {
@@ -164,8 +169,9 @@ static char* parse_multiline_string(const char** input, JzonAllocator* allocator
             unsigned result_len = (unsigned)strlen(result);
             unsigned line_len = (unsigned)(*input - start);
 
-            if (result_len > 0) {
-                char* new_result = concat_str(allocator, result, result_len, "\n", 1);
+            if (result_len > 0)
+            {
+                char *new_result = concat_str(allocator, result, result_len, "\n", 1);
                 allocator->deallocate(result);
                 result = new_result;
                 ++result_len;
@@ -175,7 +181,7 @@ static char* parse_multiline_string(const char** input, JzonAllocator* allocator
 
             if (line_len != 0)
             {
-                char* new_result = concat_str(allocator, result, result_len, start, line_len);
+                char *new_result = concat_str(allocator, result, result_len, start, line_len);
 
                 if (result_len > 0)
                     allocator->deallocate(result);
@@ -183,13 +189,13 @@ static char* parse_multiline_string(const char** input, JzonAllocator* allocator
                 result = new_result;
             }
 
-            start = (char*)*input;
+            start = (char *)*input;
         }
 
         if (is_multiline_string_quotes(*input))
         {
             unsigned result_len = (unsigned)strlen(result);
-            char* new_result = concat_str(allocator, result, result_len, start, (unsigned)(*input - start));
+            char *new_result = concat_str(allocator, result, result_len, start, (unsigned)(*input - start));
             allocator->deallocate(result);
             result = new_result;
             *input += 3;
@@ -203,7 +209,7 @@ static char* parse_multiline_string(const char** input, JzonAllocator* allocator
     return NULL;
 }
 
-static char* parse_string_internal(const char** input, JzonAllocator* allocator)
+static char *parse_string_internal(const char **input, JzonAllocator *allocator)
 {
     if (current(input) != '"')
         return NULL;
@@ -212,13 +218,13 @@ static char* parse_string_internal(const char** input, JzonAllocator* allocator)
         return parse_multiline_string(input, allocator);
 
     next(input);
-    char* start = (char*)*input;
+    char *start = (char *)*input;
 
     while (current(input))
     {
         if (current(input) == '"')
         {
-            char* end = (char*)*input;
+            char *end = (char *)*input;
             next(input);
             return copy_str(start, (unsigned)(end - start), allocator);
             break;
@@ -230,16 +236,16 @@ static char* parse_string_internal(const char** input, JzonAllocator* allocator)
     return NULL;
 }
 
-static char* parse_keyname(const char** input, JzonAllocator* allocator)
+static char *parse_keyname(const char **input, JzonAllocator *allocator)
 {
     if (current(input) == '"')
         return parse_string_internal(input, allocator);
 
-    char* start = (char*)*input;
+    char *start = (char *)*input;
 
     while (current(input))
     {
-        const char* cur_wo_whitespace = *input;
+        const char *cur_wo_whitespace = *input;
         if (is_whitespace(current(input)))
             skip_whitespace(input);
 
@@ -252,11 +258,11 @@ static char* parse_keyname(const char** input, JzonAllocator* allocator)
     return NULL;
 }
 
-static bool parse_value(const char** input, JzonValue* output, JzonAllocator* allocator);
+static bool parse_value(const char **input, JzonValue *output, JzonAllocator *allocator);
 
-static bool parse_string(const char** input, JzonValue* output, JzonAllocator* allocator)
+static bool parse_string(const char **input, JzonValue *output, JzonAllocator *allocator)
 {
-    char* str = parse_string_internal(input, allocator);
+    char *str = parse_string_internal(input, allocator);
 
     if (str == NULL)
         return false;
@@ -266,22 +272,22 @@ static bool parse_string(const char** input, JzonValue* output, JzonAllocator* a
     return true;
 }
 
-static bool parse_array(const char** input, JzonValue* output, JzonAllocator* allocator)
-{   
+static bool parse_array(const char **input, JzonValue *output, JzonAllocator *allocator)
+{
     if (current(input) != '[')
         return false;
-    
+
     output->is_array = true;
     next(input);
 
     // Empty array.
     if (current(input) == ']')
     {
-        output->size = 0; 
+        output->size = 0;
         return true;
     }
 
-    JzonValue* array = allocator->allocate(sizeof(JzonValue) * 1);
+    JzonValue *array = allocator->allocate(sizeof(JzonValue) * 1);
     uint32_t array_cap = 1;
     uint32_t array_num = 0;
 
@@ -295,7 +301,7 @@ static bool parse_array(const char** input, JzonValue* output, JzonAllocator* al
             array = allocator->reallocate(array, sizeof(JzonValue) * array_cap);
         }
 
-        JzonValue* val = array + (array_num++);
+        JzonValue *val = array + (array_num++);
         memset(val, 0, sizeof(JzonValue));
         if (parse_value(input, val, allocator) == false)
             return false;
@@ -308,16 +314,16 @@ static bool parse_array(const char** input, JzonValue* output, JzonAllocator* al
             break;
         }
     }
-    
+
     if (array_cap != array_num)
         array = allocator->reallocate(array, sizeof(JzonValue) * array_num);
 
-    output->size = array_num; 
-    output->array_val = array;   
+    output->size = array_num;
+    output->array_val = array;
     return true;
 }
 
-static bool parse_table(const char** input, JzonValue* output, bool root_object, JzonAllocator* allocator)
+static bool parse_table(const char **input, JzonValue *output, bool root_object, JzonAllocator *allocator)
 {
     if (current(input) == '{')
         next(input);
@@ -334,11 +340,11 @@ static bool parse_table(const char** input, JzonValue* output, bool root_object,
         return true;
     }
 
-    const char* counter_input = *input;
-    uint32_t table_num_max = 0; 
+    const char *counter_input = *input;
+    uint32_t table_num_max = 0;
     while (*counter_input)
     {
-        if(*counter_input == ':') // there may be ":" in keys or values, so we might get some unused slots
+        if (*counter_input == ':') // there may be ":" in keys or values, so we might get some unused slots
             ++table_num_max;
 
         if (*counter_input == '}')
@@ -347,12 +353,12 @@ static bool parse_table(const char** input, JzonValue* output, bool root_object,
         ++counter_input;
     }
 
-    JzonKeyValuePair* table = allocator->allocate(sizeof(JzonKeyValuePair) * table_num_max);
+    JzonKeyValuePair *table = allocator->allocate(sizeof(JzonKeyValuePair) * table_num_max);
     uint32_t table_num = 0;
     while (current(input))
     {
         skip_whitespace(input);
-        char* key = parse_keyname(input, allocator);
+        char *key = parse_keyname(input, allocator);
         skip_whitespace(input);
 
         if (key == NULL || current(input) != ':')
@@ -372,7 +378,8 @@ static bool parse_table(const char** input, JzonValue* output, bool root_object,
 
         // we want it sorted for binary search
         uint32_t insertion_idx = find_pair_insertion_index(table, table_num, pair.key_hash);
-        memmove(table + insertion_idx + 1, table + insertion_idx, (table_num - insertion_idx) * sizeof(JzonKeyValuePair));
+        memmove(table + insertion_idx + 1, table + insertion_idx,
+                (table_num - insertion_idx) * sizeof(JzonKeyValuePair));
         table[insertion_idx] = pair;
         ++table_num;
 
@@ -393,10 +400,10 @@ static bool parse_table(const char** input, JzonValue* output, bool root_object,
     return true;
 }
 
-static bool parse_number(const char** input, JzonValue* output)
+static bool parse_number(const char **input, JzonValue *output)
 {
     bool is_float = false;
-    char* start = (char*)*input;
+    char *start = (char *)*input;
 
     if (current(input) == '-')
         next(input);
@@ -439,7 +446,7 @@ static bool parse_number(const char** input, JzonValue* output)
     return true;
 }
 
-static bool parse_true(const char** input, JzonValue* output)
+static bool parse_true(const char **input, JzonValue *output)
 {
     if (is_str(*input, "true"))
     {
@@ -452,7 +459,7 @@ static bool parse_true(const char** input, JzonValue* output)
     return false;
 }
 
-static bool parse_false(const char** input, JzonValue* output)
+static bool parse_false(const char **input, JzonValue *output)
 {
     if (is_str(*input, "false"))
     {
@@ -465,7 +472,7 @@ static bool parse_false(const char** input, JzonValue* output)
     return false;
 }
 
-static bool parse_null(const char** input, JzonValue* output)
+static bool parse_null(const char **input, JzonValue *output)
 {
     if (is_str(*input, "null"))
     {
@@ -477,44 +484,48 @@ static bool parse_null(const char** input, JzonValue* output)
     return false;
 }
 
-static bool parse_value(const char** input, JzonValue* output, JzonAllocator* allocator)
+static bool parse_value(const char **input, JzonValue *output, JzonAllocator *allocator)
 {
     skip_whitespace(input);
     char ch = current(input);
 
     switch (ch)
     {
-        case '{': return parse_table(input, output, false, allocator);
-        case '[': return parse_array(input, output, allocator);
-        case '"': return parse_string(input, output, allocator);
-        case '-': return parse_number(input, output);
-        case 'f': return parse_false(input, output);
-        case 't': return parse_true(input, output);
-        case 'n': return parse_null(input, output);
-        default: return ch >= '0' && ch <= '9' ? parse_number(input, output) : false;
+    case '{':
+        return parse_table(input, output, false, allocator);
+    case '[':
+        return parse_array(input, output, allocator);
+    case '"':
+        return parse_string(input, output, allocator);
+    case '-':
+        return parse_number(input, output);
+    case 'f':
+        return parse_false(input, output);
+    case 't':
+        return parse_true(input, output);
+    case 'n':
+        return parse_null(input, output);
+    default:
+        return ch >= '0' && ch <= '9' ? parse_number(input, output) : false;
     }
 }
 
-
 // Public interface
 
-JzonParseResult jzon_parse_custom_allocator(const char* input, JzonAllocator* allocator)
+JzonParseResult jzon_parse_custom_allocator(const char *input, JzonAllocator *allocator)
 {
     JzonValue output = {0};
     bool ok = parse_table(&input, &output, true, allocator);
-    return (JzonParseResult) {
-        .ok = ok,
-        .output = output
-    };
+    return (JzonParseResult){.ok = ok, .output = output};
 }
 
-JzonParseResult jzon_parse(const char* input)
+JzonParseResult jzon_parse(const char *input)
 {
-    JzonAllocator allocator = { malloc, free, realloc };
+    JzonAllocator allocator = {malloc, free, realloc};
     return jzon_parse_custom_allocator(input, &allocator);
 }
 
-void jzon_free_custom_allocator(JzonValue* value, JzonAllocator* allocator)
+void jzon_free_custom_allocator(JzonValue *value, JzonAllocator *allocator)
 {
     if (value->is_table)
     {
@@ -539,20 +550,20 @@ void jzon_free_custom_allocator(JzonValue* value, JzonAllocator* allocator)
     }
 }
 
-void jzon_free(JzonValue* value)
+void jzon_free(JzonValue *value)
 {
-    JzonAllocator allocator = { malloc, free, realloc };
+    JzonAllocator allocator = {malloc, free, realloc};
     jzon_free_custom_allocator(value, &allocator);
 }
 
-JzonValue* jzon_get(JzonValue* object, const char* key)
+JzonValue *jzon_get(JzonValue *object, const char *key)
 {
     if (!object->is_table)
         return NULL;
 
     if (object->size == 0)
         return NULL;
-    
+
     uint64_t key_hash = hash_str(key);
 
     unsigned first = 0;

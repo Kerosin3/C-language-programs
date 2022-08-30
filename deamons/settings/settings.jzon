@@ -1,0 +1,11 @@
+#paths to watch
+enable_deamonization: true #enable demonisation
+daemon_settings: {
+	files_to_watch: [
+		{ val: "testfile" }
+		{ val: "testfile1" }
+#		{ val: "/home/ker0/.zshrc" }
+		{ val: "END_PATH" } #end mark, do not touch!!
+	]
+}
+

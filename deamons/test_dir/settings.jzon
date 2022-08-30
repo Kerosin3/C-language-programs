@@ -1,10 +1,10 @@
 #paths to watch
-enable_deamonization: true
+enable_deamonization: false
 daemon_settings: {
 	files_to_watch: [
 		{ val: "testfile" }
 		{ val: "testfile1" }
-#		{ val: "/home/ker0/.zshrc" }
+		{ val: "testfile2" }
 		{ val: "END_PATH" } #end mark, do not touch
 	]
 }

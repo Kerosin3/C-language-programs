@@ -1,34 +1,39 @@
+#include "deamon_magic.h"
+#include "deamonize.h"
+#include "parse_settings.h"
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "deamonize.h"
-#include <assert.h>
 #include <string.h>
-#include "parse_settings.h"
-#include "deamon_magic.h"
 
-#define NUL (void*)0
-
-
-int main(){
-	char *deamon_name = "some_test_deamon";
-	_Bool denable = false;
-	const char** pathz = paths_to_analyze();		
-	denable = if_deamon();
-	if (denable){
-		printf("enabling demonization\n");
-		deamonize(pathz);
-//		start_server(pathz);
-	}
-	size_t j = 0;
-	/*
-	while (pathz[j]) {
-		printf("a path is %s\n",pathz[j]);
-		printf("size of file is %u \n",calc_filesize(pathz[j]));
-		j++;
-	}
-	destroy_paths(pathz);   	 */
-	//destroy_paths(pathz);  	 
-	return 0;
+int main()
+{
+    _Bool denable = false;
+    denable = if_deamon();
+    if (denable)
+    {
+        printf("starting the deamon...\n");
+        deamonize();
+    }
+    else
+    {
+        char **paths = paths_to_analyze();
+        size_t j = 0;
+        size_t filesize = 0;
+        while (paths[j])
+        {
+            if (!(filesize = calc_filesize(paths[j])))
+            {
+                fprintf(stdout, "error while processing >>%s<< file, check whether it exists\n", paths[j]);
+            }
+            else
+            {
+                fprintf(stdout, "filename is %s, filesize is >>%lu<< bytes\n", paths[j], filesize);
+            }
+            j++;
+        }
+        destroy_paths(paths);
+    }
+    return 0;
 }
-

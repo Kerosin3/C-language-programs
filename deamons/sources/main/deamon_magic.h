@@ -11,6 +11,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 #include "parse_settings.h"
+#include "deamonize.h"
 
 void start_server();
 size_t calc_filesize(char pathname[static 1]);
