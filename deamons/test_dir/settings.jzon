@@ -1,5 +1,5 @@
 #paths to watch
-enable_deamonization: false
+enable_deamonization: true
 daemon_settings: {
 	files_to_watch: [
 		{ val: "testfile" }

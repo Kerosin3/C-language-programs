@@ -23,16 +23,16 @@ int main()
     	openlog("filesize tracker", LOG_CONS | LOG_PID, LOG_DAEMON);
         char **paths = paths_to_analyze();
         size_t j = 0;
-        size_t filesize = 0;
+        signed long filesize = -1;
         while (paths[j])
         {
-            if (!(filesize = calc_filesize(paths[j])))
+            if ((filesize = calc_filesize(paths[j]))<0)
             {
                 fprintf(stdout, "error while processing >>%s<< file, check whether it exists\n", paths[j]);
             }
             else
             {
-                fprintf(stdout, "filename is %s, filesize is >>%lu<< bytes\n", paths[j], filesize);
+                fprintf(stdout, "filename is %s, filesize is >>%ld<< bytes\n", paths[j], filesize);
             }
             j++;
         }

@@ -15,6 +15,6 @@
 #include "deamonize.h"
 
 void start_server();
-size_t calc_filesize(char pathname[static 1]);
+signed long calc_filesize(char pathname[static 1]);
 
 #endif

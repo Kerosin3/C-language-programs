@@ -82,13 +82,13 @@ static int send_filesize(int msgsock, char **paths)
 {
     size_t bufs = 0;
     size_t j = 0;
-    size_t filesize = 0;
+    signed long filesize = -1;
     char *msg = NUL;
     j = 0;
 
     while (paths[j])
     {
-        if (!(filesize = calc_filesize(paths[j])))
+        if ((filesize = calc_filesize(paths[j])) <0 )
         {
             bufs = snprintf(NUL, 0, "error while processing >>%s<< file, check whether it exists\n", paths[j]);
             msg = calloc((bufs + 1), sizeof(char));
@@ -97,9 +97,9 @@ static int send_filesize(int msgsock, char **paths)
         }
         else
         {
-            bufs = snprintf(NUL, 0, "filename is %s, filesize is >>%lu<< bytes\n", paths[j], filesize);
+            bufs = snprintf(NUL, 0, "filename is %s, filesize is >>%ld<< bytes\n", paths[j], filesize);
             msg = calloc((bufs + 1), sizeof(char));
-            snprintf(msg, bufs + 1, "filename is %s, filesize is >>%lu<< bytes\n", paths[j], filesize);
+            snprintf(msg, bufs + 1, "filename is %s, filesize is >>%ld<< bytes\n", paths[j], filesize);
             send(msgsock, msg, bufs + 1, 0);
         }
         free(msg);
@@ -114,7 +114,7 @@ static int send_filesize(int msgsock, char **paths)
     thrd_exit(0);
 }
 
-size_t calc_filesize(char pathname[static 1])
+signed long calc_filesize(char pathname[static 1])
 {
     struct stat statbuf;
     int fd_fp = 0;
@@ -122,12 +122,12 @@ size_t calc_filesize(char pathname[static 1])
     if (!(fp = fopen(pathname, "rb")))
     {
         syslog(LOG_ERR, "cannon open %s file, error %d", pathname, errno);
-        return 0;
+        return -1;
     }
     fd_fp = fileno(fp);
     if (!fd_fp) {
         syslog(LOG_ERR, "there were some error while processing %s filename,cannont assign a fd", pathname);
-	return 0;
+	return -1;
     }
     int lock = flock(fd_fp, LOCK_EX);
     if (lock)
@@ -136,13 +136,9 @@ size_t calc_filesize(char pathname[static 1])
     }
     if ((fstat(fd_fp, &statbuf) != 0) || (!S_ISREG(statbuf.st_mode))) {
         syslog(LOG_ERR, "%s file is probably not a regular file ", pathname);
-	return 0;
+	return -1;
     }
     size_t filesize = statbuf.st_size;
-    if (!filesize) {
-	syslog(LOG_ERR,"file %s, filesize is 0",pathname);
-	return 0;
-    }
     flock(fileno(fp), LOCK_UN);
     if (fclose(fp))
     {
