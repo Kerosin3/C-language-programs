@@ -41,12 +41,12 @@ void start_server(int mode)
     listen(sock, MAX_CONNECTIONS);
     while (1)
     {
+	        //    if (acnt == (N - 1))
+        //      break; // to limit connections serial number
+        msgsock = accept(sock, 0, 0);
 	if (mode == APP_SETUP){
 	    signal(SIGINT,term_on_sig);
 	}
-        //    if (acnt == (N - 1))
-        //      break; // to limit connections serial number
-        msgsock = accept(sock, 0, 0);
 	if (sig_status) break;
         if (msgsock == -1)
         {
@@ -121,8 +121,7 @@ static int send_filesize(int msgsock, char **paths)
 }
 
 static void term_on_sig(int signo){
-	signal(SIGINT, term_on_sig);
-	sig_status = 1;
+	sig_status = signo;
 	fprintf(stdout,"exiting.. total %d calls\n",acnt);
 }
 
