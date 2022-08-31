@@ -16,27 +16,12 @@ int main()
     {
         printf("starting the deamon...\n");
     	openlog("filesize tracker deamon", LOG_CONS | LOG_PID, LOG_DAEMON);
-        deamonize();
+        deamonize(DEAMON_SETUP);
     }
     else
     {
     	openlog("filesize tracker", LOG_CONS | LOG_PID, LOG_DAEMON);
-        char **paths = paths_to_analyze();
-        size_t j = 0;
-        signed long filesize = -1;
-        while (paths[j])
-        {
-            if ((filesize = calc_filesize(paths[j]))<0)
-            {
-                fprintf(stdout, "error while processing >>%s<< file, check whether it exists\n", paths[j]);
-            }
-            else
-            {
-                fprintf(stdout, "filename is %s, filesize is >>%ld<< bytes\n", paths[j], filesize);
-            }
-            j++;
-        }
-        destroy_paths(paths);
+	start_server(APP_SETUP);
     }
     return 0;
 }

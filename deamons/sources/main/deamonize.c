@@ -70,5 +70,5 @@ void deamonize()
         syslog(LOG_CRIT, "error with fd0-fd2 creation fd0:%d,fd1:%d,fd2:%d", fd0, fd1, fd2);
     }
     syslog(LOG_INFO, "running deamon with pid %d", getpid());
-    start_server();
+    start_server(DEAMON_SETUP);
 }

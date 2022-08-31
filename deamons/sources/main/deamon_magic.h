@@ -14,7 +14,10 @@
 #include "parse_settings.h"
 #include "deamonize.h"
 
-void start_server();
+#define DEAMON_SETUP 1
+#define APP_SETUP    2
+
+void start_server(int);
 signed long calc_filesize(char pathname[static 1]);
 
 #endif

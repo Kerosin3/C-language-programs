@@ -1,11 +1,12 @@
 #include "deamon_magic.h"
+#include <signal.h>
 #include <threads.h>
 
 #define MAX_CONNECTIONS 10
 #define SOCKNAME "filetracker.socket"
 
 atomic_int acnt = 0;
-
+volatile sig_atomic_t sig_status = 0;
 typedef struct
 {
     char **pathzz;
@@ -14,8 +15,9 @@ typedef struct
 
 static int send_filesize(int msgsock, char **paths);
 static void wrap_send(thrd_temp_s *data);
+static void term_on_sig(int signo);
 
-void start_server()
+void start_server(int mode)
 {
     syslog(LOG_WARNING, "starting server app");
     int sock, msgsock;
@@ -37,11 +39,15 @@ void start_server()
     }
     syslog(LOG_ALERT, "lunched socket has a name: %s", server.sun_path);
     listen(sock, MAX_CONNECTIONS);
-    for (;;)
+    while (1)
     {
+	if (mode == APP_SETUP){
+	    signal(SIGINT,term_on_sig);
+	}
         //    if (acnt == (N - 1))
         //      break; // to limit connections serial number
         msgsock = accept(sock, 0, 0);
+	if (sig_status) break;
         if (msgsock == -1)
         {
             syslog(LOG_CRIT, "error  reading socket");
@@ -112,6 +118,12 @@ static int send_filesize(int msgsock, char **paths)
     acnt++;
     close(msgsock);
     thrd_exit(0);
+}
+
+static void term_on_sig(int signo){
+	signal(SIGINT, term_on_sig);
+	sig_status = 1;
+	fprintf(stdout,"exiting.. total %d calls\n",acnt);
 }
 
 signed long calc_filesize(char pathname[static 1])
