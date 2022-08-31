@@ -49,13 +49,9 @@ char **paths_to_analyze()
     assert(nested_table_val->is_table);
     JzonValue *things_arr = jzon_get(nested_table_val, "files_to_watch");
     assert(things_arr->is_array);
-    char *valt = jzon_get(things_arr->array_val, "val")->string_val;
     size_t jj = 0;
-    while (strncmp(valt, "END_PATH", 50))
-    {
-        jj++;
-        valt = jzon_get(things_arr->array_val + jj, "val")->string_val;
-    }
+    size_t size_of_paths = things_arr->size;
+    jj = size_of_paths;
     char **paths = malloc(sizeof(char *) * (jj + 1)); // add extra for NULL, main point
     if (!paths)
     {

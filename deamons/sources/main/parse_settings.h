@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <syslog.h>
 #include <sys/syslog.h>
+#include <stdint.h>
 
 #define NUL (void*)0
 
