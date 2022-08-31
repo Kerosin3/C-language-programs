@@ -1,4 +1,5 @@
 #include "parse_settings.h"
+#include <stdbool.h>
 
 void destroy_paths(char **pathz)
 {
@@ -32,7 +33,6 @@ char **paths_to_analyze()
         exit(4);
     }
     fread(data, 1, filesize, fp);
-    data[filesize] = 0; // WHY?
     if (fclose(fp))
     {
         syslog(LOG_ERR, "error while closing file ");
@@ -81,7 +81,7 @@ char **paths_to_analyze()
     return paths;
 }
 
-_Bool if_deamon()
+bool if_deamon()
 {
     FILE *fp = NUL;
     if (!(fp = fopen("settings.jzon", "rb")))
@@ -93,7 +93,7 @@ _Bool if_deamon()
     size_t filesize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     char *data = malloc(sizeof(char) * filesize);
-    _Bool ret = false;
+    bool ret = false;
     if (!data)
     {
         syslog(LOG_ERR, "error while memory allocation");
@@ -101,7 +101,6 @@ _Bool if_deamon()
         exit(4);
     }
     fread(data, 1, filesize, fp);
-    data[filesize] = 0; // WHY?
     if (fclose(fp))
     {
         syslog(LOG_ERR, "error while closing file");

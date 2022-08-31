@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include "parse_settings.h"
 #include "deamonize.h"
 

@@ -116,23 +116,37 @@ static int send_filesize(int msgsock, char **paths)
 
 size_t calc_filesize(char pathname[static 1])
 {
+    struct stat statbuf;
+    int fd_fp = 0;
     FILE *fp = NUL;
     if (!(fp = fopen(pathname, "rb")))
     {
         syslog(LOG_ERR, "cannon open %s file, error %d", pathname, errno);
         return 0;
     }
-    int lock = flock(fileno(fp), LOCK_EX);
+    fd_fp = fileno(fp);
+    if (!fd_fp) {
+        syslog(LOG_ERR, "there were some error while processing %s filename,cannont assign a fd", pathname);
+	return 0;
+    }
+    int lock = flock(fd_fp, LOCK_EX);
     if (lock)
     {
         syslog(LOG_ERR, "cannot lock fd");
     }
-    fseek(fp, 0, SEEK_END);
-    size_t filesize = ftell(fp);
+    if ((fstat(fd_fp, &statbuf) != 0) || (!S_ISREG(statbuf.st_mode))) {
+        syslog(LOG_ERR, "%s file is probably not a regular file ", pathname);
+	return 0;
+    }
+    size_t filesize = statbuf.st_size;
+    if (!filesize) {
+	syslog(LOG_ERR,"file %s, filesize is 0",pathname);
+	return 0;
+    }
     flock(fileno(fp), LOCK_UN);
     if (fclose(fp))
     {
         syslog(LOG_ERR, "error while closing file ");
     }
-    return filesize++;
+    return filesize;
 }

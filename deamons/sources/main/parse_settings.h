@@ -13,6 +13,6 @@
 
 char** paths_to_analyze();
 void destroy_paths(char** pathz);
-_Bool if_deamon();
+bool if_deamon();
 
 #endif

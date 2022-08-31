@@ -10,7 +10,7 @@
 int main()
 {
     
-    _Bool denable = false;
+    bool denable = false;
     denable = if_deamon();
     if (denable)
     {
