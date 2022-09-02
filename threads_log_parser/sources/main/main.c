@@ -4,32 +4,27 @@
 #include <unistd.h>
 #include <errno.h>
 #include "signal.h"
+#include <string.h>
+
+#include "misc.h"
 
 #define NUL (void*)0
-
-typedef  signed pid_t;
+#define MAX_LEN 200
 
 
 int main(){
-	
-	pid_t pid;
-	unsigned t = 10;
-	unsigned child_pid = 0;
-	fprintf(stdout,"current pid is %d \n",getpid());
-	fprintf(stdout,"current user is %d \n",getuid());
-	
-	if  ( (pid = fork() ) < 0 ){
-		perror("error fork execution\n");
-	} else if (!pid){  // == 0 -> child!
-		child_pid = getpid();
-		fprintf(stdout,"child pid is %d \n",getpid());
-		fprintf(stdout,"parent pid is %d \n",getppid());
-		t++;
-	} else { // sleep parent
-		sleep(2);
-	}
-	fprintf(stdout,"value is %u \n",t);
-	//kill(pid, SIGTERM);
+
+
+/*    FILE* fp;
+    fp = fopen("test.txt", "r");
+    if (fp == NULL) {
+      perror("Failed: ");
+      return 1;
+    }
+    parse_string(fp );
+
+    fclose(fp);
+*/	
 	return 0;
 	
 }
