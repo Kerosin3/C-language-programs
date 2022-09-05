@@ -13,31 +13,27 @@ storage_url create_url_storage();
 a_url* create_a_url(char* str);
 int append_a_url(a_url* url,storage_url* storage);
 void test(void);
-int get_a_url(storage_url* storage,char* a_url_to_check);
+int get_a_urlN(storage_url* storage,char* a_url_to_check);
 void destroy_a_url(a_url* url);
 void destroy_url_storage(storage_url* storage);
+
+void storage_expand(storage_url* storage,size_t extend_size);
 
 void test(){
 	storage_url m_storage = create_url_storage();
 	char* str_sss = "hahaha";
 	char* str_s0 = "oneone";
 	a_url* some_url = create_a_url(str_sss);
-	//a_url* some_url1 = create_a_url(str_s0);
-	//append_a_url(some_url,&m_storage );
+	a_url* some_url1 = create_a_url(str_s0);
 	append_a_url(some_url,&m_storage );
-	//printf("p inter is %s \n",(**(m_storage.root_storage)).a_str);
-	//printf("p inter is %s \n",   (*(m_storage.root_storage)[2]    ).a_str);
-	//printf("p inter is %s \n",   (**((m_storage.root_storage)+1    )).a_str);
-	//printf("--> %d\n",get_a_url(&m_storage,"asdad"));
-	//printf("--> %d\n",get_a_url(&m_storage,"oneone"));
-	destroy_a_url(some_url);
+	append_a_url(some_url1,&m_storage );
+	storage_expand(&m_storage,5);
+	printf("size new is %u \n",m_storage.max_size);
 	destroy_url_storage(&m_storage);
 }
 
-
 storage_url create_url_storage(){
-	a_url** main_pointer = calloc(sizeof(a_url*),1);
-	*main_pointer =  calloc(sizeof(a_url*), STORAGE_DEF_MAXSIZE); // create 10 urls
+	a_url** main_pointer = calloc(sizeof(a_url*),STORAGE_DEF_MAXSIZE);
 	if (!main_pointer ){
 		printf("error while memory allocation!\n");
 		exit(1);
@@ -48,13 +44,43 @@ storage_url create_url_storage(){
 	main_storage.root_storage = main_pointer;
 	return main_storage;
 }
+
+void storage_expand(storage_url* storage,size_t extend_size){
+	if (extend_size <= 0) {
+		printf("pass next size more than 0\n");
+		exit(1);
+	}
+	a_url** new_root = realloc(storage->root_storage,sizeof(a_url*)*((storage->max_size)+extend_size));
+	if (!new_root){
+		printf("error while reallocation\n");
+		exit(1);
+	}
+	for (size_t j=storage->max_size; j< (storage->max_size + extend_size) ; j++) {
+		new_root[j] = (void*)0;
+	}
+	storage->root_storage = new_root;
+	storage->max_size += extend_size;
+
+}
+
 void destroy_url_storage(storage_url* storage){
-	free(*(storage->root_storage));
+	for (size_t i =0 ; i< storage->max_size; i++) {
+		a_url* current_url_p =  ((storage->root_storage)[i]);
+		if (!current_url_p) {
+			continue;
+		}
+		free(current_url_p->a_str);
+		free(current_url_p);
+		}
+
 	free(storage->root_storage);
 }
 
 int append_a_url(a_url* url,storage_url* storage){
-	printf("string is %s postition is %d \n",url->a_str,storage->current_size);
+	if (storage->current_size == storage->max_size){
+		storage_expand(storage, 10);
+		printf("expanded table by 10 entries\n");
+	}
 	(storage->root_storage)[storage->current_size] = url;
 	storage->current_size+=1;
 	return 0;	
@@ -75,7 +101,7 @@ a_url* create_a_url(char* str){
 	return t_url;
 }
 
-int get_a_url(storage_url* storage,char* a_url_to_check){
+int get_a_urlN(storage_url* storage,char* a_url_to_check){
 	for (size_t i =0 ; i< storage->max_size; i++) {
 		a_url* current_url_p =  ((storage->root_storage)[i]);
 		if (!current_url_p) {
