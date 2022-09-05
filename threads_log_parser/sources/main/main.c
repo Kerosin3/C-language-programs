@@ -14,7 +14,7 @@
 
 int main(){
 
-
+	test();
 /*    FILE* fp;
     fp = fopen("test.txt", "r");
     if (fp == NULL) {
