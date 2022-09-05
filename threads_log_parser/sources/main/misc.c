@@ -14,19 +14,24 @@ a_url* create_a_url(char* str);
 int append_a_url(a_url* url,storage_url* storage);
 void test(void);
 int get_a_url(storage_url* storage,char* a_url_to_check);
+void destroy_a_url(a_url* url);
+void destroy_url_storage(storage_url* storage);
 
 void test(){
 	storage_url m_storage = create_url_storage();
 	char* str_sss = "hahaha";
 	char* str_s0 = "oneone";
 	a_url* some_url = create_a_url(str_sss);
-	a_url* some_url1 = create_a_url(str_s0);
+	//a_url* some_url1 = create_a_url(str_s0);
 	//append_a_url(some_url,&m_storage );
-	//append_a_url(some_url1,&m_storage );
-	printf("p  inter is %p \n",(m_storage.root_storage));
-	//printf("value is %s \n",(*m_storage.root_storage)->a_str  );
-	//printf("value is %s \n",(* ((m_storage.root_storage)+1  ))->a_str  );
-	//printf("index is %d\n",get_a_url(&m_storage,"gege"));
+	append_a_url(some_url,&m_storage );
+	//printf("p inter is %s \n",(**(m_storage.root_storage)).a_str);
+	//printf("p inter is %s \n",   (*(m_storage.root_storage)[2]    ).a_str);
+	//printf("p inter is %s \n",   (**((m_storage.root_storage)+1    )).a_str);
+	//printf("--> %d\n",get_a_url(&m_storage,"asdad"));
+	//printf("--> %d\n",get_a_url(&m_storage,"oneone"));
+	destroy_a_url(some_url);
+	destroy_url_storage(&m_storage);
 }
 
 
@@ -37,14 +42,22 @@ storage_url create_url_storage(){
 		printf("error while memory allocation!\n");
 		exit(1);
 	}
-	printf("storage %p \n",main_pointer);
-	printf("storage p cont %p \n",  (*(main_pointer))+1     )  ;
-//	printf("storage plus one %p \n",*(main_pointer+1 ));
 	storage_url main_storage;
 	main_storage.current_size = 0;
 	main_storage.max_size = STORAGE_DEF_MAXSIZE;
 	main_storage.root_storage = main_pointer;
 	return main_storage;
+}
+void destroy_url_storage(storage_url* storage){
+	free(*(storage->root_storage));
+	free(storage->root_storage);
+}
+
+int append_a_url(a_url* url,storage_url* storage){
+	printf("string is %s postition is %d \n",url->a_str,storage->current_size);
+	(storage->root_storage)[storage->current_size] = url;
+	storage->current_size+=1;
+	return 0;	
 }
 
 a_url* create_a_url(char* str){
@@ -62,26 +75,14 @@ a_url* create_a_url(char* str){
 	return t_url;
 }
 
-
-int append_a_url(a_url* url,storage_url* storage){
-	printf("string is %s postition is %d \n",url->a_str,storage->current_size);
-//	(*((storage->root_storage)+(storage->current_size))) = url;
-	(*(storage->root_storage)+1) = url;
-
-	storage->current_size+=1;
-	return 0;	
-}
 int get_a_url(storage_url* storage,char* a_url_to_check){
 	for (size_t i =0 ; i< storage->max_size; i++) {
-		char* current_url =  (*((storage->root_storage)+ i))->a_str;
-		printf("bebe\n");
-		printf("current string %s\n",current_url);
-		if (!current_url) {
+		a_url* current_url_p =  ((storage->root_storage)[i]);
+		if (!current_url_p) {
 			continue;
 		}
-		else if (!(strcmp(current_url,a_url_to_check))) return i;
-		else ;	
-		printf("---\n");
+		char* current_url =  (*(storage->root_storage)[i]).a_str;
+		if (!(strcmp(current_url,a_url_to_check))) return i;
 		}
 	return -1;
 	}
