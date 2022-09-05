@@ -17,6 +17,7 @@ int get_a_urlN(storage_url* storage,char* a_url_to_check);
 void destroy_a_url(a_url* url);
 void destroy_url_storage(storage_url* storage);
 
+int append_url_is_nexists(storage_url* storage,char* a_url_str); // <_____ TEST!
 void storage_expand(storage_url* storage,size_t extend_size);
 
 void test(){
@@ -101,6 +102,13 @@ a_url* create_a_url(char* str){
 	return t_url;
 }
 
+int append_url_is_nexists(storage_url* storage,char* a_url_str){
+	if (get_a_urlN(storage,a_url_str) < 0) return 0;
+	a_url* t_url = create_a_url(a_url_str);
+	append_a_url(t_url,storage);
+	return 1;
+}
+// search a url, if success -> get N, else -> -1;
 int get_a_urlN(storage_url* storage,char* a_url_to_check){
 	for (size_t i =0 ; i< storage->max_size; i++) {
 		a_url* current_url_p =  ((storage->root_storage)[i]);
