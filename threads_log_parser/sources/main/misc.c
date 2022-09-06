@@ -25,6 +25,8 @@ void storage_expand(storage_url* storage,size_t extend_size);
 char* find_url(char str[static 1]);
 void get_n_most_urls(storage_url* storage, size_t N);
 void merge_structs(storage_url* main_storage,storage_url* a_storage);
+long int extract_bytes(char buf[static 1]);
+char* extract_refer(char buf[static 1]);
 
 void test(){
 	storage_url m_storage = create_url_storage();
@@ -238,53 +240,79 @@ void merge_structs(storage_url* main_storage,storage_url* a_storage){
 }
 
 void parse_string(FILE* fp,storage_url* storage){
-    unsigned long long total_bytes = 0;
     char buffer[MAX_LEN];
     size_t ii = 1;
-    int main_pagef = 0;
+    signed long long total_bytes = 0;
     while (fgets(buffer, MAX_LEN, fp))
     {
-        // Remove trailing newline
         buffer[strcspn(buffer, "\n")] ='\0';
-	//printf("i is %lu \n",ii);
         //printf("%s\n", buffer); print page
+	//----------------------------------//
 	char* a_url_str = find_url(buffer);
 	if (!a_url_str) continue;
 	int appnded = append_url_if_nexistsV2(storage,a_url_str);
-	//(appnded) ? printf("---------\n") : printf("add count!\n");	
 	free(a_url_str);
+	//---------------------------------//
+	signed long bs = -1;
+	total_bytes += extract_bytes(buffer);
+	//---------------------------------//
+	char* ext_refer = extract_refer(buffer);
+	printf("refer:%s\n",ext_refer);
+	free(ext_refer);
 	ii++;
-	//------------------------------------
-	/*
-	printf("count = %d\n",main_page.count); 
-	st_ptr = buffer;
-	part_beg = (void*)0;
-	part_end = (void*)0;
-	size_t i = 0;
-	unsigned long x = 0;
-	unsigned long y = 0;
-	while ( (st_ptr = strstr(st_ptr,"\"")) ) { // find bytesize
-		if (i==1) part_beg = st_ptr+1;
+	}
+}
+long int extract_bytes(char buf[static 1]){
+	char* part_beg = (void*)0;
+	char* part_end = (void*)0;
+	char* st_ptr = buf;
+	st_ptr = strstr(st_ptr,"GET");
+	if (!st_ptr) return -1;
+	long int x,y;
+	size_t i = 1;
+	while ( (st_ptr = strstr(st_ptr,"\"")) ) { // find mark
+		if (i==1) part_beg = st_ptr+1;// find first
 		if (i==2) {
-			part_end = st_ptr;
-			*part_end = '\0';
 			break;
 		}
 		st_ptr++;
 		i++;	
 	}
 	sscanf(part_beg,"%ld %ld",&x,&y);
-	total_bytes+= y;
-	printf("x is %d y is %d\n",x,y); // find bytesize 
-	*/	
-
-
-
+	//printf("x is %ld y is %ld\n",x,y); // find bytesize 
+	return y;
+}
+char* extract_refer(char buf[static 1]){
+	char* part_beg = (void*)0;
+	char* part_end = (void*)0;
+	char* st_ptr = buf;
+	size_t i = 1;
+	while ( (st_ptr = strstr(st_ptr,"\"")) ) { // find mark
+		if (i != 4) part_beg = st_ptr+1;// find first "
+		if (i==5) {
+			break;
+		}
+		st_ptr++;
+		i++;	
 	}
+	st_ptr = buf;
+	while ( (st_ptr = strstr(st_ptr,"\"")) ) { // find mark
+		if (i==10) { //find second "
+			part_end = st_ptr;
+			break;
+		}
+		st_ptr++;
+		i++;	
+		part_end = st_ptr;
+	}
+
+	size_t len = part_end - part_beg;
+	char* refer = calloc(sizeof(char), len+1);
+	memcpy(refer, part_beg, len);
+	refer[len] = '\0';
+	return refer;
 }
-long int extract_bytes(char[static 1]){
-	
-}
+
 /*
 int compare_urls_n(const void *a,const void *b){
 	a_url* x = (a_url*) a; 
