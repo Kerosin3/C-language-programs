@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parse_string(FILE* fp);
 
 typedef struct {
 	unsigned long count;
@@ -23,8 +22,10 @@ a_url* create_a_url(char*);
 
 
 
-int append_a_url(a_url* url,storage_url* storage);
+long int append_a_url(a_url* url,storage_url* storage);
+void parse_string(FILE* fp,storage_url*);
 
 void test(void);
+void test2(FILE* fp,FILE*);
 
 #endif

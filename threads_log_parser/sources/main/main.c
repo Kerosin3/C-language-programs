@@ -14,17 +14,20 @@
 
 int main(){
 
-	test();
-/*    FILE* fp;
+//	test();
+    FILE* fp;
+    FILE* fp2;
     fp = fopen("test.txt", "r");
     if (fp == NULL) {
       perror("Failed: ");
       return 1;
     }
-    parse_string(fp );
+    fp2 = fopen("test2.txt", "r");
+    test2(fp,fp2);
 
     fclose(fp);
-*/	
+    fclose(fp2);
+	
 	return 0;
 	
 }

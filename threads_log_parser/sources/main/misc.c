@@ -3,33 +3,58 @@
 #include <stdlib.h>
 #include <string.h>
 #include <threads.h>
+#include <time.h>
+
 #define MAX_LEN 1500
-#define STORAGE_DEF_MAXSIZE 10
-void parse_string(FILE* fp);
+#define STORAGE_DEF_MAXSIZE 100
+void test(void);
+void test2(FILE* fp,FILE*);
 
-unsigned serial = 0;
 
+
+void parse_string(FILE* fp,storage_url*);
 storage_url create_url_storage();
 a_url* create_a_url(char* str);
-int append_a_url(a_url* url,storage_url* storage);
-void test(void);
-int get_a_urlN(storage_url* storage,char* a_url_to_check);
+long int append_a_url(a_url* url,storage_url* storage);
+long int get_a_urlN(storage_url* storage,char* a_url_to_check);
 void destroy_a_url(a_url* url);
 void destroy_url_storage(storage_url* storage);
-
-int append_url_is_nexists(storage_url* storage,char* a_url_str); // <_____ TEST!
+long int append_url_if_nexists(storage_url* storage,char* a_url_str); 
+long int append_url_if_nexistsV2(storage_url* storage,char* a_url_str);// use with find  
 void storage_expand(storage_url* storage,size_t extend_size);
+char* find_url(char str[static 1]);
+void get_n_most_urls(storage_url* storage, size_t N);
+void merge_structs(storage_url* main_storage,storage_url* a_storage);
 
 void test(){
 	storage_url m_storage = create_url_storage();
-	char* str_sss = "hahaha";
-	char* str_s0 = "oneone";
-	a_url* some_url = create_a_url(str_sss);
-	a_url* some_url1 = create_a_url(str_s0);
-	append_a_url(some_url,&m_storage );
-	append_a_url(some_url1,&m_storage );
-	storage_expand(&m_storage,5);
-	printf("size new is %u \n",m_storage.max_size);
+	srand ((long) time(0)); // define a seed for the random number generator
+	for (size_t k=0; k<3560; k++) {
+		const char ALLOWED[] = "abcdefghijklmnopqrstuvwxyz1234567890";
+		char random[10+1];
+		int i = 0;
+		int c = 0;
+		int nbAllowed = sizeof(ALLOWED)-1;
+		for(i=0;i<10;i++) {
+		    c = rand() % nbAllowed ;
+		    random[i] = ALLOWED[c];
+		}
+		random[10] = '\0';
+		long int ret = append_url_if_nexists(&m_storage,random);
+		printf("string is %s, ret is %ld \n",random,ret);
+	}
+	destroy_url_storage(&m_storage);
+}
+
+void test2(FILE* fp,FILE* fp2){
+	storage_url m_storage = create_url_storage();
+	storage_url s_storage = create_url_storage();
+	parse_string(fp,&m_storage);
+	printf("storage main size %u \n",m_storage.current_size);
+	printf("----------->\n");
+	parse_string(fp2, &s_storage);
+	printf("storage s size %u \n",s_storage.current_size);
+	merge_structs(&m_storage, &s_storage);
 	destroy_url_storage(&m_storage);
 }
 
@@ -77,11 +102,12 @@ void destroy_url_storage(storage_url* storage){
 	free(storage->root_storage);
 }
 
-int append_a_url(a_url* url,storage_url* storage){
+long int append_a_url(a_url* url,storage_url* storage){
 	if (storage->current_size == storage->max_size){
-		storage_expand(storage, 10);
+		storage_expand(storage, STORAGE_DEF_MAXSIZE);
 		printf("expanded table by 10 entries\n");
 	}
+//	printf("appended:%s\n",url->a_str);
 	(storage->root_storage)[storage->current_size] = url;
 	storage->current_size+=1;
 	return 0;	
@@ -102,18 +128,30 @@ a_url* create_a_url(char* str){
 	return t_url;
 }
 
-int append_url_is_nexists(storage_url* storage,char* a_url_str){
-	if (get_a_urlN(storage,a_url_str) < 0) return 0;
+long int append_url_if_nexists(storage_url* storage,char* a_url_str){
+	long int N = -1;
+	if ( (N = get_a_urlN(storage,a_url_str)) >= 0) return 0; // if exists
 	a_url* t_url = create_a_url(a_url_str);
 	append_a_url(t_url,storage);
-	return 1;
+	return 1; // is not exists -> append!
 }
+long int append_url_if_nexistsV2(storage_url* storage,char* a_url_str){
+	long int N = -1;
+	if ( (N = get_a_urlN(storage,a_url_str)) >= 0) {
+		(*(storage->root_storage)[N]).count++;
+		return 0; // if exists
+	}
+	a_url* t_url = create_a_url(a_url_str);
+	append_a_url(t_url,storage);
+	return 1; // is not exists -> append!
+}
+
 // search a url, if success -> get N, else -> -1;
-int get_a_urlN(storage_url* storage,char* a_url_to_check){
+long int get_a_urlN(storage_url* storage,char* a_url_to_check){
 	for (size_t i =0 ; i< storage->max_size; i++) {
 		a_url* current_url_p =  ((storage->root_storage)[i]);
 		if (!current_url_p) {
-			continue;
+			break;
 		}
 		char* current_url =  (*(storage->root_storage)[i]).a_str;
 		if (!(strcmp(current_url,a_url_to_check))) return i;
@@ -126,44 +164,96 @@ void destroy_a_url(a_url* url){
 	free(url);
 }
 
+
 /*
-
-void find_url(char* str){
-
-	const char* st_ptr = str;
+ * input - string, ret - 
+ */
+char* find_url(char str[static 1]){
+	char* str_cpy = calloc(sizeof(char), snprintf(0, 0, "%s",str)+1);
+	strcpy(str_cpy,str);
+	str_cpy[strlen(str_cpy)] = '\0';
+	//char* st_ptr = str;
+	char* st_ptr = str_cpy;
 	char* part_beg = (void*)0;
 	char* part_end = (void*)0;
-
+	unsigned long main_page = 0;
 	st_ptr = strstr(st_ptr,"GET");
+	if (!st_ptr){
+		free(str_cpy);
+		return (void*)0;
+	}
 	st_ptr+=4;
 	part_beg = st_ptr;
-	printf("|%s \n",st_ptr);
+	//printf("|%s \n",st_ptr);
+	size_t len = 0;
 	if ( *(st_ptr+1) == 32){
-		main_page.count++;
+		char* ret =calloc(sizeof(char),2 );
+		ret[0] = '/';
+		ret[1]= '\0';
+		if (!ret) {
+			printf("error while memory allcation\n");
+			exit(1);
+		}
+		free(str_cpy);
+		return ret;
 	} else {
-		printf("extracting the path\n");
 		size_t j = 0;
 		while ( ( (*st_ptr) != ' ')  ) {
 			st_ptr++;
 			j++;
 		}
-		part_end = st_ptr-1;
-		printf("1=%s /n",part_beg);
+		*st_ptr = '\0';
 	}
+		len = snprintf((void*)0 , 0, "%s",part_beg);
+		char* ret =calloc(sizeof(char), ++len);
+		strncpy(ret, part_beg,len);
+		free(str_cpy);
+		return ret; 
 
 }
 
-void parse_string(FILE* fp){
+void merge_structs(storage_url* main_storage,storage_url* a_storage){
+	for (size_t index=0; index < (a_storage->max_size);index++) { // work with second storage
+		a_url* current_url_p =  ((a_storage->root_storage)[index]);
+		if (!current_url_p) { // empty -> end
+			continue;
+		} 
+		// if exists
+		char* a_url_str = current_url_p->a_str; // extract string
+		unsigned long a_url_str_count = current_url_p->count; // extract N
+		long int N = -1;
+		if ((N = get_a_urlN(main_storage, a_url_str)) >=0) { //exists -> add count
+			((main_storage->root_storage)[N])->count++;
+			continue;
+		} else{ //not exists
+			a_url* t_url = create_a_url(a_url_str); // create new obj
+			append_a_url(t_url,main_storage); // append
+		}
+	}
+	printf("------------------>\n");
+	printf("storage s size is %u \n",a_storage->current_size);
+	printf("storage main size is %u \n",main_storage->current_size);
+	destroy_url_storage(a_storage);
+	printf("merge done!\n");
+}
+
+void parse_string(FILE* fp,storage_url* storage){
     unsigned long long total_bytes = 0;
     char buffer[MAX_LEN];
-
+    size_t ii = 1;
     int main_pagef = 0;
     while (fgets(buffer, MAX_LEN, fp))
     {
         // Remove trailing newline
         buffer[strcspn(buffer, "\n")] ='\0';
-        printf("%s\n", buffer);
-
+	//printf("i is %lu \n",ii);
+        //printf("%s\n", buffer); print page
+	char* a_url_str = find_url(buffer);
+	if (!a_url_str) continue;
+	int appnded = append_url_if_nexistsV2(storage,a_url_str);
+	//(appnded) ? printf("---------\n") : printf("add count!\n");	
+	free(a_url_str);
+	ii++;
 	//------------------------------------
 	/*
 	printf("count = %d\n",main_page.count); 
@@ -185,11 +275,25 @@ void parse_string(FILE* fp){
 	}
 	sscanf(part_beg,"%ld %ld",&x,&y);
 	total_bytes+= y;
-	printf("x is %d y is %d\n",x,y); // find bytesize */
-	/*
+	printf("x is %d y is %d\n",x,y); // find bytesize 
+	*/	
 
 
 
 	}
+}
+long int extract_bytes(char[static 1]){
+	
+}
+/*
+int compare_urls_n(const void *a,const void *b){
+	a_url* x = (a_url*) a; 
+	a_url* y = (a_url*) b; 
+	return x->count - y->count; 
+}
+
+void get_n_most_urls(storage_url* storage, size_t N){
+	qsort(void *base, size_t nmemb, size_t size, __compar_fn_t compar)
+			
 }
 */
