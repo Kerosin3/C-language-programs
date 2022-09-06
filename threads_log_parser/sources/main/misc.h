@@ -3,12 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <threads.h>
+#include <time.h>
 
 typedef struct {
 	unsigned long count;
 	char* a_str;
 } a_url;
+
 
 typedef struct {
 	a_url** root_storage;
@@ -17,15 +19,9 @@ typedef struct {
 } storage_url;
 
 storage_url create_url_storage();
-
 a_url* create_a_url(char*);
-
-
-
 long int append_a_url(a_url* url,storage_url* storage);
 void parse_string(FILE* fp,storage_url*);
-
 void test(void);
 void test2(FILE* fp,FILE*);
-
 #endif

@@ -9,7 +9,6 @@
 #include "misc.h"
 
 #define NUL (void*)0
-#define MAX_LEN 200
 
 
 int main(){
