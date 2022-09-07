@@ -6,7 +6,7 @@
 int* get_fp_for_files(char** files);
 
 char** get_files_in_dir(){
-  char* to_search = "test";
+  char* to_search = "access";
   DIR *d;
   struct dirent *dir;
   d = opendir(".");

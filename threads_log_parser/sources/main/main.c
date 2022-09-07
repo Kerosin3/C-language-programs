@@ -18,13 +18,13 @@ int main(){
     FILE* fp;
     FILE* fp2;
     FILE* fp3;
-    fp = fopen("test2.txt", "r");
+    fp = fopen("access0.txt", "r");
     if (fp == NULL) {
       perror("Failed: ");
       return 1;
     }
-    fp2 = fopen("test3.txt", "r");
-    fp3 = fopen("test4.txt", "r");
+    fp2 = fopen("access1.txt", "r");
+    fp3 = fopen("access2.txt", "r");
     test3(fp,fp2,fp3);
 
     fclose(fp);

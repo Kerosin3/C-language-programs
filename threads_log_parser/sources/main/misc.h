@@ -29,5 +29,5 @@ long int append_url_if_nexistsV2(storage_url* storage,char* a_url_str);
 long int append_url_if_nexists(storage_url* storage,char* a_url_str);
 void destroy_url_storage(storage_url* storage);
 void merge_structs(storage_url* main_storage,storage_url* a_storage);
-void parse_string(FILE* fp,storage_url*,storage_url*);
+signed long long parse_string(FILE* fp,storage_url*,storage_url*);
 #endif

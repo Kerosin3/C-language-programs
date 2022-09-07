@@ -1,7 +1,7 @@
 #include "string_parse.h"
 
 
-void parse_string(FILE* fp,storage_url* storage, storage_url* storage_refer){
+signed long long parse_string(FILE* fp,storage_url* storage, storage_url* storage_refer){
     char* buffer = calloc(sizeof(char), MAX_LEN);
     if (!buffer) {
 	    printf("error while memory allocation\n");
@@ -32,6 +32,7 @@ void parse_string(FILE* fp,storage_url* storage, storage_url* storage_refer){
 	memset(buffer,'\0',MAX_LEN);
 	}
     free(buffer);
+    return total_bytes;
 }
 long int extract_bytes(char buf[static 1]){
 	char* part_beg = (void*)0;

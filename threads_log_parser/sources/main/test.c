@@ -43,6 +43,7 @@ void test2(FILE* fp,FILE* fp2){
 }
 
 void test3(FILE* fp,FILE* fp2,FILE* fp3){
+	signed long long total_bytes = 0;
 	storage_url m_storage = create_url_storage(); // url
 	storage_url s_storage = create_url_storage(); // url
 	storage_url ss_storage = create_url_storage(); // url
@@ -51,17 +52,23 @@ void test3(FILE* fp,FILE* fp2,FILE* fp3){
 	storage_url sref_storage = create_url_storage(); //ref
 	storage_url ssref_storage = create_url_storage(); //ref
 
-	parse_string(fp,&m_storage,&mref_storage);
+	total_bytes+=parse_string(fp,&m_storage,&mref_storage);
 	printf("storage main size %u \n",m_storage.current_size);
 	printf("storage main ref size %u \n",mref_storage.current_size);
 
-	parse_string(fp2, &s_storage,&sref_storage);
+	printf("bytes sended >>>%lld<<<\n",total_bytes);
+
+	total_bytes+=parse_string(fp2, &s_storage,&sref_storage);
 	printf("storage s size %u \n",s_storage.current_size);
 	printf("storage s ref size %u \n",sref_storage.current_size);
 
-	parse_string(fp3, &ss_storage,&ssref_storage);
+	printf("bytes sended >>>%lld<<<\n",total_bytes);
+
+	total_bytes+=parse_string(fp3, &ss_storage,&ssref_storage);
 	printf("storage ss size %u \n",ss_storage.current_size);
 	printf("storage ss ref size %u \n",ssref_storage.current_size);
+
+	printf("bytes sended >>>%lld<<<\n",total_bytes);
 
 	merge_structs(&m_storage, &s_storage); // merget urls
 	merge_structs(&m_storage, &ss_storage); // merget urls
@@ -74,7 +81,7 @@ void test3(FILE* fp,FILE* fp2,FILE* fp3){
 	
 	get_10_most(&m_storage,URL);
 	get_10_most(&mref_storage,REFERERENCES);
-
+	printf("total bytes sended >>>%lld<<<\n",total_bytes);
 	destroy_url_storage(&m_storage); // free main url
 	destroy_url_storage(&mref_storage); // free m  refer
 }
