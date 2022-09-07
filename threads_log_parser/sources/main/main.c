@@ -8,6 +8,7 @@
 
 #include "misc.h"
 #include "test.h"
+#include "files.h"
 #define NUL (void*)0
 
 
@@ -29,7 +30,7 @@ int main(){
     fclose(fp);
     fclose(fp2);
     fclose(fp3);
-	
+    get_files_in_dir();
 	return 0;
 	
 }
