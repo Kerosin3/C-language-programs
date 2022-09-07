@@ -7,7 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
 
-void get_files_in_dir();
+char** get_files_in_dir();
+void destroy_filenames(char** files);
+void close_all_fd(int* fds);
+int* get_fp_for_files(char** files);
 
 #endif

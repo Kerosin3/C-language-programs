@@ -30,7 +30,14 @@ int main(){
     fclose(fp);
     fclose(fp2);
     fclose(fp3);
-    get_files_in_dir();
-	return 0;
+    char** files = get_files_in_dir();
+    int* fdx = get_fp_for_files(files);
+    size_t i = 0;
+    while ( (fdx[i] != -1  )  ){
+	    printf("fd is %d\n",fdx[i]);
+	    i++;
+    }
+    close_all_fd(fdx);
+    return 0;
 	
 }
