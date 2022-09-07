@@ -7,7 +7,7 @@
 #include <string.h>
 
 #include "misc.h"
-
+#include "test.h"
 #define NUL (void*)0
 
 
@@ -16,16 +16,19 @@ int main(){
 //	test();
     FILE* fp;
     FILE* fp2;
-    fp = fopen("test.txt", "r");
+    FILE* fp3;
+    fp = fopen("test2.txt", "r");
     if (fp == NULL) {
       perror("Failed: ");
       return 1;
     }
-    fp2 = fopen("test2.txt", "r");
-    test2(fp,fp2);
+    fp2 = fopen("test3.txt", "r");
+    fp3 = fopen("test4.txt", "r");
+    test3(fp,fp2,fp3);
 
     fclose(fp);
     fclose(fp2);
+    fclose(fp3);
 	
 	return 0;
 	

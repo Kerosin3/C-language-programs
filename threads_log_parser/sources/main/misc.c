@@ -18,39 +18,6 @@ long int append_url_if_nexistsV2(storage_url* storage,char* a_url_str);// use wi
 void storage_expand(storage_url* storage,size_t extend_size);
 void get_n_most_urls(storage_url* storage, size_t N);
 void merge_structs(storage_url* main_storage,storage_url* a_storage);
-
-void test(){
-	storage_url m_storage = create_url_storage();
-	srand ((long) time(0)); // define a seed for the random number generator
-	for (size_t k=0; k<3560; k++) {
-		const char ALLOWED[] = "abcdefghijklmnopqrstuvwxyz1234567890";
-		char random[10+1];
-		int i = 0;
-		int c = 0;
-		int nbAllowed = sizeof(ALLOWED)-1;
-		for(i=0;i<10;i++) {
-		    c = rand() % nbAllowed ;
-		    random[i] = ALLOWED[c];
-		}
-		random[10] = '\0';
-		long int ret = append_url_if_nexists(&m_storage,random);
-		printf("string is %s, ret is %ld \n",random,ret);
-	}
-	destroy_url_storage(&m_storage);
-}
-
-void test2(FILE* fp,FILE* fp2){
-	storage_url m_storage = create_url_storage();
-	storage_url s_storage = create_url_storage();
-	parse_string(fp,&m_storage);
-	printf("storage main size %u \n",m_storage.current_size);
-	printf("----------->\n");
-	parse_string(fp2, &s_storage);
-	printf("storage s size %u \n",s_storage.current_size);
-	merge_structs(&m_storage, &s_storage);
-	destroy_url_storage(&m_storage);
-}
-
 storage_url create_url_storage(){
 	a_url** main_pointer = calloc(sizeof(a_url*),STORAGE_DEF_MAXSIZE);
 	if (!main_pointer ){
@@ -98,7 +65,7 @@ void destroy_url_storage(storage_url* storage){
 long int append_a_url(a_url* url,storage_url* storage){
 	if (storage->current_size == storage->max_size){
 		storage_expand(storage, STORAGE_DEF_MAXSIZE);
-		printf("expanded table by %d entries\n",STORAGE_DEF_MAXSIZE);
+		//printf("expanded table by %d entries\n",STORAGE_DEF_MAXSIZE);
 	}
 //	printf("appended:%s\n",url->a_str);
 	(storage->root_storage)[storage->current_size] = url;
@@ -176,14 +143,32 @@ void merge_structs(storage_url* main_storage,storage_url* a_storage){
 			append_a_url(t_url,main_storage); // append
 		}
 	}
-	printf("------------------>\n");
-	printf("storage s size is %u \n",a_storage->current_size);
-	printf("storage main size is %u \n",main_storage->current_size);
 	destroy_url_storage(a_storage);
 	printf("merge done!\n");
 }
 
+void get_10_most(storage_url* storage,int PARAM){
+	printf("------------------------------------\n");
+	if (PARAM==URL) printf("top 10 accessed pages\n");
+	else printf("top 10 references requesters\n");
+	for (size_t i=0; i < 10; i++) {
+		size_t max_count = 0;
+		size_t max_countN = 0;
+		for (size_t j = 0; j < storage->current_size; j++) {
+			size_t c_cout = ((storage->root_storage)[j])->count;
+			a_url c_url = *((storage->root_storage)[j]);
+			if (c_cout > max_count) {
+				max_count = c_cout;
+				max_countN = j;
+				((storage->root_storage)[j])->count = 0;// hmm
+			}
+		}
+		if (PARAM==URL) printf("№%lu, url: %s count: %lu \n",i+1,  ((storage->root_storage)[max_countN])->a_str,max_count );
+		else printf("№%lu, requesters: %s count: %lu \n",i+1,  ((storage->root_storage)[max_countN])->a_str,max_count );
 
+	}
+	printf("------------------------------------\n");
+}
 /*
 int compare_urls_n(const void *a,const void *b){
 	a_url* x = (a_url*) a; 

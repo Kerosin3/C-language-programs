@@ -7,10 +7,9 @@
 #define MAX_LEN 9000
 
 
-
 long int extract_bytes(char buf[static 1]);
 char* extract_refer(char buf[static 1]);
 char* find_url(char str[static 1]);
-void parse_string(FILE* fp,storage_url*);
+void parse_string(FILE* fp,storage_url*,storage_url*);
 
 #endif

@@ -6,6 +6,9 @@
 #include <threads.h>
 #include <time.h>
 
+#define URL 1
+#define REFERERENCES 2
+
 typedef struct {
 	unsigned long count;
 	char* a_str;
@@ -18,10 +21,13 @@ typedef struct {
 	unsigned max_size;
 } storage_url;
 
+void get_10_most(storage_url* storage,int PARAM);
 storage_url create_url_storage();
 a_url* create_a_url(char*);
 long int append_a_url(a_url* url,storage_url* storage);
-void parse_string(FILE* fp,storage_url*);
-void test(void);
-void test2(FILE* fp,FILE*);
+long int append_url_if_nexistsV2(storage_url* storage,char* a_url_str);
+long int append_url_if_nexists(storage_url* storage,char* a_url_str);
+void destroy_url_storage(storage_url* storage);
+void merge_structs(storage_url* main_storage,storage_url* a_storage);
+void parse_string(FILE* fp,storage_url*,storage_url*);
 #endif

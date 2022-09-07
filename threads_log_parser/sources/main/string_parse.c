@@ -1,14 +1,7 @@
 #include "string_parse.h"
 
-long int extract_bytes(char buf[static 1]);
-char* extract_refer(char buf[static 1]);
-char* find_url(char str[static 1]);
-void parse_string(FILE* fp,storage_url*);
 
-
-
-
-void parse_string(FILE* fp,storage_url* storage){
+void parse_string(FILE* fp,storage_url* storage, storage_url* storage_refer){
     char* buffer = calloc(sizeof(char), MAX_LEN);
     if (!buffer) {
 	    printf("error while memory allocation\n");
@@ -19,21 +12,23 @@ void parse_string(FILE* fp,storage_url* storage){
     while (fgets(buffer, MAX_LEN, fp))
     {
         buffer[strcspn(buffer, "\n")] ='\0';
-	printf("string №%ld \n",ii);
+//	printf("string №%ld \n",ii);
 	ii++;
         //printf("%s\n", buffer); print page
 	//----------------------------------//
 	char* a_url_str = find_url(buffer);
 	if (!a_url_str) continue;
-	int appnded = append_url_if_nexistsV2(storage,a_url_str);
+	int appended_url = append_url_if_nexistsV2(storage,a_url_str);
 	free(a_url_str);
 	//---------------------------------//
 	signed long bs = -1;
 	total_bytes += extract_bytes(buffer);
 	//---------------------------------//
 	char* ext_refer = extract_refer(buffer);
-	printf("refer:%s\n",ext_refer);
+//	printf("refer:%s\n",ext_refer);
+	int appended_refer = append_url_if_nexistsV2(storage_refer,ext_refer);
 	free(ext_refer);
+
 	memset(buffer,'\0',MAX_LEN);
 	}
     free(buffer);
