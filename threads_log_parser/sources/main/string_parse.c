@@ -20,10 +20,9 @@ signed long long parse_string(int fd,storage_url* storage, storage_url* storage_
     {
         buffer[strcspn(buffer, "\n")] ='\0';
 	ii++;
-        //printf("%s\n", buffer); print page
 	//----------------------------------//
 	char* a_url_str = find_url(buffer);
-//	printf("string №%ld cont %s\n",ii,a_url_str);
+	//printf("string №%ld cont %s\n",ii,a_url_str);
 	if (!a_url_str) continue;
 	int appended_url = append_url_if_nexistsV2(storage,a_url_str);
 	free(a_url_str);
