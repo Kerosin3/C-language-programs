@@ -18,6 +18,7 @@ long int append_url_if_nexistsV2(storage_url* storage,char* a_url_str);// use wi
 void storage_expand(storage_url* storage,size_t extend_size);
 void get_n_most_urls(storage_url* storage, size_t N);
 void merge_structs(storage_url* main_storage,storage_url* a_storage);
+
 storage_url create_url_storage(){
 	a_url** main_pointer = calloc(sizeof(a_url*),STORAGE_DEF_MAXSIZE);
 	if (!main_pointer ){

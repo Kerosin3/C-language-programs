@@ -31,9 +31,9 @@ void wrap_string_parse(storage_cont* g_storage){
 	mtx_lock(&mtx_mrefer_storage);
 	merge_structs(g_storage->main_storage_refer, g_storage->refer_storage);
 	mtx_unlock(&mtx_murl_storage);
-	free(g_storage);
-	free(g_storage->url_storage);
-	free(g_storage->refer_storage);
+
+	printf("addr thr is %p\n",g_storage);
+	free((storage_cont*) g_storage);
 
 	thrd_exit(0);
 }
@@ -55,11 +55,9 @@ void process_data(int* fds){
 
 	size_t i = 0;
 	//while ( (fds[i] != -1  )  ){
-	while ( ( i<1  )  ){
-		    printf("fd is %d\n",fds[i]);
+	while ( ( i<n_thrd  )  ){
 		    storage_cont* t_storage_cont = malloc(sizeof(storage_cont*));
-
-
+		    printf("addr is %p\n",t_storage_cont);
 		    t_storage_cont->main_storage_refer = &main_storage_refer;//assign main
 		    t_storage_cont->main_storage_url = &main_storage_url;   //assign main
 		    
@@ -74,10 +72,11 @@ void process_data(int* fds){
 		    t_storage_cont->url_storage = t_refer_storage;  // assign thrd storages
 			
 		    t_storage_cont->assoc_fd = fds[i]; // assign fd
+		    printf("%d,fd is %d\n",fds[i],t_storage_cont->assoc_fd);
 
-		    int tc_ret = thrd_create(&threads_pool[i], (thrd_start_t) wrap_string_parse,(void*) &t_storage_cont );
+		    int tc_ret = thrd_create(&threads_pool[i], (thrd_start_t) wrap_string_parse,(void*) t_storage_cont );
 		    if (tc_ret == thrd_error){
-			printf("error while %d thread creation\n",i);
+			printf("error while %zu thread creation\n",i);
 			exit(1);
 		    }
 		    i++;
@@ -87,6 +86,7 @@ void process_data(int* fds){
 	for (size_t j = 0; j < n_thrd;j++) {
 		thrd_join(threads_pool[j],0);
 	}
+	printf("finishing..\n");
 	destroy_url_storage(&main_storage_url);
 	destroy_url_storage(&main_storage_refer);
 	close_all_fd(fds);

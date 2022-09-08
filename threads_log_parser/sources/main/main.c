@@ -17,7 +17,7 @@ int main(){
 
 //	test();
 //
-/*
+
     FILE* fp;
     FILE* fp2;
     FILE* fp3;
@@ -28,14 +28,15 @@ int main(){
     }
     fp2 = fopen("access1.txt", "r");
     fp3 = fopen("access2.txt", "r");
-    test3(fp,fp2,fp3);
+    test3(fileno(fp),fileno(fp2),fileno(fp3));
 
     fclose(fp);
     fclose(fp2);
-    fclose(fp3);*/
+    fclose(fp3);
+    /*
     char** files = get_files_in_dir();
     int* fdx = get_fp_for_files(files);
-    process_data(fdx);
+    process_data(fdx);*/
     return 0;
 	
 }
