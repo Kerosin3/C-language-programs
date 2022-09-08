@@ -33,7 +33,7 @@ void wrap_string_parse(storage_cont* g_storage){
 	mtx_unlock(&mtx_murl_storage);
 
 	printf("addr thr is %p\n",g_storage);
-	free((storage_cont*) g_storage);
+	free(g_storage);
 
 	thrd_exit(0);
 }
@@ -52,11 +52,13 @@ void process_data(int* fds){
 	
 	storage_url main_storage_url = create_url_storage();
 	storage_url main_storage_refer = create_url_storage();
-
+	storage_cont* spt;
 	size_t i = 0;
 	//while ( (fds[i] != -1  )  ){
 	while ( ( i<n_thrd  )  ){
+		    printf("LAUNCH THREAD\n");
 		    storage_cont* t_storage_cont = malloc(sizeof(storage_cont*));
+		    spt = t_storage_cont;
 		    printf("addr is %p\n",t_storage_cont);
 		    t_storage_cont->main_storage_refer = &main_storage_refer;//assign main
 		    t_storage_cont->main_storage_url = &main_storage_url;   //assign main
@@ -82,11 +84,12 @@ void process_data(int* fds){
 		    i++;
 
 	    }
-
-	for (size_t j = 0; j < n_thrd;j++) {
+		for (size_t j = 0; j < n_thrd;j++) {
 		thrd_join(threads_pool[j],0);
 	}
 	printf("finishing..\n");
+	//free(spt);
+
 	destroy_url_storage(&main_storage_url);
 	destroy_url_storage(&main_storage_refer);
 	close_all_fd(fds);

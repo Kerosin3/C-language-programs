@@ -17,7 +17,7 @@ int main(){
 
 //	test();
 //
-
+/*
     FILE* fp;
     FILE* fp2;
     FILE* fp3;
@@ -33,10 +33,10 @@ int main(){
     fclose(fp);
     fclose(fp2);
     fclose(fp3);
-    /*
+*/
     char** files = get_files_in_dir();
     int* fdx = get_fp_for_files(files);
-    process_data(fdx);*/
+    process_data(fdx);
     return 0;
 	
 }
