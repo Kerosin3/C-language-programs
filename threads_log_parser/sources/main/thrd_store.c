@@ -54,6 +54,7 @@ void process_data(int* fds){
 	size_t i = 0;
 	while ( (fds[i] != -1  )  ){
 	//while ( ( i<n_thrd  )  ){
+		    if (fds[i] == -1) break; 
 		    storage_cont* t_storage_cont = malloc(sizeof(storage_cont));
 		    t_storage_cont->main_storage_refer = &main_storage_refer;//assign main
 		    t_storage_cont->main_storage_url = &main_storage_url;   //assign main
