@@ -9,4 +9,5 @@
 #include "string_parse.h"
 #include "misc.h"
 
+void process_data(int* fds);
 #endif

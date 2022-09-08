@@ -15,10 +15,11 @@ typedef struct storage_cont{
 	storage_url* main_storage_refer;
 	storage_url* url_storage;
 	storage_url* refer_storage;
-	FILE*  assoc_fd;
+	int  assoc_fd;
 } storage_cont;
 
 void wrap_string_parse(storage_cont* g_storage){
+	printf("thread %lu\n",thrd_current());
 	signed long long total_bytes = parse_string(g_storage->assoc_fd, g_storage->url_storage , g_storage->refer_storage);
 
 	total_bytes+= total_bytes;

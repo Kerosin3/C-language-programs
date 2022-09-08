@@ -10,6 +10,6 @@
 long int extract_bytes(char buf[static 1]);
 char* extract_refer(char buf[static 1]);
 char* find_url(char str[static 1]);
-signed long long parse_string(FILE* fp,storage_url*,storage_url*);
+signed long long parse_string(int,storage_url*,storage_url*);
 
 #endif

@@ -1,7 +1,8 @@
 #include "string_parse.h"
+#include <stdio.h>
 
 
-signed long long parse_string(FILE* fp,storage_url* storage, storage_url* storage_refer){
+signed long long parse_string(int fd,storage_url* storage, storage_url* storage_refer){
     char* buffer = calloc(sizeof(char), MAX_LEN);
     if (!buffer) {
 	    printf("error while memory allocation\n");
@@ -9,6 +10,7 @@ signed long long parse_string(FILE* fp,storage_url* storage, storage_url* storag
     }
     size_t ii = 1;
     signed long long total_bytes = 0;
+    FILE* fp = fdopen(fd, "rb");
     while (fgets(buffer, MAX_LEN, fp))
     {
         buffer[strcspn(buffer, "\n")] ='\0';

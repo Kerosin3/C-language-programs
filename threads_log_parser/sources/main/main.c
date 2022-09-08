@@ -9,12 +9,15 @@
 #include "misc.h"
 #include "test.h"
 #include "files.h"
+#include "thrd_store.h"
 #define NUL (void*)0
 
 
 int main(){
 
 //	test();
+//
+/*
     FILE* fp;
     FILE* fp2;
     FILE* fp3;
@@ -29,15 +32,10 @@ int main(){
 
     fclose(fp);
     fclose(fp2);
-    fclose(fp3);
+    fclose(fp3);*/
     char** files = get_files_in_dir();
     int* fdx = get_fp_for_files(files);
-    size_t i = 0;
-    while ( (fdx[i] != -1  )  ){
-	    printf("fd is %d\n",fdx[i]);
-	    i++;
-    }
-    close_all_fd(fdx);
+    process_data(fdx);
     return 0;
 	
 }
