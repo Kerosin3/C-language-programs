@@ -6,5 +6,7 @@
 #include <threads.h>
 #include <stdatomic.h>
 #include "files.h"
+#include "string_parse.h"
+#include "misc.h"
 
 #endif
