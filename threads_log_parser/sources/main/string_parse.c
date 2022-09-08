@@ -10,15 +10,20 @@ signed long long parse_string(int fd,storage_url* storage, storage_url* storage_
     }
     size_t ii = 1;
     signed long long total_bytes = 0;
-    FILE* fp = fdopen(fd, "rb");
+    FILE* fp;
+    printf("working with %d fd\n",fd);
+    if  (!(fp=fdopen(fd, "rb"))){
+	printf("error while opening fd\n");
+	exit(1);
+    }
     while (fgets(buffer, MAX_LEN, fp))
     {
         buffer[strcspn(buffer, "\n")] ='\0';
-//	printf("string №%ld \n",ii);
 	ii++;
         //printf("%s\n", buffer); print page
 	//----------------------------------//
 	char* a_url_str = find_url(buffer);
+	printf("string №%ld cont %s\n",ii,a_url_str);
 	if (!a_url_str) continue;
 	int appended_url = append_url_if_nexistsV2(storage,a_url_str);
 	free(a_url_str);
