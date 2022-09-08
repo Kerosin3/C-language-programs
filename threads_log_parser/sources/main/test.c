@@ -20,7 +20,7 @@ void test(){
 	destroy_url_storage(&m_storage);
 }
 
-void test2(FILE* fp,FILE* fp2){
+void test2(int fp,int fp2){
 	storage_url m_storage = create_url_storage(); // url
 	storage_url s_storage = create_url_storage(); // url
 
@@ -42,7 +42,7 @@ void test2(FILE* fp,FILE* fp2){
 	destroy_url_storage(&mref_storage); // free m  refer
 }
 
-void test3(FILE* fp,FILE* fp2,FILE* fp3){
+void test3(int fp,int fp2,int fp3){
 	signed long long total_bytes = 0;
 	storage_url m_storage = create_url_storage(); // url
 	storage_url s_storage = create_url_storage(); // url
