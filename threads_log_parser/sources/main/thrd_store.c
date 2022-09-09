@@ -45,6 +45,7 @@ void wrap_string_parse(storage_cont* g_storage){
 	mtx_lock(&mtx_mrefer_storage);
 	merge_structs(g_storage->main_storage_refer, g_storage->refer_storage);
 	mtx_unlock(&mtx_mrefer_storage);
+	printf("storage size after merge %lu \n",g_storage->main_storage_url->current_size);
 
 	mtx_lock(g_storage->mtx_done);
 	g_storage->flags = true;
@@ -142,6 +143,9 @@ void process_data(int* fds){
 		}
 		printf("waiting %lu ,rez is %d \n",j,rez);
 	}
+
+	get_10_most(&main_storage_url,URL);
+	get_10_most(&main_storage_refer,REFERERENCES);
 
 	destroy_url_storage(&main_storage_url);
 	destroy_url_storage(&main_storage_refer);

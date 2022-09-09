@@ -153,11 +153,14 @@ void get_10_most(storage_url* storage,int PARAM){
 	if (PARAM==URL) printf("top 10 accessed pages\n");
 	else printf("top 10 references requesters\n");
 	for (size_t i=0; i < 10; i++) {
+		size_t c_cout = 0;
 		size_t max_count = 0;
 		size_t max_countN = 0;
 		for (size_t j = 0; j < storage->current_size; j++) {
-			size_t c_cout = ((storage->root_storage)[j])->count;
+			c_cout = ((storage->root_storage)[j])->count;
+			if (!c_cout) continue;
 			a_url c_url = *((storage->root_storage)[j]);
+			printf("current string %s  COUNT %lu \n",c_url.a_str,c_url.count);
 			if (c_cout > max_count) {
 				max_count = c_cout;
 				max_countN = j;
