@@ -22,7 +22,8 @@ signed long long parse_string(int fd,storage_url* storage, storage_url* storage_
 	ii++;
 	//----------------------------------//
 	char* a_url_str = find_url(buffer);
-	//printf("string №%ld cont %s\n",ii,a_url_str);
+//	printf("string №%ld cont %s\n",ii,a_url_str);
+//	printf("string №%ld \n",ii);
 	if (!a_url_str) continue;
 	int appended_url = append_url_if_nexistsV2(storage,a_url_str);
 	free(a_url_str);
