@@ -75,7 +75,6 @@ int *get_fp_for_files(char **files)
     for (size_t j = 0; j < n_files; j++)
     {
         FILE *some_file = fopen(files[j], "rb");
-    	printf("asdasdad\n");
         if (!some_file)
         {
             printf("error while opening %s file,err = %d aborting..\n", files[j],errno);
