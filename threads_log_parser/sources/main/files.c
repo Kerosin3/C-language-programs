@@ -1,7 +1,6 @@
 #include "files.h"
-#include <stdio.h>
+#include <linux/limits.h>
 #include <stdlib.h>
-#include <string.h>
 
 int *get_fp_for_files(char **files);
 
@@ -9,6 +8,8 @@ char **get_files_in_dir(char dirname[static 1])
 {
     char *to_search = "access";
     DIR *d;
+    char absp[PATH_MAX+1] = {0};
+    realpath(dirname, absp);
     struct dirent *dir;
     d = opendir(dirname);
     if (!d)
@@ -17,16 +18,20 @@ char **get_files_in_dir(char dirname[static 1])
         exit(1);
     }
     char **files = malloc((sizeof(char *)));
+    char buf[PATH_MAX+1] = {0};
     size_t j = 0;
     if (d)
     {
         while ((dir = readdir(d)) != NULL)
+
         {
             if (strstr(dir->d_name, to_search) != NULL)
-            {
-                size_t len = snprintf(0, 0, "%s", dir->d_name);
+            { 
+                size_t len = snprintf(0, 0, "%s/%s", absp,dir->d_name);
+                snprintf(buf, len+1, "%s/%s", absp,dir->d_name);// plus one?
+		//printf("filename is %s\n",buf);
                 char *filename = calloc(sizeof(char), len + 1);
-                strcpy(filename, dir->d_name);
+                strcpy(filename, buf);
                 filename[len] = '\0';
                 files[j] = filename;
                 j++;
@@ -70,10 +75,10 @@ int *get_fp_for_files(char **files)
     for (size_t j = 0; j < n_files; j++)
     {
         FILE *some_file = fopen(files[j], "rb");
-        setbuf(some_file, _IOFBF);
+    	printf("asdasdad\n");
         if (!some_file)
         {
-            printf("error while opening %s file, aborting..\n", files[j]);
+            printf("error while opening %s file,err = %d aborting..\n", files[j],errno);
         }
         files_FD[j] = fileno(some_file);
         int lock = flock(files_FD[j], LOCK_EX);
