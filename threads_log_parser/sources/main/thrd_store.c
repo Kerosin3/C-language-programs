@@ -54,7 +54,7 @@ void process_data(int *fds)
     mtx_init(&mtx_murl_storage, mtx_plain);   // init mtx
 
     printf("number of threads will be used: %u \n", n_thrd);
-    printf("please be patiend!\n");
+    printf("please be patient!\n");
 
     thrd_t threads_pool[n_thrd]; // create threads
 
