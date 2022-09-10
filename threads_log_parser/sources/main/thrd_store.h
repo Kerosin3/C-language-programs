@@ -8,6 +8,8 @@
 #include "files.h"
 #include "string_parse.h"
 #include "misc.h"
+#include <stdbool.h>
+
 
 void process_data(int* fds);
 #endif

@@ -1,42 +1,26 @@
+#include "signal.h"
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <errno.h>
-#include "signal.h"
-#include <string.h>
 
+#include "files.h"
 #include "misc.h"
 #include "test.h"
-#include "files.h"
 #include "thrd_store.h"
-#define NUL (void*)0
+#define NUL (void *)0
 
-
-int main(){
-
-//	test();
-//
-/*
-    FILE* fp;
-    FILE* fp2;
-    FILE* fp3;
-    fp = fopen("access0.txt", "r");
-    if (fp == NULL) {
-      perror("Failed: ");
-      return 1;
+int main(int argc, char *argv[])
+{
+    if ((argc > 2 || (argc == 1)))
+    {
+        printf("please specify just a directory, exiting..\n");
+        exit(1);
     }
-    fp2 = fopen("access1.txt", "r");
-    fp3 = fopen("access2.txt", "r");
-    test3(fileno(fp),fileno(fp2),fileno(fp3));
-
-    fclose(fp);
-    fclose(fp2);
-    fclose(fp3);
-*/
-    char** files = get_files_in_dir();
-    int* fdx = get_fp_for_files(files);
+    char **files = get_files_in_dir(argv[1]);
+    int *fdx = get_fp_for_files(files);
     process_data(fdx);
     return 0;
-	
 }
