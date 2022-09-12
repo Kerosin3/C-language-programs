@@ -1,6 +1,5 @@
 #include "files.h"
-#include <linux/limits.h>
-#include <stdlib.h>
+
 
 int *get_fp_for_files(char **files);
 
@@ -74,12 +73,13 @@ int *get_fp_for_files(char **files)
     int *files_FD = malloc((n_files + 1) * sizeof(int));
     for (size_t j = 0; j < n_files; j++)
     {
-        FILE *some_file = fopen(files[j], "rb");
-        if (!some_file)
+        //FILE *some_file = fopen(files[j], "rb");
+	int fd_t = open(files[j],O_DIRECT | O_SYNC,"rb");
+        if (fd_t <=0)
         {
             printf("error while opening %s file,err = %d aborting..\n", files[j],errno);
         }
-        files_FD[j] = fileno(some_file);
+        files_FD[j] = fd_t;
         int lock = flock(files_FD[j], LOCK_EX);
         if (lock)
         {

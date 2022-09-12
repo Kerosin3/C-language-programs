@@ -1,7 +1,9 @@
 #ifndef FILES
 #define FILES
 
+#define _GNU_SOURCE
 
+#include <fcntl.h>
 #include <dirent.h> 
 #include <stdio.h> 
 #include <stdio.h>
@@ -10,6 +12,7 @@
 #include <sys/file.h>
 #include <limits.h>
 #include <errno.h>
+
 
 char** get_files_in_dir(char dir[static 1]);
 void destroy_filenames(char** files);
