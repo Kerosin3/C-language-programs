@@ -48,11 +48,36 @@ int main(int argc, char *argv[])
 	}
 	
 	int s = socket(res->ai_family,res->ai_socktype,res->ai_protocol); // get a socket
+	
+        int c_done = connect(s,res->ai_addr,res->ai_addrlen);
+
+	if (c_done < 0) {
+		printf("error connecting to socket\n");
+	} else {
+		printf("successfully opened a socket\n");
+	}
+
 	if (s <0){ 
 		printf("error opening socket\n");
 	}
+	static char buffer[2048] = {0};
 
-
+	if (send(s,"figlet",strlen(("@figlet /list")),0) <0 ){
+		printf("error sending a message\n");
+		close(s);
+		return 1;
+	}
+	int len= 0 ;
+	int r;
+	while ((r = (recv(s,&buffer[len],2048-len,0))) >0 ) {
+		len+=r;
+		printf("---\n");
+	}
+	if (r <0) printf("error\n");
+	printf("finishing\n");
+//	while((r = recv(s,buffer)))
+	puts(buffer);
+	shutdown(s,SHUT_RDWR);
 
 freeaddrinfo(res);
 
