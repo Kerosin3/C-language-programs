@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -8,6 +9,7 @@
 #include <netinet/in.h>
 
 
+void DumpHex(const void* data, size_t size);
 int main(int argc, char *argv[])
 {
     if ((argc > 2 || (argc == 1)))
@@ -24,7 +26,7 @@ int main(int argc, char *argv[])
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 
-	if ( (status = getaddrinfo(argv[1], "23", &hints, &res)) ){
+	if ( (status = getaddrinfo(argv[1], "telnet", &hints, &res)) ){
 		printf("getaddrinfo error:%s\n",gai_strerror(status));
 		exit(1);
 	}
@@ -51,6 +53,9 @@ int main(int argc, char *argv[])
 	
         int c_done = connect(s,res->ai_addr,res->ai_addrlen);
 
+	printf("returned socket is %d \n",s);
+
+	
 	if (c_done < 0) {
 		printf("error connecting to socket\n");
 	} else {
@@ -60,18 +65,41 @@ int main(int argc, char *argv[])
 	if (s <0){ 
 		printf("error opening socket\n");
 	}
-	static char buffer[2048] = {0};
 
-	if (send(s,"figlet",strlen(("@figlet /list")),0) <0 ){
+/*	printf("Please enter the message=");
+	char buffers[256] = {0};
+	bzero(buffers, 256);
+        fgets(buffers, 255, stdin);
+
+	int n = write(s, buffers, strlen(buffer));
+    	if (n < 0)
+        printf("ERROR writing in socket %d  len %d", n, strlen(buffers));
+	n = read(s, buffer, 255);
+         if (n < 0)
+        perror("ERROR reading from socket");
+
+	printf("%s\n", buffers);
+	send(s,buffers,strlen(buffers),0) ;
+
+*/
+	/*if (send(s,"figlet",strlen(("figlet"))+1,0) <0 ){
 		printf("error sending a message\n");
 		close(s);
 		return 1;
-	}
+	} */
+
+	static char buffer[4096] = {0};
 	int len= 0 ;
 	int r;
-	while ((r = (recv(s,&buffer[len],2048-len,0))) >0 ) {
+	while ((r = (recv(s,&buffer[len],4096-len,0))) >0 ) {
 		len+=r;
-		printf("---\n");
+		printf("len is %d \n",r);
+		DumpHex(buffer, r);
+		if (r == 1 ){
+			printf("sending------||------\n");
+			send(s,"figlet\r\n",strlen(("figlet\r\n")),0);
+			len = 0;
+		}
 	}
 	if (r <0) printf("error\n");
 	printf("finishing\n");
@@ -82,4 +110,35 @@ int main(int argc, char *argv[])
 freeaddrinfo(res);
 
     return 0;
+}
+
+
+
+void DumpHex(const void* data, size_t size) {
+	char ascii[17];
+	size_t i, j;
+	ascii[16] = '\0';
+	for (i = 0; i < size; ++i) {
+		printf("%02X ", ((unsigned char*)data)[i]);
+		if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
+			ascii[i % 16] = ((unsigned char*)data)[i];
+		} else {
+			ascii[i % 16] = '.';
+		}
+		if ((i+1) % 8 == 0 || i+1 == size) {
+			printf(" ");
+			if ((i+1) % 16 == 0) {
+				printf("|  %s \n", ascii);
+			} else if (i+1 == size) {
+				ascii[(i+1) % 16] = '\0';
+				if ((i+1) % 16 <= 8) {
+					printf(" ");
+				}
+				for (j = (i+1) % 16; j < 16; ++j) {
+					printf("   ");
+				}
+				printf("|  %s \n", ascii);
+			}
+		}
+	}
 }
