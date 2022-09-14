@@ -88,18 +88,32 @@ int main(int argc, char *argv[])
 		return 1;
 	} */
 
+	int a = 0xD;
+	int b = 0xA;
+	int c = 0x2E;
+	int d = 0x20;
+	int x = 0x66;
 	static char buffer[4096] = {0};
 	int len= 0 ;
 	int r;
-	while ((r = (recv(s,&buffer[len],4096-len,0))) >0 ) {
+	int t = 0;
+	while ((r = (recv(s,&buffer[len],4096-len,0))) >0 ) {// shift buffer
+		if (r == 1) continue; 
 		len+=r;
 		printf("len is %d \n",r);
 		DumpHex(buffer, r);
-		if (r == 1 ){
-			printf("sending------||------\n");
-			send(s,"figlet\r\n",strlen(("figlet\r\n")),0);
+		printf("-------------->0x%X, 0x%X, 0x%X \n", buffer[len-3],buffer[len-2],buffer[len-1]);
+		if (t) break;
+		if (  buffer[len-3] == a && buffer[len-2] == b  && buffer[len-1] == c ){ // test last bytes
+			printf("sending!\n");
+			send(s,"figlet /cosmic TESTSOME\r\n",strlen(("figlet /cosmic TESTSOME\r\n")),0);
 			len = 0;
-		}
+			memset(buffer,0,4096);
+			t = 1;
+		} 
+//			printf("sending------||------\n");
+		//}
+		printf("------------------------------------\n");
 	}
 	if (r <0) printf("error\n");
 	printf("finishing\n");
