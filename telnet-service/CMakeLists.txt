@@ -9,12 +9,11 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_C_FLAGS_DEBUG "-g")
-set(CMAKE_C_FLAGS_RELEASE "-O0")
+set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -pedantic-errors ")
 
-#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../test) #copy executable
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 add_subdirectory(sources/main)
 

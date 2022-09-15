@@ -1,158 +1,184 @@
+#include <alloca.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
+#include <sys/types.h>
 
+#define TERM_CHAR0 0xD
+#define TERM_CHAR1 0xA
+#define TERM_CHAR2 0x2E
 
-void DumpHex(const void* data, size_t size);
-int main(int argc, char *argv[])
+#define MAX_BUF_SIZE 4096
+
+int main()
 {
-    if ((argc > 2 || (argc == 1)))
+    struct addrinfo hints, *res, *p;
+    int status;
+    char ipstr[INET6_ADDRSTRLEN];
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+
+    if ((status = getaddrinfo("telehack.com", "23", &hints, &res)))
     {
-	    printf("specity a  hostname\n");
-	    exit(1);
+        printf("getaddrinfo error:%s\n", gai_strerror(status));
+        exit(1);
+    }
+    for (p = res; p != NULL; p = p->ai_next)
+    {
+        void *addr;
+
+        if (p->ai_family == AF_INET)
+        {
+            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+            addr = &(ipv4->sin_addr);
+        }
+        else
+        {
+            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+            addr = &(ipv6->sin6_addr);
+        }
+        inet_ntop(p->ai_family, addr, ipstr, sizeof(ipstr));
     }
 
-	struct addrinfo hints, * res, *p;
-	int status;
-	char ipstr[INET6_ADDRSTRLEN];
+    int s = socket(res->ai_family, res->ai_socktype, res->ai_protocol); // get a socket
+    if (s < 0)
+    {
+        printf("error opening socket\n");
+        exit(1);
+    }
 
-	memset(&hints,0 ,sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
+    int c_done = connect(s, res->ai_addr, res->ai_addrlen);
 
-	if ( (status = getaddrinfo(argv[1], "telnet", &hints, &res)) ){
-		printf("getaddrinfo error:%s\n",gai_strerror(status));
-		exit(1);
-	}
-	printf("IP addresses for %s \n \n",argv[1]);
-	for (p = res; p!=NULL; p = p->ai_next) {
-		void *addr;
-		char *ipver;
+    if (c_done < 0)
+    {
+        printf("error connecting to socket\n");
+        exit(1);
+    }
 
-		if (p->ai_family == AF_INET){
-			struct sockaddr_in *ipv4 = (struct sockaddr_in *) p->ai_addr;
-			addr = &(ipv4->sin_addr);
-			ipver = "IPV4";
-		} else {
-			struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *) p->ai_addr;
-			addr = &(ipv6->sin6_addr);
-			ipver = "IPV6";
-		}
-		printf("--------------\n");
-		inet_ntop(p->ai_family,addr,ipstr,sizeof(ipstr));
-		printf("%s: %s \n",ipver,ipstr);
-	}
-	
-	int s = socket(res->ai_family,res->ai_socktype,res->ai_protocol); // get a socket
-	
-        int c_done = connect(s,res->ai_addr,res->ai_addrlen);
+    char *text = alloca(1000);
+    memset(text, 0, 1000);
+    char *font = alloca(100);
+    memset(font, 0, 100);
+    char *s_msg = alloca(1000);
+    memset(s_msg, 0, 1000);
 
-	printf("returned socket is %d \n",s);
+    if (!(text || font || s_msg))
+    {
+        printf("error memory allocation\n");
+        exit(1);
+    }
+    puts("please enter some text:");
+    if (!fgets(text, 1000, stdin))
+    {
+        fprintf(stderr, "error while reading input");
+    }
+    puts("please enter a desired font:");
+    text[strcspn(text, "\n")] = 0;
+    if (!fgets(font, 100, stdin))
+    {
+        fprintf(stderr, "error while reading input");
+    }
 
-	
-	if (c_done < 0) {
-		printf("error connecting to socket\n");
-	} else {
-		printf("successfully opened a socket\n");
-	}
+    font[strcspn(font, "\n")] = 0;
 
-	if (s <0){ 
-		printf("error opening socket\n");
-	}
+    size_t s_msg_len = snprintf(0, 0, "figlet /%s %s\r\n", font, text);
+    snprintf(s_msg, s_msg_len + 1, "figlet /%s %s\r\n", font, text);
+    s_msg[s_msg_len] = '\0';
 
-/*	printf("Please enter the message=");
-	char buffers[256] = {0};
-	bzero(buffers, 256);
-        fgets(buffers, 255, stdin);
+    static char buffer[MAX_BUF_SIZE] = {0};
+    int len = 0;
+    int r = -1;
+    int t = 0; // flag sended message
+    while ((r = (recv(s, &buffer[len], MAX_BUF_SIZE - len, 0))) > 0)
+    { // shift buffer
+        len += r;
+        if (len >= MAX_BUF_SIZE)
+        {
+            printf("max buffer size exeeded!\n");
+            buffer[MAX_BUF_SIZE - 1] = '\0';
+            break;
+        }
+        if (buffer[len - 3] == TERM_CHAR0 && buffer[len - 2] == TERM_CHAR1 && buffer[len - 1] == TERM_CHAR2)
+        { // test last bytes
+            if (buffer[len - 3] == TERM_CHAR0 && buffer[len - 2] == TERM_CHAR1 && buffer[len - 1] == TERM_CHAR2 &&
+                t == 1)
+            { // break when respond
+                break;
+            }
+            ssize_t sret = -1;
+            ssize_t left = s_msg_len + 1;
+            do
+            {
+                sret = send(s, s_msg, left, 0);
+                left -= sret;
 
-	int n = write(s, buffers, strlen(buffer));
-    	if (n < 0)
-        printf("ERROR writing in socket %d  len %d", n, strlen(buffers));
-	n = read(s, buffer, 255);
-         if (n < 0)
-        perror("ERROR reading from socket");
+            } while (left > 0);
 
-	printf("%s\n", buffers);
-	send(s,buffers,strlen(buffers),0) ;
-
-*/
-	/*if (send(s,"figlet",strlen(("figlet"))+1,0) <0 ){
-		printf("error sending a message\n");
-		close(s);
-		return 1;
-	} */
-
-	int a = 0xD;
-	int b = 0xA;
-	int c = 0x2E;
-	int d = 0x20;
-	int x = 0x66;
-	static char buffer[4096] = {0};
-	int len= 0 ;
-	int r;
-	int t = 0;
-	while ((r = (recv(s,&buffer[len],4096-len,0))) >0 ) {// shift buffer
-		if (r == 1) continue; 
-		len+=r;
-		printf("len is %d \n",r);
-		DumpHex(buffer, r);
-		printf("-------------->0x%X, 0x%X, 0x%X \n", buffer[len-3],buffer[len-2],buffer[len-1]);
-		if (t) break;
-		if (  buffer[len-3] == a && buffer[len-2] == b  && buffer[len-1] == c ){ // test last bytes
-			printf("sending!\n");
-			send(s,"figlet /cosmic TESTSOME\r\n",strlen(("figlet /cosmic TESTSOME\r\n")),0);
-			len = 0;
-			memset(buffer,0,4096);
-			t = 1;
-		} 
-//			printf("sending------||------\n");
-		//}
-		printf("------------------------------------\n");
-	}
-	if (r <0) printf("error\n");
-	printf("finishing\n");
-//	while((r = recv(s,buffer)))
-	puts(buffer);
-	shutdown(s,SHUT_RDWR);
-
-freeaddrinfo(res);
+            len = 0;
+            memset(buffer, 0, MAX_BUF_SIZE); // clear buffer
+            t = 1;
+        }
+    }
+    if (r < 0)
+    {
+        printf("error reading server response\n");
+        goto end;
+    }
+    puts(buffer);
+end:
+    shutdown(s, SHUT_RDWR);
+    freeaddrinfo(res);
+    freeaddrinfo(p);
 
     return 0;
 }
 
-
-
-void DumpHex(const void* data, size_t size) {
-	char ascii[17];
-	size_t i, j;
-	ascii[16] = '\0';
-	for (i = 0; i < size; ++i) {
-		printf("%02X ", ((unsigned char*)data)[i]);
-		if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
-			ascii[i % 16] = ((unsigned char*)data)[i];
-		} else {
-			ascii[i % 16] = '.';
-		}
-		if ((i+1) % 8 == 0 || i+1 == size) {
-			printf(" ");
-			if ((i+1) % 16 == 0) {
-				printf("|  %s \n", ascii);
-			} else if (i+1 == size) {
-				ascii[(i+1) % 16] = '\0';
-				if ((i+1) % 16 <= 8) {
-					printf(" ");
-				}
-				for (j = (i+1) % 16; j < 16; ++j) {
-					printf("   ");
-				}
-				printf("|  %s \n", ascii);
-			}
-		}
-	}
+/*
+ * for debugging
+ * */
+void DumpHex(const void *data, size_t size)
+{
+    char ascii[17];
+    size_t i, j;
+    ascii[16] = '\0';
+    for (i = 0; i < size; ++i)
+    {
+        printf("%02X ", ((unsigned char *)data)[i]);
+        if (((unsigned char *)data)[i] >= ' ' && ((unsigned char *)data)[i] <= '~')
+        {
+            ascii[i % 16] = ((unsigned char *)data)[i];
+        }
+        else
+        {
+            ascii[i % 16] = '.';
+        }
+        if ((i + 1) % 8 == 0 || i + 1 == size)
+        {
+            printf(" ");
+            if ((i + 1) % 16 == 0)
+            {
+                printf("|  %s \n", ascii);
+            }
+            else if (i + 1 == size)
+            {
+                ascii[(i + 1) % 16] = '\0';
+                if ((i + 1) % 16 <= 8)
+                {
+                    printf(" ");
+                }
+                for (j = (i + 1) % 16; j < 16; ++j)
+                {
+                    printf("   ");
+                }
+                printf("|  %s \n", ascii);
+            }
+        }
+    }
 }
