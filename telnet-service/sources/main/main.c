@@ -8,6 +8,7 @@
 #include <strings.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <errno.h>
 
 #define TERM_CHAR0 0xD
 #define TERM_CHAR1 0xA
@@ -105,6 +106,11 @@ int main()
             buffer[MAX_BUF_SIZE - 1] = '\0';
             break;
         }
+	if (len < 0){
+		printf("error while sending the data\n");
+            	buffer[MAX_BUF_SIZE - 1] = '\0';
+		break;
+	}
         if (buffer[len - 3] == TERM_CHAR0 && buffer[len - 2] == TERM_CHAR1 && buffer[len - 1] == TERM_CHAR2)
         { // test last bytes
             if (buffer[len - 3] == TERM_CHAR0 && buffer[len - 2] == TERM_CHAR1 && buffer[len - 1] == TERM_CHAR2 &&
@@ -117,6 +123,12 @@ int main()
             do
             {
                 sret = send(s, s_msg, left, 0);
+		if (sret < 0 ) {
+			printf("error while sending to the server, error %d\n", errno);
+			left = -1;
+			len = -1;
+			break;
+		}
                 left -= sret;
 
             } while (left > 0);
