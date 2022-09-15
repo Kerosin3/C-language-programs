@@ -9,12 +9,15 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <stdint.h>
 
 #define TERM_CHAR0 0xD
 #define TERM_CHAR1 0xA
 #define TERM_CHAR2 0x2E
 
 #define MAX_BUF_SIZE 4096
+#define MAX_TEXT_SIZE 1000
+#define MAX_FONT_SIZE 100
 
 int main()
 {
@@ -49,9 +52,8 @@ int main()
     }
 
     int s = socket(res->ai_family, res->ai_socktype, res->ai_protocol); // get a socket
-    if (s < 0)
-    {
-        printf("error opening socket\n");
+    if (s < 0){
+	perror("error while assigning a socket");
         exit(1);
     }
 
@@ -59,30 +61,22 @@ int main()
 
     if (c_done < 0)
     {
-        printf("error connecting to socket\n");
+        perror("error connecting to socket\n");
         exit(1);
     }
 
-    char *text = alloca(1000);
-    memset(text, 0, 1000);
-    char *font = alloca(100);
-    memset(font, 0, 100);
-    char *s_msg = alloca(1000);
-    memset(s_msg, 0, 1000);
+    char text[MAX_TEXT_SIZE] = {0} ;
+    char font[MAX_FONT_SIZE] = {0} ;
+    char s_msg[MAX_TEXT_SIZE] = {0};
 
-    if (!(text || font || s_msg))
-    {
-        printf("error memory allocation\n");
-        exit(1);
-    }
     puts("please enter some text:");
-    if (!fgets(text, 1000, stdin))
+    if (!fgets(text, MAX_TEXT_SIZE, stdin))
     {
         fprintf(stderr, "error while reading input");
     }
     puts("please enter a desired font:");
     text[strcspn(text, "\n")] = 0;
-    if (!fgets(font, 100, stdin))
+    if (!fgets(font, MAX_FONT_SIZE, stdin))
     {
         fprintf(stderr, "error while reading input");
     }
@@ -91,13 +85,12 @@ int main()
 
     size_t s_msg_len = snprintf(0, 0, "figlet /%s %s\r\n", font, text);
     snprintf(s_msg, s_msg_len + 1, "figlet /%s %s\r\n", font, text);
-    s_msg[s_msg_len] = '\0';
 
     static char buffer[MAX_BUF_SIZE] = {0};
     int len = 0;
     int r = -1;
     int t = 0; // flag sended message
-    while ((r = (recv(s, &buffer[len], MAX_BUF_SIZE - len, 0))) > 0)
+    while (  ((r = (recv(s, &buffer[len], MAX_BUF_SIZE - len, 0))) > 0  )   )
     { // shift buffer
         len += r;
         if (len >= MAX_BUF_SIZE)
@@ -111,10 +104,10 @@ int main()
             	buffer[MAX_BUF_SIZE - 1] = '\0';
 		break;
 	}
-        if (buffer[len - 3] == TERM_CHAR0 && buffer[len - 2] == TERM_CHAR1 && buffer[len - 1] == TERM_CHAR2)
+
+	if (!(strcmp(buffer+(len-3),"\r\n." )))
         { // test last bytes
-            if (buffer[len - 3] == TERM_CHAR0 && buffer[len - 2] == TERM_CHAR1 && buffer[len - 1] == TERM_CHAR2 &&
-                t == 1)
+            if (  !(strcmp(buffer+(len-3),"\r\n." )) && (t == 1  ) )
             { // break when respond
                 break;
             }
