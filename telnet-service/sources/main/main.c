@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     printf("please make input your text (limit 1000 chars), exiting..\n");
     exit(1);
   }
-  if (strnlen(argv[1], 1000) > 1000) {
+  if (strnlen(argv[1], MAX_TEXT_SIZE) > MAX_TEXT_SIZE) {
     printf("please enter less that 1000 chars\n");
     exit(1);
   }
