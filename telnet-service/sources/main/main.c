@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
       printf("error while sending to the server, error %d\n", errno);
       left = -1;
       len = -1;
-      break;
+      goto end;
     }
     left -= sret;
 
