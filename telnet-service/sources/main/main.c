@@ -110,11 +110,6 @@ int main(int argc, char *argv[]) {
       buffer[MAX_BUF_SIZE - 1] = '\0';
       break;
     }
-    if (len < 0) {
-      printf("error while sending the data\n");
-      buffer[MAX_BUF_SIZE - 1] = '\0';
-      break;
-    }
     if (!(strncmp(buffer + (len - 3), "\r\n.", 3)))
       break;
   }
