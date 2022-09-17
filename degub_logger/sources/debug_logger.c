@@ -145,6 +145,10 @@ void wrap_gglog(int lineno, unsigned LOG_LEVEL, char *message)
 static void write_gglog(int lineno, unsigned LOG_LEVEL, char *message)
 {
     char *filename = init_t.filename;
+    if (!init_t.filename){
+        printf("error open file to logging\n");
+	exit(1);
+    }
     if ((LOG_LEVEL) > 3)
     {
         printf("error setting log level,setting to default");
@@ -169,13 +173,13 @@ static void write_gglog(int lineno, unsigned LOG_LEVEL, char *message)
 
 int init_recording(char *filename)
 {
-    init_t.filename = filename;
     FILE *ret;
     if (!(ret = get_file(filename)))
     {
-        printf("error open file to logging\n");
-        exit(1);
+    	init_t.filename = 0;
+	return 0;
     }
+    init_t.filename = filename;
     fclose(ret);
     return 1;
 }
