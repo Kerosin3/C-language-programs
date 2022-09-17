@@ -1,12 +1,5 @@
-#include <execinfo.h>
-#include <fcntl.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stdio.h>
+#include "debug_logger.h"
 #include <stdlib.h>
-#include <string.h>
-#include <sys/file.h>
-#include <threads.h>
 
 #define OK 1
 #define FAIL 0
@@ -98,7 +91,7 @@ static void write_backlog(int linen, char filename[static 1], char *message)
     fwrite(start_bt, sizeof(char), strlen(start_bt), log_file);
     fwrite(ln, sizeof(char), strlen(ln), log_file);
     fwrite(message, sizeof(char), strlen(message), log_file);
-    fflush(log_file);
+    fflush(log_file); //!
     backtrace_symbols_fd(log, bt_size, fileno(log_file));
     fwrite(end_bt, sizeof(char), strlen(end_bt), log_file);
 
@@ -113,7 +106,7 @@ static void write_to_file(FILE *log_file, int n, ...)
     va_list ptr;
     va_start(ptr, n);
     fcntl(fileno(log_file), F_SETLKW);
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < (unsigned) n; i++)
     {
         char *to_write = va_arg(ptr, char *);
         fwrite(to_write, sizeof(char), strlen(to_write), log_file);
@@ -152,7 +145,7 @@ void wrap_gglog(int lineno, unsigned LOG_LEVEL, char *message)
 static void write_gglog(int lineno, unsigned LOG_LEVEL, char *message)
 {
     char *filename = init_t.filename;
-    if ((LOG_LEVEL) < 0 || (LOG_LEVEL) > 3)
+    if ((LOG_LEVEL) > 3)
     {
         printf("error setting log level,setting to default");
         LOG_LEVEL = 0;
@@ -173,9 +166,7 @@ static void write_gglog(int lineno, unsigned LOG_LEVEL, char *message)
     }
     write_log(lineno, filename, LOG_LEVEL, msg);
 }
-/*
- * when open is ok return 1, else zero
- */
+
 int init_recording(char *filename)
 {
     init_t.filename = filename;
@@ -183,7 +174,7 @@ int init_recording(char *filename)
     if (!(ret = get_file(filename)))
     {
         printf("error open file to logging\n");
-        return 0;
+        exit(1);
     }
     fclose(ret);
     return 1;
@@ -199,15 +190,4 @@ static FILE *get_file(char filename[static 1])
         exit(1);
     }
     return log_file;
-}
-
-int main(int argc, char *argv[])
-{
-
-    init_recording("ggagaga");
-    write_to_log(WARNING, "hohohoohoho");
-    write_to_log(ERROR, "hohohodasdadasdaohoho");
-    write_to_log(INFO, "hohohodas1111111111dadasdaohoho");
-
-    return 0;
 }

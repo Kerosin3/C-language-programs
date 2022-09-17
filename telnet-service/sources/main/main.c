@@ -19,14 +19,21 @@ void DumpHex(const void *data, size_t size); // for debugging
 
 int main(int argc, char *argv[]) {
 
-  if ((argc > 2 || (argc == 1))) {
-    printf("please make input your text (limit 1000 chars), exiting..\n");
+  printf("Please enter text and desired font\n");
+
+  if ((argc > 3 || (argc == 1)) || (argc == 2)) {
+    printf("please make input your text format: <text (upto 1000 chars) font>, exiting..\n");
     exit(1);
   }
   if (strnlen(argv[1], MAX_TEXT_SIZE) > MAX_TEXT_SIZE) {
-    printf("please enter less that 1000 chars\n");
+    printf("please enter text less that 1000 chars\n");
     exit(1);
   }
+  if (strnlen(argv[2], MAX_FONT_SIZE) > MAX_FONT_SIZE) {
+    printf("please enter font less that 100 chars\n");
+    exit(1);
+  }
+
   struct addrinfo hints, *res, *p;
   int status;
   char ipstr[INET6_ADDRSTRLEN];
@@ -66,18 +73,10 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  char font[MAX_FONT_SIZE] = {0};
   char s_msg[MAX_TEXT_SIZE] = {0};
 
-  puts("please enter a desired font:");
-  if (!fgets(font, MAX_FONT_SIZE, stdin)) {
-    fprintf(stderr, "error while reading input");
-  }
-
-  font[strcspn(font, "\n")] = 0;
-
-  size_t s_msg_len = snprintf(0, 0, "figlet /%s %s\r\n", font, argv[1]);
-  snprintf(s_msg, s_msg_len + 1, "figlet /%s %s\r\n", font, argv[1]);
+  size_t s_msg_len = snprintf(0, 0, "figlet /%s %s\r\n", argv[2], argv[1]);
+  snprintf(s_msg, s_msg_len + 1, "figlet /%s %s\r\n", argv[2], argv[1]);
 
   static char buffer[MAX_BUF_SIZE] = {0};
   int len = 0;
