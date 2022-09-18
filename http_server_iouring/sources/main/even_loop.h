@@ -1,8 +1,7 @@
-#ifndef SETUP
-#define SETUP
+#ifndef EVENT_LOOP
+#define EVENT_LOOP
 
 #include "liburing.h"
-#include <linux/io_uring.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdbool.h>
@@ -12,8 +11,13 @@
 #include <string.h>
 #include <sys/socket.h>
 
-int setup_serv_sock(uint16_t port);
-void teardown_server_sock(int servsock);
-void setup_iouring(struct io_uring* ring, int ncon, bool pool);
+typedef enum {
+	FLAG_ACCEPT = 0,
+	FLAG_READ = 1,
+	FLAG_WRITE = 2,
+} flag_state;
+
+
+void event_loop(int serv_sock,struct io_uring* ring);
 
 #endif
