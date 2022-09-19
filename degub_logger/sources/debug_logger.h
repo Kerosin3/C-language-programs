@@ -19,7 +19,16 @@
 
 #define write_to_log(...) wrap_gglog(__LINE__,__FILE__, __VA_ARGS__);
 
-void wrap_gglog(int,char*, unsigned, char*);
+typedef enum log_level
+{
+    debug,
+    info,
+    warning,
+    error
+} log_level;
+
+
+void wrap_gglog(int,char*, log_level, char*);
 int init_recording(char *filename);
 void stop_recording();
 

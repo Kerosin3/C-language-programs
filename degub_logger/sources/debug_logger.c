@@ -1,13 +1,11 @@
 #include "debug_logger.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/syslog.h>
-#include <unistd.h>
 
 #define OK 1
 #define FAIL 0
 #define FAIL2 1024
+
 #define MAX_MSG 2000
+#define MAX_MSG_T 200
 
 #define NTRIES 10000
 
@@ -17,14 +15,6 @@
 #define ERROR 3
 
 #define write_to_log(...) wrap_gglog(__LINE__,__FILE__, __VA_ARGS__);
-
-typedef enum log_level
-{
-    debug,
-    info,
-    warning,
-    error
-} log_level;
 
 struct flock g_flock;
 
@@ -80,10 +70,12 @@ static void write_backlog(int linen,char* fname_call, int fd, char *message)
     if (!log)
         longjmp(j1_jump, FAIL); // try again
                                 //
-    char ln[150] = {0};
+    char ln[MAX_MSG_T] = {0};
 
     size_t s_msg_len = snprintf(0, 0, "---------------------FILE:%s,LINE NUMBER %u --------------------\n",fname_call, linen);
-    snprintf(ln, s_msg_len + 1, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call,linen);
+    snprintf(ln, MAX_MSG_T, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call,linen);
+    if ((s_msg_len >= MAX_MSG_T))
+    	syslog(LOG_INFO, "maximum msg reached, truncate output");
 
     bt_size = backtrace(log, init_size);
     if (!(bt_size < init_size))
@@ -141,18 +133,20 @@ static void write_log(int lineno,char* fname_call , int fd, log_level level, cha
     }
     strcpy(buf, message);
 
-    char ln[150] = {0};
+    char ln[MAX_MSG_T] = {0};
     size_t s_msg_len = snprintf(0, 0, "---------------------FILE:%s,LINE NUMBER %u --------------------\n",fname_call, lineno);
-    snprintf(ln, s_msg_len + 1, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call,lineno);
-    char sn[150] = {0};
+    snprintf(ln, MAX_MSG_T, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call,lineno);
+    char sn[MAX_MSG_T] = {0};
     size_t l_msg_len = snprintf(0, 0, "---------------------LOG LEVEL %s --------------------\n", get_level(level));
-    snprintf(sn, l_msg_len + 1, "---------------------LOG LEVEL %s --------------------\n", get_level(level));
+    if ((s_msg_len >= MAX_MSG_T)  || (l_msg_len >=MAX_MSG_T))
+    	syslog(LOG_INFO, "maximum msg reached, truncate output");
+    snprintf(sn, MAX_MSG_T, "---------------------LOG LEVEL %s --------------------\n", get_level(level));
     static const char *end_bt = "--------------------------------------------------------\n";
 
     write_to_file(fd, 4, sn, ln, buf, end_bt);
 }
 
-void wrap_gglog(int lineno,char* fname_call, unsigned LOG_LEVEL, char *message)
+void wrap_gglog(int lineno,char* fname_call, log_level LOG_LEVEL, char *message)
 {
     write_gglog(lineno,fname_call, LOG_LEVEL, message);
 }
@@ -185,19 +179,16 @@ static void write_gglog(int lineno,char* fname_call, unsigned LOG_LEVEL, char *m
 int init_recording(char *filename)
 {
     openlog("debugger logger", LOG_CONS | LOG_PID, LOG_USER);
-    syslog(LOG_INFO, "start debug logging");
+    syslog(LOG_INFO, "start debug logging session");
     FILE *ret;
-    if (!(ret = get_file(filename)))
-    {
-    	init_t.fd = -1;
-	return 0;
-    }
+    ret = get_file(filename);
     init_t.fd = fileno(ret);
     return 1;
 }
 
 void stop_recording(){
 	close(init_t.fd);
+    	syslog(LOG_INFO, "stop debug logging session");
 }
 
 static FILE *get_file(char filename[static 1])
