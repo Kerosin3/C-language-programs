@@ -9,6 +9,6 @@ int main(int argc, char *argv[])
     write_to_log(WARNING, "hohohoohoho");
     write_to_log(ERROR, "hohohodasdadasdaohoho");
     write_to_log(INFO, "hohohodas1111111111dadasdaohoho");
-
+    stop_recording();
     return 0;
 }

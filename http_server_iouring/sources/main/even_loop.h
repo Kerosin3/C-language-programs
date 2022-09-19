@@ -2,6 +2,7 @@
 #define EVENT_LOOP
 
 #include "liburing.h"
+#include "misc.h"
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdbool.h>

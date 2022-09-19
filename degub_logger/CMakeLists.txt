@@ -9,7 +9,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_C_FLAGS_DEBUG "-g")
-set(CMAKE_C_FLAGS_RELEASE "-O3")
+set(CMAKE_C_FLAGS_RELEASE "-rdynamic -O3")
 
 set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -pedantic-errors ")
 

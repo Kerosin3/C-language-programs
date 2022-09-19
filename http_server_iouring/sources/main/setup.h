@@ -2,6 +2,7 @@
 #define SETUP
 
 #include "liburing.h"
+#include "misc.h"
 #include <linux/io_uring.h>
 #include <netdb.h>
 #include <netinet/in.h>

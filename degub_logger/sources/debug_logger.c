@@ -1,5 +1,8 @@
 #include "debug_logger.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <sys/syslog.h>
+#include <unistd.h>
 
 #define OK 1
 #define FAIL 0
@@ -13,7 +16,7 @@
 #define WARNING 2
 #define ERROR 3
 
-#define write_to_log(...) wrap_gglog(__LINE__, __VA_ARGS__);
+#define write_to_log(...) wrap_gglog(__LINE__,__FILE__, __VA_ARGS__);
 
 typedef enum log_level
 {
@@ -23,21 +26,24 @@ typedef enum log_level
     error
 } log_level;
 
+struct flock g_flock;
+
 typedef struct internal_init
 {
-    char *filename;
+	int fd;
 } internal_init;
 
 static internal_init init_t;
 
 static char *get_level(log_level);
-static void write_backlog(int linen, char filename[static 1], char *message);
+static void write_backlog(int linen,char* , int , char *message);
 static FILE *get_file(char filename[static 1]);
-static void write_to_file(FILE *log_file, int n, ...);
-static void write_gglog(int, unsigned LOG_LEVEL, char *message);
-static void write_log(int lineno, char filename[static 1], log_level level, char *message);
-void wrap_gglog(int lineno, unsigned LOG_LEVEL, char *message);
+static void write_to_file(int, int n, ...);
+static void write_gglog(int,char*, unsigned LOG_LEVEL, char *message);
+static void write_log(int lineno,char*, int, log_level level, char *message);
+void wrap_gglog(int lineno,char*, unsigned LOG_LEVEL, char *message);
 int init_recording(char *filename);
+void stop_recording();
 
 static char *get_level(log_level level)
 {
@@ -46,7 +52,7 @@ static char *get_level(log_level level)
     return levels[level];
 }
 
-static void write_backlog(int linen, char filename[static 1], char *message)
+static void write_backlog(int linen,char* fname_call, int fd, char *message)
 {
     static const char *start_bt = "-----------------LOG:ERRORS,BACKTRACE-------------------\n";
     static const char *end_bt = "--------------------------------------------------------\n";
@@ -74,84 +80,89 @@ static void write_backlog(int linen, char filename[static 1], char *message)
     if (!log)
         longjmp(j1_jump, FAIL); // try again
                                 //
-    char ln[100] = {0};
-    size_t s_msg_len = snprintf(0, 0, "---------------------LINE NUMBER %u --------------------\n", linen);
-    snprintf(ln, s_msg_len + 1, "---------------------LINE NUMBER %u --------------------\n", linen);
+    char ln[150] = {0};
+
+    size_t s_msg_len = snprintf(0, 0, "---------------------FILE:%s,LINE NUMBER %u --------------------\n",fname_call, linen);
+    snprintf(ln, s_msg_len + 1, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call,linen);
 
     bt_size = backtrace(log, init_size);
     if (!(bt_size < init_size))
     { // truncated
         longjmp(j1_jump, FAIL2);
     }
+    g_flock.l_len=0;
+    g_flock.l_start = 0;
+    g_flock.l_whence = SEEK_SET;
+    g_flock.l_type = F_WRLCK;
+    g_flock.l_pid = getpid(); 
 
-    FILE *log_file = get_file(filename);
+    fcntl(fd, F_SETLKW,&g_flock);
 
-    fcntl(fileno(log_file), F_SETLKW);
+    write(fd, start_bt, strlen(start_bt) );
+    write(fd, ln,  strlen(ln));
+    write(fd,message, strlen(message));
+    fsync(fd); 
+    backtrace_symbols_fd(log, bt_size, fd);
+    write(fd,end_bt, strlen(end_bt));
 
-    fwrite(start_bt, sizeof(char), strlen(start_bt), log_file);
-    fwrite(ln, sizeof(char), strlen(ln), log_file);
-    fwrite(message, sizeof(char), strlen(message), log_file);
-    fflush(log_file); //!
-    backtrace_symbols_fd(log, bt_size, fileno(log_file));
-    fwrite(end_bt, sizeof(char), strlen(end_bt), log_file);
-
-    fcntl(fileno(log_file), F_UNLCK);
+    fcntl(fd, F_UNLCK);
 
     free(log);
-    fclose(log_file);
 }
 
-static void write_to_file(FILE *log_file, int n, ...)
+static void write_to_file(int fd, int n, ...)
 {
     va_list ptr;
     va_start(ptr, n);
-    fcntl(fileno(log_file), F_SETLKW);
+
+    g_flock.l_len=0;
+    g_flock.l_start = 0;
+    g_flock.l_whence = SEEK_SET;
+    g_flock.l_type = F_WRLCK;
+    g_flock.l_pid = getpid(); 
+
+    fcntl(fd, F_SETLKW,&g_flock);
+
     for (size_t i = 0; i < (unsigned) n; i++)
     {
         char *to_write = va_arg(ptr, char *);
-        fwrite(to_write, sizeof(char), strlen(to_write), log_file);
+        write(fd,to_write, strlen(to_write) );
     }
-    fcntl(fileno(log_file), F_UNLCK);
-    fclose(log_file);
+    fcntl(fd, F_UNLCK);
 }
 
-static void write_log(int lineno, char filename[static 1], log_level level, char *message)
+static void write_log(int lineno,char* fname_call , int fd, log_level level, char *message)
 {
     char buf[MAX_MSG] = {0};
     if (strnlen(message, MAX_MSG) == MAX_MSG)
     {
-        printf("maximum message limit reached\n");
+    	syslog(LOG_INFO, "maximum message length reached");
         buf[MAX_MSG - 1] = '\0';
     }
     strcpy(buf, message);
 
-    FILE *file_log = get_file(filename);
-    char ln[100] = {0};
-    size_t s_msg_len = snprintf(0, 0, "---------------------LINE NUMBER %u --------------------\n", lineno);
-    snprintf(ln, s_msg_len + 1, "---------------------LINE NUMBER %u --------------------\n", lineno);
-    char sn[100] = {0};
+    char ln[150] = {0};
+    size_t s_msg_len = snprintf(0, 0, "---------------------FILE:%s,LINE NUMBER %u --------------------\n",fname_call, lineno);
+    snprintf(ln, s_msg_len + 1, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call,lineno);
+    char sn[150] = {0};
     size_t l_msg_len = snprintf(0, 0, "---------------------LOG LEVEL %s --------------------\n", get_level(level));
     snprintf(sn, l_msg_len + 1, "---------------------LOG LEVEL %s --------------------\n", get_level(level));
     static const char *end_bt = "--------------------------------------------------------\n";
 
-    write_to_file(file_log, 4, sn, ln, buf, end_bt);
+    write_to_file(fd, 4, sn, ln, buf, end_bt);
 }
 
-void wrap_gglog(int lineno, unsigned LOG_LEVEL, char *message)
+void wrap_gglog(int lineno,char* fname_call, unsigned LOG_LEVEL, char *message)
 {
-    write_gglog(lineno, LOG_LEVEL, message);
+    write_gglog(lineno,fname_call, LOG_LEVEL, message);
 }
 
-static void write_gglog(int lineno, unsigned LOG_LEVEL, char *message)
+static void write_gglog(int lineno,char* fname_call, unsigned LOG_LEVEL, char *message)
 {
-    char *filename = init_t.filename;
-    if (!init_t.filename){
-        printf("error open file to logging\n");
-	exit(1);
-    }
+    int fd = init_t.fd;
     if ((LOG_LEVEL) > 3)
     {
-        printf("error setting log level,setting to default");
+    	syslog(LOG_INFO, "setting default log level");
         LOG_LEVEL = 0;
     }
     char *occur = strchr(message, '\n');
@@ -165,23 +176,28 @@ static void write_gglog(int lineno, unsigned LOG_LEVEL, char *message)
     }
     if (LOG_LEVEL == 3)
     {
-        write_backlog(lineno, filename, msg);
+        write_backlog(lineno,fname_call, fd, msg);
         return;
     }
-    write_log(lineno, filename, LOG_LEVEL, msg);
+    write_log(lineno,fname_call, fd, LOG_LEVEL, msg);
 }
 
 int init_recording(char *filename)
 {
+    openlog("debugger logger", LOG_CONS | LOG_PID, LOG_USER);
+    syslog(LOG_INFO, "start debug logging");
     FILE *ret;
     if (!(ret = get_file(filename)))
     {
-    	init_t.filename = 0;
+    	init_t.fd = -1;
 	return 0;
     }
-    init_t.filename = filename;
-    fclose(ret);
+    init_t.fd = fileno(ret);
     return 1;
+}
+
+void stop_recording(){
+	close(init_t.fd);
 }
 
 static FILE *get_file(char filename[static 1])
@@ -190,7 +206,7 @@ static FILE *get_file(char filename[static 1])
     log_file = fopen(filename, "a+");
     if (!log_file)
     {
-        printf("error while opening the log file\n");
+    	syslog(LOG_INFO, "error opening file to write");
         exit(1);
     }
     return log_file;

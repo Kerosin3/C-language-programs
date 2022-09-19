@@ -6,13 +6,6 @@
 #include <unistd.h>
 
 
-#define UNLIKELY(x)    __builtin_expect(!!(x), 0)
-
-_Noreturn void die(const char *message) {
-  perror(message);
-  exit(EXIT_FAILURE);
-}
-
 
 void add_accept_request(struct io_uring* ring, int serverfd, struct sockaddr_in* a_client_adrd, socklen_t* client_addr_len);
 

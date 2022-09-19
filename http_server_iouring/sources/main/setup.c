@@ -3,11 +3,6 @@
 #include "liburing.h"
 #define MAX_CONNECTIONS 100
 
-_Noreturn void die(const char *message) {
-  perror(message);
-  exit(EXIT_FAILURE);
-}
-
 int setup_serv_sock(uint16_t port) {
   struct protoent *proto = getprotobyname("tcp");
   int sockfd = socket(AF_INET, SOCK_STREAM, proto->p_proto);
