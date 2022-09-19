@@ -15,6 +15,6 @@
 
 int setup_serv_sock(uint16_t port);
 void teardown_server_sock(int servsock);
-void setup_iouring(struct io_uring* ring, int ncon, bool pool);
+void setup_iouring(struct io_uring *ring, int ncon, bool pool);
 
 #endif

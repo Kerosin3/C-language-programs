@@ -1,6 +1,6 @@
+#include "debug_logger.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "debug_logger.h"
 
 int main(int argc, char *argv[])
 {

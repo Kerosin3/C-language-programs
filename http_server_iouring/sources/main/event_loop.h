@@ -12,13 +12,13 @@
 #include <string.h>
 #include <sys/socket.h>
 
-typedef enum {
-	FLAG_ACCEPT = 0,
-	FLAG_READ = 1,
-	FLAG_WRITE = 2,
+typedef enum
+{
+    FLAG_ACCEPT = 0,
+    FLAG_READ = 1,
+    FLAG_WRITE = 2,
 } flag_state;
 
-
-void event_loop(int serv_sock,struct io_uring* ring);
+void event_loop(int serv_sock, struct io_uring *ring);
 
 #endif
