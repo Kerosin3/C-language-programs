@@ -44,12 +44,14 @@ void add_accept_request(struct io_uring *ring,
 		        struct sockaddr_in* a_client_adrd,
                         socklen_t* client_addr_len)
 {
-    struct io_uring_sqe* sqe = io_uring_get_sqe(ring); // pop
+    struct io_uring_sqe *sqe = io_uring_get_sqe(ring); // pop
+    printf("%u\n",sqe->len);
     if (!sqe) {	    
 	    printf("error!\n");
+	    //exit(1);
     }
-    io_uring_prep_accept(sqe, serverfd, 0,0, 0);
-//     io_uring_prep_accept(sqe, serverfd, (struct sockaddr*) a_client_adrd, client_addr_len, 0);
+
+    io_uring_prep_accept(sqe, serverfd, (struct sockaddr*) a_client_adrd, client_addr_len, 0);
     uint64_t to_write = 0;
     flag_state state_accept = FLAG_ACCEPT;
     __u64 some = (__u64)state_accept;

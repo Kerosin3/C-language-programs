@@ -36,5 +36,6 @@ void setup_iouring(struct io_uring *ring, int ncon, bool pool)
 //     if ((io_uring_queue_init_params(ncon, ring, &params)) != 0)
         die("error io uring initialization");
     //printf("submitted:%d\n",io_uring_submit(ring));
-    printf("successully inited io uring\n");
+    printf("successully inited io uring %u\n",ring->sq.sqe_head);
+    printf("successully inited io uring %u\n",ring->sq.sqe_tail);
 }

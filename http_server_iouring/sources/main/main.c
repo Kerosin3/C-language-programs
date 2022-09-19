@@ -5,10 +5,11 @@
 #include <signal.h>
 #include <stdio.h>
 
+struct io_uring ring;
+
 int main(int argc, char *argv[])
 {
     int serv_fd = setup_serv_sock(12345);
-    struct io_uring ring;
     setup_iouring(&ring, 100, false);
     signal(SIGPIPE, SIG_IGN);
 
