@@ -18,15 +18,14 @@ void event_loop(int sockfd, struct io_uring *ring)
         switch (cqe->user_data) // get type
         {
         case FLAG_ACCEPT:
-            add_accept_request(ring, sockfd, &client_addr, &client_addr_len); // add another accept
-            buffer_lengths[cqe->res] = 0;                                     // set current buffer sock 0
-            //                 add_read_request(ring, cqe->res);// res = fd
+            add_accept_request(ring, sockfd, &client_addr, &client_addr_len); // add requst one more time
+            buffer_lengths[cqe->res] = 0;                                     // set current read buffer 0
+            add_read_request(ring, cqe->res);// res = fd
             break;
         case FLAG_READ:
-            // 		if(LIKELY(cqe->res)) // non-empty request?  set fd
-            //                     handle_request(ring,
-            //                                    request_data_client_fd(cqe->user_data),
-            //                                    cqe->res);
+        	if(LIKELY(cqe->res)) // non-empty request?  set fd test not zero read
+          		handle_request(ring,
+			request_data_client_fd(cqe->user_data),cqe->res); // 
             break;
         }
     }
