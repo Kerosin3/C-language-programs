@@ -1,7 +1,5 @@
 #include "setup.h"
-
 #include "liburing.h"
-#define MAX_CONNECTIONS 100
 
 int setup_serv_sock(uint16_t port)
 {
@@ -30,12 +28,6 @@ void teardown_server_sock(int servsock)
 void setup_iouring(struct io_uring *ring, int ncon, bool pool)
 {
     struct io_uring_params params = {0};
-    params.flags = 0;
-    params.sq_thread_idle = 2147483647;
     if ((io_uring_queue_init(100, ring,0)) != 0)
-//     if ((io_uring_queue_init_params(ncon, ring, &params)) != 0)
         die("error io uring initialization");
-    //printf("submitted:%d\n",io_uring_submit(ring));
-    printf("successully inited io uring %u\n",ring->sq.sqe_head);
-    printf("successully inited io uring %u\n",ring->sq.sqe_tail);
 }

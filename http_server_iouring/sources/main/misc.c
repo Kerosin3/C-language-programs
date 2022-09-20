@@ -5,3 +5,4 @@ _Noreturn void die(const char *message)
     perror(message);
     exit(EXIT_FAILURE);
 }
+
