@@ -1,0 +1,1 @@
+/usr/bin/cc -Wall -Wextra -Wpedantic -pedantic-errors  -O3 CMakeFiles/app.out.dir/main.c.o -o ../../app.out  libservapplib.a -luring 

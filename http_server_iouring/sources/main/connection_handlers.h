@@ -1,12 +1,13 @@
 #ifndef CONNECTIONHANDLERS
 #define CONNECTIONHANDLERS
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "bufandfiles.h"
 #include "misc.h"
-#include "buf&files.h"
 #include <liburing.h>
-
+#include <stdio.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <stdlib.h>
 
 typedef enum
 {
@@ -15,15 +16,14 @@ typedef enum
     FLAG_WRITE = 2,
 } flag_state;
 
-inline char* get_client_buffer(int client_fd)
+
+void add_accept_request(struct io_uring *ring, int serverfd, struct sockaddr_in *a_client_adrd, socklen_t *client_addr_len);
+
+inline char *get_client_buffer(int client_fd)
 {
     return &buffers[client_fd * BUFFER_SIZE];
 }
 
-void add_read_request(struct io_uring* ring, int client_fd);
+// void add_read_request(struct io_uring* ring, int client_fd);
 
-void add_accept_request(struct io_uring *ring, 
-		        int serverfd, 
-		        struct sockaddr_in* a_client_adrd,
-                        socklen_t* client_addr_len);
 #endif
