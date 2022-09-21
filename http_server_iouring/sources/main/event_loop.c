@@ -1,5 +1,6 @@
 #include "event_loop.h"
 #include "connection_handlers.h"
+#include <liburing.h>
 
 void event_loop(int sockfd, struct io_uring *ring)
 {
@@ -24,12 +25,11 @@ void event_loop(int sockfd, struct io_uring *ring)
         case FLAG_ACCEPT:
             add_accept_request(ring, sockfd, &client_addr, &client_addr_len); // add requst one more time  and set socket id
             buffer_lengths[cqe->res] = 0;                                     // set current read buffer 0
-            add_read_request(ring, cqe->res);// res = fd of the socket
+            add_read_request(ring, cqe->res);// res = fd of the socket res -> n bytes
 	    printf("current event after submit: %u, fd is %d \n",request_data_event_type(ring->sq.sqes->user_data),request_data_client_fd(ring->sq.sqes->user_data) );
 	                break;
         case FLAG_READ:
 	        printf("read done\n");
-		exit(1);
         	if(LIKELY(cqe->res)) // non-empty request?  set fd test not zero read
         		handle_request(ring,request_data_client_fd(cqe->user_data),cqe->res); //  // 
             break;
@@ -37,5 +37,6 @@ void event_loop(int sockfd, struct io_uring *ring)
 
 	    break;
         }
+	io_uring_cqe_seen(ring,cqe);
     }
 }
