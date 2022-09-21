@@ -83,4 +83,10 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: \
  /usr/include/linux/fscrypt.h /usr/include/linux/mount.h \
  /usr/include/liburing/barrier.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdatomic.h \
- /usr/include/netinet/in.h /usr/include/bits/in.h
+ /usr/include/netinet/in.h /usr/include/bits/in.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h \
+ /usr/include/limits.h /usr/include/bits/posix1_lim.h \
+ /usr/include/bits/local_lim.h \
+ /usr/include/bits/pthread_stack_min-dynamic.h \
+ /usr/include/bits/pthread_stack_min.h /usr/include/bits/posix2_lim.h

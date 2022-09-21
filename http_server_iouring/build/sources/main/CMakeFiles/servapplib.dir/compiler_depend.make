@@ -210,7 +210,15 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: /home/ker0/test/
   /usr/include/liburing/barrier.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdatomic.h \
   /usr/include/netinet/in.h \
-  /usr/include/bits/in.h
+  /usr/include/bits/in.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h \
+  /usr/include/limits.h \
+  /usr/include/bits/posix1_lim.h \
+  /usr/include/bits/local_lim.h \
+  /usr/include/bits/pthread_stack_min-dynamic.h \
+  /usr/include/bits/pthread_stack_min.h \
+  /usr/include/bits/posix2_lim.h
 
 sources/main/CMakeFiles/servapplib.dir/event_loop.c.o: /home/ker0/test/C_lang/http_server_iouring/sources/main/event_loop.c \
   /usr/include/stdc-predef.h \
@@ -363,6 +371,14 @@ sources/main/CMakeFiles/servapplib.dir/event_loop.c.o: /home/ker0/test/C_lang/ht
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdatomic.h \
   /usr/include/netinet/in.h \
   /usr/include/bits/in.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h \
+  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h \
+  /usr/include/limits.h \
+  /usr/include/bits/posix1_lim.h \
+  /usr/include/bits/local_lim.h \
+  /usr/include/bits/pthread_stack_min-dynamic.h \
+  /usr/include/bits/pthread_stack_min.h \
+  /usr/include/bits/posix2_lim.h \
   /home/ker0/test/C_lang/http_server_iouring/sources/main/setup.h \
   /usr/include/linux/io_uring.h \
   /usr/include/netdb.h \
@@ -604,6 +620,18 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 
 /home/ker0/test/C_lang/http_server_iouring/sources/main/event_loop.c:
 
+/usr/include/bits/local_lim.h:
+
+/usr/include/bits/posix1_lim.h:
+
+/usr/include/limits.h:
+
+/usr/include/bits/pthread_stack_min-dynamic.h:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h:
+
 /usr/include/bits/in.h:
 
 /usr/include/netdb.h:
@@ -639,6 +667,8 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 /usr/include/bits/types/struct_sched_param.h:
 
 /usr/include/alloca.h:
+
+/usr/include/bits/pthread_stack_min.h:
 
 /usr/include/bits/sigthread.h:
 
@@ -867,6 +897,8 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 /usr/include/signal.h:
 
 /usr/include/bits/signum-arch.h:
+
+/usr/include/bits/posix2_lim.h:
 
 /usr/include/bits/sigevent-consts.h:
 
