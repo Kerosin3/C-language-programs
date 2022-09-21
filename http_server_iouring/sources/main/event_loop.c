@@ -22,9 +22,9 @@ void event_loop(int sockfd, struct io_uring *ring)
         case FLAG_ACCEPT:
             add_accept_request(ring, sockfd, &client_addr, &client_addr_len); // add requst one more time  and set socket id
             buffer_lengths[cqe->res] = 0;                                     // set current read buffer 0
-	    printf("-->%d\n",cqe->res);
             add_read_request(ring, cqe->res);// res = fd of the socket
-            break;
+	    printf("current event after submit: %u, fd is %d \n",request_data_event_type(ring->sq.sqes->user_data),request_data_client_fd(ring->sq.sqes->user_data) );
+	                break;
         case FLAG_READ:
 	        printf("read done\n");
         	if(LIKELY(cqe->res)) // non-empty request?  set fd test not zero read
