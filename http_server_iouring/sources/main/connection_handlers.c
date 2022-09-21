@@ -1,6 +1,9 @@
 #include "connection_handlers.h"
 #include "bufandfiles.h"
 
+static void send_string(struct io_uring* ring, int client_fd,const char* str, size_t str_len);
+void add_write_request(struct io_uring* ring, int client_fd,
+                              size_t nbytes, bool more_data);
 
 void add_read_request(struct io_uring* ring, int client_fd)
 {
@@ -9,7 +12,6 @@ void add_read_request(struct io_uring* ring, int client_fd)
     io_uring_prep_recv(sqe, client_fd,
                        get_client_buffer(client_fd) + current_length,
                        BUFFER_SIZE - current_length, 0);
-    //io_uring_sqe_set_data64(sqe, 1 );
     io_uring_sqe_set_data64(sqe, make_request_data(client_fd,FLAG_READ) );
     printf("setting udata is :%LX,event: %u \n",sqe->user_data, request_data_event_type(sqe->user_data));
     if (io_uring_submit(ring)<0)  printf("error submitting\n");
@@ -28,14 +30,49 @@ void add_accept_request(struct io_uring *ring, int serverfd, struct sockaddr_in 
     if (io_uring_submit(ring)<0)  printf("error submitting\n");
 }
 
+void add_back_accept_request(struct io_uring* ring, int client_fd)
+{
+    struct io_uring_sqe *sqe = io_uring_get_sqe(ring); // pop
+    if (!sqe)
+    {
+        printf("error adding to que\n");
+    }
+    io_uring_sqe_set_data64(sqe, make_request_data(client_fd, FLAG_READ));
+    if (io_uring_submit(ring)<0)  printf("error submitting\n");
+    printf("set state read\n");
+}
+
 void handle_request(struct io_uring* ring, int client_fd,size_t n_read){
-	size_t cur_len = buffer_lengths[client_fd];
-	printf("----->%s\n",get_client_buffer(client_fd));
+	size_t prev_length = buffer_lengths[client_fd];
+	size_t length = (buffer_lengths[client_fd] += n_read); // add to length
+// 	printf("----->%s\n",get_client_buffer(client_fd)+length);
+	printf("----->%s\n", "------>>>>>>>>>>>>>\n" );
+	send_string(ring,client_fd, get_client_buffer(client_fd)+(prev_length) ,n_read); // set write here
+ 	add_read_request(ring, client_fd);
 }
 /*
  *  ---flag---clientfd
  */
 u_int64_t make_request_data( int client_fd,flag_state flag ){
 	return (uint64_t) (flag) << 32 | client_fd; 
+}
+
+
+void add_write_request(struct io_uring* ring, int client_fd,
+                              size_t nbytes, bool more_data)
+{
+    struct io_uring_sqe* sqe = io_uring_get_sqe(ring);
+    io_uring_prep_send(sqe, client_fd, get_client_buffer(client_fd), nbytes,
+                       MSG_DONTWAIT | (more_data ? MSG_MORE : 0));
+    io_uring_sqe_set_data(
+        sqe, (void*)make_request_data(client_fd, FLAG_WRITE));
+    io_uring_submit(ring);
+}
+
+static void send_string(struct io_uring* ring, int client_fd,
+                        const char* str, size_t str_len)
+{
+    memcpy(get_client_buffer(client_fd), str, str_len);
+    add_write_request(ring, client_fd, str_len, false);
 }
 
