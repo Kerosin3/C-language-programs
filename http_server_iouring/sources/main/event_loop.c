@@ -9,11 +9,13 @@ void event_loop(int sockfd, struct io_uring *ring)
 
     add_accept_request(ring, sockfd, &client_addr, &client_addr_len);
 
+    
+
     for (;;)
     {
         struct io_uring_cqe *cqe;
 
-        if (UNLIKELY(io_uring_wait_cqe(ring, &cqe)) < 0)
+        if (UNLIKELY(io_uring_wait_cqe(ring, &cqe)))
             die("error accepting a connection");
 	printf("current event: %u, fd is %d \n",request_data_event_type(cqe->user_data),request_data_client_fd(cqe->user_data) );
 
@@ -27,6 +29,7 @@ void event_loop(int sockfd, struct io_uring *ring)
 	                break;
         case FLAG_READ:
 	        printf("read done\n");
+		exit(1);
         	if(LIKELY(cqe->res)) // non-empty request?  set fd test not zero read
         		handle_request(ring,request_data_client_fd(cqe->user_data),cqe->res); //  // 
             break;

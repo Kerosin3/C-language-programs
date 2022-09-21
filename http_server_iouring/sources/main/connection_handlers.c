@@ -10,7 +10,7 @@ void add_read_request(struct io_uring* ring, int client_fd)
                        BUFFER_SIZE - current_length, 0);
     //io_uring_sqe_set_data64(sqe, 1 );
     io_uring_sqe_set_data64(sqe, make_request_data(client_fd,FLAG_READ) );
-    printf("udata is :%LX,event: %u \n",sqe->user_data, request_data_event_type(sqe->user_data));
+    printf("setting udata is :%LX,event: %u \n",sqe->user_data, request_data_event_type(sqe->user_data));
     if (io_uring_submit(ring)<0)  printf("error submitting\n");
 }
 
@@ -24,7 +24,7 @@ void add_accept_request(struct io_uring *ring, int serverfd, struct sockaddr_in 
     }
     io_uring_prep_accept(sqe, serverfd, (struct sockaddr *)a_client_adrd, client_addr_len, 0);
     io_uring_sqe_set_data64(sqe, make_request_data(0, FLAG_ACCEPT));
-    io_uring_submit(ring); // use timeout?
+    if (io_uring_submit(ring)<0)  printf("error submitting\n");
 }
 
 void handle_request(struct io_uring* ring, int client_fd,size_t n_read){
