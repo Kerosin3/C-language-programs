@@ -3,6 +3,7 @@
 
 #include "bufandfiles.h"
 #include "misc.h"
+#include "picohttpparser.h"
 #include <liburing.h>
 #include <limits.h>
 #include <netinet/in.h>

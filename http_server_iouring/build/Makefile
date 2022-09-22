@@ -117,6 +117,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named picohttpparserlib
+
+# Build rule for target.
+picohttpparserlib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 picohttpparserlib
+.PHONY : picohttpparserlib
+
+# fast build rule for target.
+picohttpparserlib/fast:
+	$(MAKE) $(MAKESILENT) -f sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build.make sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build
+.PHONY : picohttpparserlib/fast
+
+#=============================================================================
 # Target rules for targets named servapplib
 
 # Build rule for target.
@@ -141,19 +154,6 @@ app.out: cmake_check_build_system
 app.out/fast:
 	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/app.out.dir/build.make sources/main/CMakeFiles/app.out.dir/build
 .PHONY : app.out/fast
-
-#=============================================================================
-# Target rules for targets named picohttpparserlib
-
-# Build rule for target.
-picohttpparserlib: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 picohttpparserlib
-.PHONY : picohttpparserlib
-
-# fast build rule for target.
-picohttpparserlib/fast:
-	$(MAKE) $(MAKESILENT) -f sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build.make sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build
-.PHONY : picohttpparserlib/fast
 
 # Help Target
 help:

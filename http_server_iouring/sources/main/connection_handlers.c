@@ -1,5 +1,4 @@
 #include "connection_handlers.h"
-#include "bufandfiles.h"
 
 const char *unimplemented_content =
     "HTTP/1.0 400 Bad Request\r\n"
@@ -14,6 +13,16 @@ const char *unimplemented_content =
     "<p>Your client sent a request ZeroHTTPd did not understand and it is probably not your fault.</p>"
     "</body>"
     "</html>";
+
+
+
+#define REPLY_200 "HTTP/1.0 200 OK\r\nServer: otus-io-uring\r\nDate: %s\r\n\
+Content-Type: application/octet-stream\r\nContent-Length: %ld\r\n\r\n"
+#define REPLY_400 "HTTP/1.0 400 Bad Request\r\n\r\n"
+#define REPLY_404 "HTTP/1.0 404 Not Found\r\n\r\n"
+#define REPLY_405 "HTTP/1.0 405 Method Not Allowed\r\nAllow: GET\r\n\r\n"
+#define REPLY_413 "HTTP/1.0 413 Payload Too Large\r\n\r\n"
+
 
 static void send_string(struct io_uring *ring, int client_fd, const char *str, size_t str_len);
 void add_write_request(struct io_uring *ring, int client_fd, size_t nbytes, bool more_data);
@@ -67,9 +76,22 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
 {
     size_t prev_length = buffer_lengths[client_fd];
     size_t length = (buffer_lengths[client_fd] += n_read); // add to length
+							   //
+    char* method, *path;
+    size_t NHEADERS = 16;
+    size_t method_len, path_len, num_headers = NHEADERS;
+    int minor_version;
+    struct phr_header headers[NHEADERS];
+    int r = phr_parse_request(get_client_buffer(client_fd), length,
+                              (const char**)&method, &method_len,
+                              (const char**)&path, &path_len, &minor_version,
+                              headers, &num_headers, prev_length);
+
+ 
+    send_string(ring, client_fd, REPLY_404, strlen(REPLY_404));
     printf("----->%s\n", "------>>>>>>>>>>>>>\n");
     // send_string(ring,client_fd, unimplemented_content ,strlen(unimplemented_content)); // set write here
-    send_string(ring, client_fd, get_client_buffer(client_fd) + (prev_length), n_read); // send back
+    // send_string(ring, client_fd, get_client_buffer(client_fd) + (prev_length), n_read); // send back
     add_read_request(ring, client_fd);                                                  // add read back
 }
 /*

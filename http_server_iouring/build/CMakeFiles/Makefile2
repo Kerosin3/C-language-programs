@@ -63,18 +63,18 @@ CMAKE_BINARY_DIR = /home/ker0/test/C_lang/http_server_iouring/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: sources/main/all
 all: sources/picohttpparser/all
+all: sources/main/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
-preinstall: sources/main/preinstall
 preinstall: sources/picohttpparser/preinstall
+preinstall: sources/main/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: sources/main/clean
 clean: sources/picohttpparser/clean
+clean: sources/main/clean
 .PHONY : clean
 
 #=============================================================================
@@ -110,59 +110,6 @@ sources/picohttpparser/clean: sources/picohttpparser/CMakeFiles/picohttpparserli
 .PHONY : sources/picohttpparser/clean
 
 #=============================================================================
-# Target rules for target sources/main/CMakeFiles/servapplib.dir
-
-# All Build rule for target.
-sources/main/CMakeFiles/servapplib.dir/all:
-	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/depend
-	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles --progress-num=5,6,7,8,9,10 "Built target servapplib"
-.PHONY : sources/main/CMakeFiles/servapplib.dir/all
-
-# Build rule for subdir invocation for target.
-sources/main/CMakeFiles/servapplib.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles 6
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sources/main/CMakeFiles/servapplib.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles 0
-.PHONY : sources/main/CMakeFiles/servapplib.dir/rule
-
-# Convenience name for target.
-servapplib: sources/main/CMakeFiles/servapplib.dir/rule
-.PHONY : servapplib
-
-# clean rule for target.
-sources/main/CMakeFiles/servapplib.dir/clean:
-	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/clean
-.PHONY : sources/main/CMakeFiles/servapplib.dir/clean
-
-#=============================================================================
-# Target rules for target sources/main/CMakeFiles/app.out.dir
-
-# All Build rule for target.
-sources/main/CMakeFiles/app.out.dir/all: sources/main/CMakeFiles/servapplib.dir/all
-sources/main/CMakeFiles/app.out.dir/all: sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/all
-	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/app.out.dir/build.make sources/main/CMakeFiles/app.out.dir/depend
-	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/app.out.dir/build.make sources/main/CMakeFiles/app.out.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles --progress-num=1,2 "Built target app.out"
-.PHONY : sources/main/CMakeFiles/app.out.dir/all
-
-# Build rule for subdir invocation for target.
-sources/main/CMakeFiles/app.out.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles 10
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sources/main/CMakeFiles/app.out.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles 0
-.PHONY : sources/main/CMakeFiles/app.out.dir/rule
-
-# Convenience name for target.
-app.out: sources/main/CMakeFiles/app.out.dir/rule
-.PHONY : app.out
-
-# clean rule for target.
-sources/main/CMakeFiles/app.out.dir/clean:
-	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/app.out.dir/build.make sources/main/CMakeFiles/app.out.dir/clean
-.PHONY : sources/main/CMakeFiles/app.out.dir/clean
-
-#=============================================================================
 # Target rules for target sources/picohttpparser/CMakeFiles/picohttpparserlib.dir
 
 # All Build rule for target.
@@ -187,6 +134,59 @@ picohttpparserlib: sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/rule
 sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/clean:
 	$(MAKE) $(MAKESILENT) -f sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build.make sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/clean
 .PHONY : sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/clean
+
+#=============================================================================
+# Target rules for target sources/main/CMakeFiles/servapplib.dir
+
+# All Build rule for target.
+sources/main/CMakeFiles/servapplib.dir/all: sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/all
+	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/depend
+	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles --progress-num=5,6,7,8,9,10 "Built target servapplib"
+.PHONY : sources/main/CMakeFiles/servapplib.dir/all
+
+# Build rule for subdir invocation for target.
+sources/main/CMakeFiles/servapplib.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles 8
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sources/main/CMakeFiles/servapplib.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles 0
+.PHONY : sources/main/CMakeFiles/servapplib.dir/rule
+
+# Convenience name for target.
+servapplib: sources/main/CMakeFiles/servapplib.dir/rule
+.PHONY : servapplib
+
+# clean rule for target.
+sources/main/CMakeFiles/servapplib.dir/clean:
+	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/clean
+.PHONY : sources/main/CMakeFiles/servapplib.dir/clean
+
+#=============================================================================
+# Target rules for target sources/main/CMakeFiles/app.out.dir
+
+# All Build rule for target.
+sources/main/CMakeFiles/app.out.dir/all: sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/all
+sources/main/CMakeFiles/app.out.dir/all: sources/main/CMakeFiles/servapplib.dir/all
+	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/app.out.dir/build.make sources/main/CMakeFiles/app.out.dir/depend
+	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/app.out.dir/build.make sources/main/CMakeFiles/app.out.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles --progress-num=1,2 "Built target app.out"
+.PHONY : sources/main/CMakeFiles/app.out.dir/all
+
+# Build rule for subdir invocation for target.
+sources/main/CMakeFiles/app.out.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles 10
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sources/main/CMakeFiles/app.out.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles 0
+.PHONY : sources/main/CMakeFiles/app.out.dir/rule
+
+# Convenience name for target.
+app.out: sources/main/CMakeFiles/app.out.dir/rule
+.PHONY : app.out
+
+# clean rule for target.
+sources/main/CMakeFiles/app.out.dir/clean:
+	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/app.out.dir/build.make sources/main/CMakeFiles/app.out.dir/clean
+.PHONY : sources/main/CMakeFiles/app.out.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

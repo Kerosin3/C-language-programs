@@ -4,8 +4,12 @@ ADD_LIBRARY( servapplib STATIC
 	     misc.c
 	     setup.c
 	     connection_handlers.c
-
 	     )
+
+TARGET_LINK_LIBRARIES( servapplib 
+	picohttpparserlib
+	)
+
 ADD_EXECUTABLE (app.out
 		main.c)
 
