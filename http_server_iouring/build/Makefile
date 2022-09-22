@@ -126,7 +126,7 @@ picohttpparserlib: cmake_check_build_system
 
 # fast build rule for target.
 picohttpparserlib/fast:
-	$(MAKE) $(MAKESILENT) -f sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build.make sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build
+	$(MAKE) $(MAKESILENT) -f sources/contrib/CMakeFiles/picohttpparserlib.dir/build.make sources/contrib/CMakeFiles/picohttpparserlib.dir/build
 .PHONY : picohttpparserlib/fast
 
 #=============================================================================

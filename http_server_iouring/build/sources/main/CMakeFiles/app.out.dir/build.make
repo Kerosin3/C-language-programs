@@ -92,9 +92,9 @@ app_out_EXTERNAL_OBJECTS =
 
 app.out: sources/main/CMakeFiles/app.out.dir/main.c.o
 app.out: sources/main/CMakeFiles/app.out.dir/build.make
-app.out: sources/picohttpparser/libpicohttpparserlib.a
+app.out: sources/contrib/libpicohttpparserlib.a
 app.out: sources/main/libservapplib.a
-app.out: sources/picohttpparser/libpicohttpparserlib.a
+app.out: sources/contrib/libpicohttpparserlib.a
 app.out: sources/main/CMakeFiles/app.out.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable ../../app.out"
 	cd /home/ker0/test/C_lang/http_server_iouring/build/sources/main && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/app.out.dir/link.txt --verbose=$(VERBOSE)

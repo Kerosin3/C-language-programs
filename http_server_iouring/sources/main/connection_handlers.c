@@ -1,7 +1,9 @@
 #include "connection_handlers.h"
+#include <fcntl.h>
+#include <stdio.h>
 
 const char *unimplemented_content =
-    "HTTP/1.0 400 Bad Request\r\n"
+    "HTTP/1.0 200 OK\r\n"
     "Content-type: text/html\r\n"
     "\r\n"
     "<html>"
@@ -10,13 +12,13 @@ const char *unimplemented_content =
     "</head>"
     "<body>"
     "<h1>Bad Request (Unimplemented)</h1>"
-    "<p>Your client sent a request ZeroHTTPd did not understand and it is probably not your fault.</p>"
+    "<p>Your client %ld  sent a request ZeroHTTPd did not understand and it is probably not your fault.</p>"
     "</body>"
     "</html>";
 
 
 
-#define REPLY_200 "HTTP/1.0 200 OK\r\nServer: otus-io-uring\r\nDate: %s\r\n\
+#define REPLY_200 "HTTP/1.0 200 OK\r\nServer: outs-io-uring\r\nDate: \r\n\
 Content-Type: application/octet-stream\r\nContent-Length: %ld\r\n\r\n"
 #define REPLY_400 "HTTP/1.0 400 Bad Request\r\n\r\n"
 #define REPLY_404 "HTTP/1.0 404 Not Found\r\n\r\n"
@@ -25,7 +27,6 @@ Content-Type: application/octet-stream\r\nContent-Length: %ld\r\n\r\n"
 
 
 static void send_string(struct io_uring *ring, int client_fd, const char *str, size_t str_len);
-void add_write_request(struct io_uring *ring, int client_fd, size_t nbytes, bool more_data);
 
 void add_read_request(struct io_uring *ring, int client_fd)
 {
@@ -82,17 +83,35 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
     size_t method_len, path_len, num_headers = NHEADERS;
     int minor_version;
     struct phr_header headers[NHEADERS];
-    int r = phr_parse_request(get_client_buffer(client_fd), length,
-                              (const char**)&method, &method_len,
-                              (const char**)&path, &path_len, &minor_version,
-                              headers, &num_headers, prev_length);
+//     int r = phr_parse_request(get_client_buffer(client_fd), length,
+//                               (const char**)&method, &method_len,
+//                               (const char**)&path, &path_len, &minor_version,
+//                               headers, &num_headers, prev_length);
 
- 
-    send_string(ring, client_fd, REPLY_404, strlen(REPLY_404));
-    printf("----->%s\n", "------>>>>>>>>>>>>>\n");
+    char *filename = "jerry-zhang.jpg";
+    file_fds[client_fd] =open(filename,O_RDONLY); // set fd to transfer
+
+    struct stat st;
+    stat(filename,&st);
+    size_t csize = st.st_size;
+
+
+    buffer_lengths[client_fd] = csize;
+    printf("filesize if %lu\n",csize);
+
+//     buffer_lengths[client_fd+1] = csize2;
+//     printf("r is %d,size if %lu \n",r); 
+//     int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, unimplemented_content ,csize );
+   
+      int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, REPLY_200, st.st_size);
+      printf("n is %d\n",n);
+
+      add_write_request(ring, client_fd, n, true);
+//     send_string(ring, client_fd, unimplemented_content, strlen(unimplemented_content));
+//     send_string(ring, client_fd, REPLY_400, strlen(REPLY_400));
     // send_string(ring,client_fd, unimplemented_content ,strlen(unimplemented_content)); // set write here
     // send_string(ring, client_fd, get_client_buffer(client_fd) + (prev_length), n_read); // send back
-    add_read_request(ring, client_fd);                                                  // add read back
+  //   add_read_request(ring, client_fd);                                                  // add read back
 }
 /*
  *  ---flag---clientfd

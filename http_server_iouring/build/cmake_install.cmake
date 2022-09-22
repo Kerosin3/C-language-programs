@@ -44,7 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/ker0/test/C_lang/http_server_iouring/build/sources/picohttpparser/cmake_install.cmake")
+  include("/home/ker0/test/C_lang/http_server_iouring/build/sources/contrib/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

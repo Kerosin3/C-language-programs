@@ -3,6 +3,7 @@
 
 #include "bufandfiles.h"
 #include "misc.h"
+#include <sys/stat.h>
 #include "picohttpparser.h"
 #include <liburing.h>
 #include <limits.h>
@@ -41,6 +42,9 @@ inline flag_state request_data_event_type(uint64_t request_data)
 void add_accept_request(struct io_uring *ring, int serverfd, struct sockaddr_in *a_client_adrd,
                         socklen_t *client_addr_len);
 void add_read_request(struct io_uring *ring, int client_fd);
+
+void add_write_request(struct io_uring *ring, int client_fd, size_t nbytes, bool more_data);
+
 void handle_request(struct io_uring *ring, int client_fd, size_t n_read);
 
 inline char *get_client_buffer(int client_fd)

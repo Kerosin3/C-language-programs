@@ -10,8 +10,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/ker0/test/C_lang/http_server_iouring/CMakeLists.txt"
   "CMakeFiles/3.24.2/CMakeCCompiler.cmake"
   "CMakeFiles/3.24.2/CMakeSystem.cmake"
+  "/home/ker0/test/C_lang/http_server_iouring/sources/contrib/CMakeLists.txt"
   "/home/ker0/test/C_lang/http_server_iouring/sources/main/CMakeLists.txt"
-  "/home/ker0/test/C_lang/http_server_iouring/sources/picohttpparser/CMakeLists.txt"
   "/usr/share/cmake/Modules/CMakeCInformation.cmake"
   "/usr/share/cmake/Modules/CMakeCommonLanguageInclude.cmake"
   "/usr/share/cmake/Modules/CMakeGenericSystem.cmake"
@@ -37,13 +37,13 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
-  "sources/picohttpparser/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "sources/contrib/CMakeFiles/CMakeDirectoryInformation.cmake"
   "sources/main/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/DependInfo.cmake"
+  "sources/contrib/CMakeFiles/picohttpparserlib.dir/DependInfo.cmake"
   "sources/main/CMakeFiles/servapplib.dir/DependInfo.cmake"
   "sources/main/CMakeFiles/app.out.dir/DependInfo.cmake"
   )

@@ -35,6 +35,8 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: \
  /usr/include/bits/struct_rwlock.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdnoreturn.h \
+ /usr/include/sys/stat.h /usr/include/bits/stat.h \
+ /usr/include/bits/struct_stat.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h \
  /usr/include/liburing.h /usr/include/sys/socket.h \
  /usr/include/bits/types/struct_iovec.h /usr/include/bits/socket.h \
@@ -45,9 +47,8 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: \
  /usr/include/asm-generic/posix_types.h /usr/include/asm/bitsperlong.h \
  /usr/include/asm-generic/bitsperlong.h /usr/include/asm/sockios.h \
  /usr/include/asm-generic/sockios.h \
- /usr/include/bits/types/struct_osockaddr.h /usr/include/sys/stat.h \
- /usr/include/bits/stat.h /usr/include/bits/struct_stat.h \
- /usr/include/sys/uio.h /usr/include/bits/uio_lim.h /usr/include/errno.h \
+ /usr/include/bits/types/struct_osockaddr.h /usr/include/sys/uio.h \
+ /usr/include/bits/uio_lim.h /usr/include/errno.h \
  /usr/include/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
  /usr/include/asm-generic/errno-base.h /usr/include/signal.h \

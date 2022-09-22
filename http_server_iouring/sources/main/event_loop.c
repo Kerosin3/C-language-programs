@@ -1,16 +1,18 @@
 #include "event_loop.h"
 #include "connection_handlers.h"
+#include "misc.h"
 #include <asm-generic/socket.h>
 #include <liburing.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 void event_loop(int sockfd, struct io_uring *ring)
 {
 
     struct sockaddr_in client_addr = {0};
     socklen_t client_addr_len = sizeof(client_addr);
-
+    int current_client_fd = -1;
     int sndsize = 65536;
     int err;
     if ((err = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_SNDBUF, (char *)&sndsize, (int)sizeof(sndsize))))
@@ -45,6 +47,19 @@ void event_loop(int sockfd, struct io_uring *ring)
                 handle_request(ring, request_data_client_fd(cqe->user_data), cqe->res); //  //
             break;
         case FLAG_WRITE:
+	    current_client_fd = request_data_client_fd(cqe->user_data); // get current fd
+	    if (LIKELY( current_client_fd !=0  )){
+		    off_t offset = 0;
+                    if(sendfile(current_client_fd, file_fds[current_client_fd],
+                                &offset, buffer_lengths[current_client_fd]) < 0)
+                        perror("sendfile");
+		    printf("sended\n");
+// 	            if(sendfile(current_client_fd, file_fds[current_client_fd+1],
+//                                &offset, buffer_lengths[current_client_fd+1]) < 0)
+ //                       perror("sendfile");
+
+//		    close(current_client_fd);
+	    }
 
             break;
         }

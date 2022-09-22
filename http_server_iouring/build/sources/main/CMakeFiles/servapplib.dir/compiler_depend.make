@@ -121,6 +121,9 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: /home/ker0/test/
   /usr/include/bits/stdlib-bsearch.h \
   /usr/include/bits/stdlib-float.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdnoreturn.h \
+  /usr/include/sys/stat.h \
+  /usr/include/bits/stat.h \
+  /usr/include/bits/struct_stat.h \
   /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h \
   /usr/include/liburing.h \
   /usr/include/sys/socket.h \
@@ -140,9 +143,6 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: /home/ker0/test/
   /usr/include/asm/sockios.h \
   /usr/include/asm-generic/sockios.h \
   /usr/include/bits/types/struct_osockaddr.h \
-  /usr/include/sys/stat.h \
-  /usr/include/bits/stat.h \
-  /usr/include/bits/struct_stat.h \
   /usr/include/sys/uio.h \
   /usr/include/bits/uio_lim.h \
   /usr/include/errno.h \
@@ -284,6 +284,9 @@ sources/main/CMakeFiles/servapplib.dir/event_loop.c.o: /home/ker0/test/C_lang/ht
   /usr/include/bits/stdlib-bsearch.h \
   /usr/include/bits/stdlib-float.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdnoreturn.h \
+  /usr/include/sys/stat.h \
+  /usr/include/bits/stat.h \
+  /usr/include/bits/struct_stat.h \
   /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h \
   /usr/include/liburing.h \
   /usr/include/sys/socket.h \
@@ -303,9 +306,6 @@ sources/main/CMakeFiles/servapplib.dir/event_loop.c.o: /home/ker0/test/C_lang/ht
   /usr/include/asm/sockios.h \
   /usr/include/asm-generic/sockios.h \
   /usr/include/bits/types/struct_osockaddr.h \
-  /usr/include/sys/stat.h \
-  /usr/include/bits/stat.h \
-  /usr/include/bits/struct_stat.h \
   /usr/include/sys/uio.h \
   /usr/include/bits/uio_lim.h \
   /usr/include/errno.h \
@@ -389,7 +389,15 @@ sources/main/CMakeFiles/servapplib.dir/event_loop.c.o: /home/ker0/test/C_lang/ht
   /usr/include/linux/io_uring.h \
   /usr/include/netdb.h \
   /usr/include/rpc/netdb.h \
-  /usr/include/bits/netdb.h
+  /usr/include/bits/netdb.h \
+  /usr/include/sys/sendfile.h \
+  /usr/include/unistd.h \
+  /usr/include/bits/posix_opt.h \
+  /usr/include/bits/environments.h \
+  /usr/include/bits/confname.h \
+  /usr/include/bits/getopt_posix.h \
+  /usr/include/bits/getopt_core.h \
+  /usr/include/bits/unistd_ext.h
 
 sources/main/CMakeFiles/servapplib.dir/misc.c.o: /home/ker0/test/C_lang/http_server_iouring/sources/main/misc.c \
   /usr/include/stdc-predef.h \
@@ -612,9 +620,21 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 
 /home/ker0/test/C_lang/http_server_iouring/sources/main/misc.c:
 
+/usr/include/bits/unistd_ext.h:
+
+/usr/include/bits/getopt_posix.h:
+
+/usr/include/bits/confname.h:
+
+/usr/include/bits/environments.h:
+
+/usr/include/unistd.h:
+
 /usr/include/bits/netdb.h:
 
 /usr/include/rpc/netdb.h:
+
+/usr/include/sys/sendfile.h:
 
 /usr/include/linux/io_uring.h:
 
@@ -677,6 +697,8 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 /usr/include/bits/pthread_stack_min.h:
 
 /usr/include/bits/sigthread.h:
+
+/usr/include/bits/posix_opt.h:
 
 /usr/include/bits/atomic_wide_counter.h:
 
@@ -749,6 +771,8 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 /usr/include/bits/signum-generic.h:
 
 /usr/include/bits/sigaction.h:
+
+/usr/include/bits/getopt_core.h:
 
 /usr/include/bits/sigstack.h:
 
@@ -830,6 +854,30 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 
 /usr/include/bits/types/__locale_t.h:
 
+/usr/include/bits/stat.h:
+
+/usr/include/asm/posix_types.h:
+
+/usr/include/asm/posix_types_64.h:
+
+/usr/include/bits/types/struct_FILE.h:
+
+/usr/include/sys/stat.h:
+
+/usr/include/bits/ss_flags.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/home/ker0/test/C_lang/http_server_iouring/sources/main/connection_handlers.h:
+
+/usr/include/bits/types/__mbstate_t.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/bits/types/time_t.h:
+
+/usr/include/bits/struct_stat.h:
+
 /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h:
 
 /usr/include/sys/cdefs.h:
@@ -854,26 +902,6 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 
 /usr/include/asm/socket.h:
 
-/usr/include/asm/posix_types.h:
-
-/usr/include/asm/posix_types_64.h:
-
-/usr/include/bits/stat.h:
-
-/usr/include/bits/types/struct_FILE.h:
-
-/usr/include/sys/stat.h:
-
-/usr/include/bits/ss_flags.h:
-
-/usr/include/bits/stdio_lim.h:
-
-/home/ker0/test/C_lang/http_server_iouring/sources/main/connection_handlers.h:
-
-/usr/include/bits/types/__mbstate_t.h:
-
-/usr/include/bits/time.h:
-
 /usr/include/asm/bitsperlong.h:
 
 /usr/include/linux/swab.h:
@@ -883,10 +911,6 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 /usr/include/inttypes.h:
 
 /usr/include/asm/sockios.h:
-
-/usr/include/bits/types/time_t.h:
-
-/usr/include/bits/struct_stat.h:
 
 /usr/include/bits/errno.h:
 
