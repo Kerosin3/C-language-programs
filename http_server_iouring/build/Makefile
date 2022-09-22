@@ -142,6 +142,19 @@ app.out/fast:
 	$(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/app.out.dir/build.make sources/main/CMakeFiles/app.out.dir/build
 .PHONY : app.out/fast
 
+#=============================================================================
+# Target rules for targets named picohttpparserlib
+
+# Build rule for target.
+picohttpparserlib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 picohttpparserlib
+.PHONY : picohttpparserlib
+
+# fast build rule for target.
+picohttpparserlib/fast:
+	$(MAKE) $(MAKESILENT) -f sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build.make sources/picohttpparser/CMakeFiles/picohttpparserlib.dir/build
+.PHONY : picohttpparserlib/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -151,6 +164,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... app.out"
+	@echo "... picohttpparserlib"
 	@echo "... servapplib"
 .PHONY : help
 

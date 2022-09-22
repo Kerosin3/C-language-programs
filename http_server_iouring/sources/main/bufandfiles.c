@@ -4,8 +4,6 @@
  * setup buffers
  */
 
-
-
 char *buffers;
 size_t *buffer_lengths;
 int *file_fds;
@@ -24,4 +22,3 @@ void setup_buffers(int nconnections)
     if (!file_fds)
         die("malloc");
 }
-

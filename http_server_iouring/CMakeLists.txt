@@ -16,4 +16,5 @@ set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -pedantic-errors ")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 #set(ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 add_subdirectory(sources/main)
+add_subdirectory(sources/picohttpparser)
 
