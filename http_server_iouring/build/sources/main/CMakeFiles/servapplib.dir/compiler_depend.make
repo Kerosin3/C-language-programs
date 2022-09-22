@@ -211,6 +211,8 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: /home/ker0/test/
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdatomic.h \
   /usr/include/netinet/in.h \
   /usr/include/bits/in.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h \
   /usr/include/limits.h \
@@ -371,6 +373,8 @@ sources/main/CMakeFiles/servapplib.dir/event_loop.c.o: /home/ker0/test/C_lang/ht
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdatomic.h \
   /usr/include/netinet/in.h \
   /usr/include/bits/in.h \
+  /usr/include/string.h \
+  /usr/include/strings.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h \
   /usr/include/limits.h \
@@ -383,9 +387,7 @@ sources/main/CMakeFiles/servapplib.dir/event_loop.c.o: /home/ker0/test/C_lang/ht
   /usr/include/linux/io_uring.h \
   /usr/include/netdb.h \
   /usr/include/rpc/netdb.h \
-  /usr/include/bits/netdb.h \
-  /usr/include/string.h \
-  /usr/include/strings.h
+  /usr/include/bits/netdb.h
 
 sources/main/CMakeFiles/servapplib.dir/misc.c.o: /home/ker0/test/C_lang/http_server_iouring/sources/main/misc.c \
   /usr/include/stdc-predef.h \
@@ -608,8 +610,6 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 
 /home/ker0/test/C_lang/http_server_iouring/sources/main/misc.c:
 
-/usr/include/string.h:
-
 /usr/include/bits/netdb.h:
 
 /usr/include/rpc/netdb.h:
@@ -631,6 +631,8 @@ sources/main/CMakeFiles/servapplib.dir/setup.c.o: /home/ker0/test/C_lang/http_se
 /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h:
 
 /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h:
+
+/usr/include/string.h:
 
 /usr/include/bits/in.h:
 

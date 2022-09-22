@@ -1,6 +1,9 @@
 #include "event_loop.h"
 #include "connection_handlers.h"
+#include <asm-generic/socket.h>
 #include <liburing.h>
+#include <string.h>
+#include <sys/socket.h>
 
 void event_loop(int sockfd, struct io_uring *ring)
 {
@@ -8,8 +11,14 @@ void event_loop(int sockfd, struct io_uring *ring)
     struct sockaddr_in client_addr = {0};
     socklen_t client_addr_len = sizeof(client_addr);
 
-    add_accept_request(ring, sockfd, &client_addr, &client_addr_len);
+    int sndsize = 65536;
+    int err;
+    if ((err = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_SNDBUF, (char *)&sndsize, (int)sizeof(sndsize)) )) 
+	    strerror(err);
+    if ((err = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_RCVBUF,(char *)&sndsize, (int)sizeof(sndsize))))
+	    strerror(err);
 
+    add_accept_request(ring, sockfd, &client_addr, &client_addr_len);
     
 
     for (;;)
