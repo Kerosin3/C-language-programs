@@ -1,4 +1,5 @@
 #include "event_loop.h"
+#include "bufandfiles.h"
 #include "connection_handlers.h"
 #include "misc.h"
 #include <asm-generic/socket.h>
@@ -47,19 +48,22 @@ void event_loop(int sockfd, struct io_uring *ring)
                 handle_request(ring, request_data_client_fd(cqe->user_data), cqe->res); //  //
             break;
         case FLAG_WRITE:
-	    current_client_fd = request_data_client_fd(cqe->user_data); // get current fd
-	    if (LIKELY( current_client_fd !=0  )){
-		    off_t offset = 0;
-                    if(sendfile(current_client_fd, file_fds[current_client_fd],
-                                &offset, buffer_lengths[current_client_fd]) < 0)
-                        perror("sendfile");
-		    printf("sended\n");
-// 	            if(sendfile(current_client_fd, file_fds[current_client_fd+1],
-//                                &offset, buffer_lengths[current_client_fd+1]) < 0)
- //                       perror("sendfile");
+            current_client_fd = request_data_client_fd(cqe->user_data); // get current fd
+            if (LIKELY(current_client_fd != 0))
+            {
+                off_t offset = 0;
+		printf("fd to send %d\n",file_fds[current_client_fd]);
 
-		    close(current_client_fd);
-	    }
+                if (sendfile(current_client_fd, file_fds[current_client_fd], &offset,
+                             buffer_lengths[current_client_fd]) < 0)
+                    perror("sendfile");
+                printf("sended\n");
+                // 	            if(sendfile(current_client_fd, file_fds[current_client_fd+1],
+                //                                &offset, buffer_lengths[current_client_fd+1]) < 0)
+                //                       perror("sendfile");
+
+                close(current_client_fd);
+            }
 
             break;
         }

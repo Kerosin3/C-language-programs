@@ -264,6 +264,30 @@ misc.c.s:
 	cd /home/ker0/test/C_lang/http_server_iouring/build && $(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/misc.c.s
 .PHONY : misc.c.s
 
+response_parser.o: response_parser.c.o
+.PHONY : response_parser.o
+
+# target to build an object file
+response_parser.c.o:
+	cd /home/ker0/test/C_lang/http_server_iouring/build && $(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/response_parser.c.o
+.PHONY : response_parser.c.o
+
+response_parser.i: response_parser.c.i
+.PHONY : response_parser.i
+
+# target to preprocess a source file
+response_parser.c.i:
+	cd /home/ker0/test/C_lang/http_server_iouring/build && $(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/response_parser.c.i
+.PHONY : response_parser.c.i
+
+response_parser.s: response_parser.c.s
+.PHONY : response_parser.s
+
+# target to generate assembly for a file
+response_parser.c.s:
+	cd /home/ker0/test/C_lang/http_server_iouring/build && $(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/response_parser.c.s
+.PHONY : response_parser.c.s
+
 setup.o: setup.c.o
 .PHONY : setup.o
 
@@ -313,6 +337,9 @@ help:
 	@echo "... misc.o"
 	@echo "... misc.i"
 	@echo "... misc.s"
+	@echo "... response_parser.o"
+	@echo "... response_parser.i"
+	@echo "... response_parser.s"
 	@echo "... setup.o"
 	@echo "... setup.i"
 	@echo "... setup.s"

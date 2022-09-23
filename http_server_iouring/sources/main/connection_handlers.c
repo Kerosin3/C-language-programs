@@ -1,6 +1,7 @@
 #include "connection_handlers.h"
+#include "bufandfiles.h"
+#include "response_parser.h"
 #include <fcntl.h>
-#include <stdio.h>
 
 const char *unimplemented_content =
     "HTTP/1.0 200 OK\r\n"
@@ -16,15 +17,13 @@ const char *unimplemented_content =
     "</body>"
     "</html>";
 
-
-
-#define REPLY_200 "HTTP/1.0 200 OK\r\nServer: outs-io-uring\r\nDate: \r\n\
+#define REPLY_200                                                                                                      \
+    "HTTP/1.0 200 OK\r\nServer: outs-io-uring\r\nDate: \r\n\
 Content-Type: application/octet-stream\r\nContent-Length: %ld\r\n\r\n"
 #define REPLY_400 "HTTP/1.0 400 Bad Request\r\n\r\n"
 #define REPLY_404 "HTTP/1.0 404 Not Found\r\n\r\n"
 #define REPLY_405 "HTTP/1.0 405 Method Not Allowed\r\nAllow: GET\r\n\r\n"
 #define REPLY_413 "HTTP/1.0 413 Payload Too Large\r\n\r\n"
-
 
 static void send_string(struct io_uring *ring, int client_fd, const char *str, size_t str_len);
 
@@ -77,41 +76,48 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
 {
     size_t prev_length = buffer_lengths[client_fd];
     size_t length = (buffer_lengths[client_fd] += n_read); // add to length
-							   //
-    char* method, *path;
-    size_t NHEADERS = 16;
-    size_t method_len, path_len, num_headers = NHEADERS;
-    int minor_version;
-    struct phr_header headers[NHEADERS];
-//     int r = phr_parse_request(get_client_buffer(client_fd), length,
-//                               (const char**)&method, &method_len,
-//                               (const char**)&path, &path_len, &minor_version,
-//                               headers, &num_headers, prev_length);
+    char *req_file = extract_bytes(get_client_buffer(client_fd)); // read request
+//    DumpHex(get_client_buffer(client_fd), length);
+    int flag_found = 0;
+    size_t k = 0;
+    while ((fds_to_send[k])) {
+	    if (!(strcmp(req_file,fds_to_send[k]))) {
+		    flag_found = 1;
+		break;
+	    }
+	printf("%s\n",fds_to_send[k]);
+    	k++;
+    }
+    if (flag_found){
 
-    char *filename = "jerry-zhang.jpg";
-    file_fds[client_fd] =open(filename,O_RDONLY); // set fd to transfer
+    printf("file: %s\n",fds_to_send[k]);
+    int fds = open(fds_to_send[k],O_RDONLY);
+    file_fds[client_fd] = fds; // write req fd to client fd array
 
     struct stat st;
-    stat(filename,&st);
+    stat(fds_to_send[k], &st);
     size_t csize = st.st_size;
-
+    printf("open file %s, fd is %d, size if %lu \n",req_file,file_fds[client_fd],csize);
 
     buffer_lengths[client_fd] = csize;
-    printf("filesize if %lu\n",csize);
 
-//     buffer_lengths[client_fd+1] = csize2;
-//     printf("r is %d,size if %lu \n",r); 
-//     int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, unimplemented_content ,csize );
-   
-      int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, "%s", unimplemented_content);
-      printf("n is %d\n",n);
+    int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE,  REPLY_200,csize );
+    add_write_request(ring, client_fd, n, true);
+    free(req_file);
 
-      add_write_request(ring, client_fd, n, true);
-//     send_string(ring, client_fd, unimplemented_content, strlen(unimplemented_content));
-//     send_string(ring, client_fd, REPLY_400, strlen(REPLY_400));
+    }
+    //     buffer_lengths[client_fd+1] = csize2;
+    //     printf("r is %d,size if %lu \n",r);
+    //     int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, unimplemented_content ,csize );
+
+    int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, "%s", unimplemented_content);
+    printf("n is %d\n", n);
+
+        //     send_string(ring, client_fd, unimplemented_content, strlen(unimplemented_content));
+    //     send_string(ring, client_fd, REPLY_400, strlen(REPLY_400));
     // send_string(ring,client_fd, unimplemented_content ,strlen(unimplemented_content)); // set write here
     // send_string(ring, client_fd, get_client_buffer(client_fd) + (prev_length), n_read); // send back
-  //   add_read_request(ring, client_fd);                                                  // add read back
+    //   add_read_request(ring, client_fd);                                                  // add read back
 }
 /*
  *  ---flag---clientfd

@@ -4,6 +4,7 @@ ADD_LIBRARY( servapplib STATIC
 	     misc.c
 	     setup.c
 	     connection_handlers.c
+	     response_parser.c
 	     )
 
 TARGET_LINK_LIBRARIES( servapplib 

@@ -34,11 +34,23 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: \
  /usr/include/bits/struct_rwlock.h /usr/include/alloca.h \
  /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdnoreturn.h \
+ /usr/include/dirent.h /usr/include/bits/dirent.h \
+ /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/bits/pthread_stack_min-dynamic.h \
+ /usr/include/bits/pthread_stack_min.h /usr/include/bits/dirent_ext.h \
+ /usr/include/fcntl.h /usr/include/bits/fcntl.h \
+ /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
+ /usr/include/bits/struct_stat.h /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
+ /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
+ /usr/include/string.h /usr/include/bits/types/locale_t.h \
+ /usr/include/bits/types/__locale_t.h /usr/include/strings.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/event_loop.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/connection_handlers.h \
- /usr/include/sys/stat.h /usr/include/bits/stat.h \
- /usr/include/bits/struct_stat.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h \
+ /home/ker0/test/C_lang/http_server_iouring/sources/main/response_parser.h \
  /usr/include/liburing.h /usr/include/sys/socket.h \
  /usr/include/bits/types/struct_iovec.h /usr/include/bits/socket.h \
  /usr/include/bits/socket_type.h /usr/include/bits/sockaddr.h \
@@ -48,8 +60,8 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: \
  /usr/include/asm-generic/posix_types.h /usr/include/asm/bitsperlong.h \
  /usr/include/asm-generic/bitsperlong.h /usr/include/asm/sockios.h \
  /usr/include/asm-generic/sockios.h \
- /usr/include/bits/types/struct_osockaddr.h /usr/include/sys/uio.h \
- /usr/include/bits/uio_lim.h /usr/include/errno.h \
+ /usr/include/bits/types/struct_osockaddr.h /usr/include/sys/stat.h \
+ /usr/include/sys/uio.h /usr/include/bits/uio_lim.h /usr/include/errno.h \
  /usr/include/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
  /usr/include/asm-generic/errno-base.h /usr/include/signal.h \
@@ -70,10 +82,7 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
  /usr/include/bits/stdint-uintn.h /usr/include/time.h \
  /usr/include/bits/time.h /usr/include/bits/types/struct_tm.h \
- /usr/include/bits/types/struct_itimerspec.h \
- /usr/include/bits/types/locale_t.h /usr/include/bits/types/__locale_t.h \
- /usr/include/fcntl.h /usr/include/bits/fcntl.h \
- /usr/include/bits/fcntl-linux.h /usr/include/sched.h \
+ /usr/include/bits/types/struct_itimerspec.h /usr/include/sched.h \
  /usr/include/bits/sched.h /usr/include/bits/types/struct_sched_param.h \
  /usr/include/bits/cpu-set.h /usr/include/linux/swab.h \
  /usr/include/linux/types.h /usr/include/asm/types.h \
@@ -81,19 +90,14 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: \
  /usr/include/asm/swab.h /usr/include/liburing/compat.h \
  /usr/include/linux/time_types.h /usr/include/linux/openat2.h \
  /usr/include/liburing/io_uring.h /usr/include/linux/fs.h \
- /usr/include/linux/limits.h /usr/include/linux/ioctl.h \
- /usr/include/asm/ioctl.h /usr/include/asm-generic/ioctl.h \
- /usr/include/linux/fscrypt.h /usr/include/linux/mount.h \
- /usr/include/liburing/barrier.h \
+ /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h \
+ /usr/include/asm-generic/ioctl.h /usr/include/linux/fscrypt.h \
+ /usr/include/linux/mount.h /usr/include/liburing/barrier.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdatomic.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h \
- /usr/include/limits.h /usr/include/bits/posix1_lim.h \
- /usr/include/bits/local_lim.h \
- /usr/include/bits/pthread_stack_min-dynamic.h \
- /usr/include/bits/pthread_stack_min.h /usr/include/bits/posix2_lim.h \
- /usr/include/netinet/in.h /usr/include/bits/in.h /usr/include/string.h \
- /usr/include/strings.h \
+ /usr/include/limits.h /usr/include/bits/posix2_lim.h \
+ /usr/include/netinet/in.h /usr/include/bits/in.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/setup.h \
  /usr/include/linux/io_uring.h /usr/include/netdb.h \
  /usr/include/rpc/netdb.h /usr/include/bits/netdb.h \

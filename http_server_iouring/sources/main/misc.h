@@ -6,6 +6,7 @@
 
 #define LIKELY(x) __builtin_expect(!!(x), 1)
 #define UNLIKELY(x) __builtin_expect(!!(x), 0)
+void DumpHex(const void *data, size_t size);
 
 _Noreturn void die(const char *message);
 

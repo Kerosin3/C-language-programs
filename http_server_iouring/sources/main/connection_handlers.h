@@ -3,8 +3,8 @@
 
 #include "bufandfiles.h"
 #include "misc.h"
-#include <sys/stat.h>
 #include "picohttpparser.h"
+#include "response_parser.h"
 #include <liburing.h>
 #include <limits.h>
 #include <netinet/in.h>
@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 typedef enum
