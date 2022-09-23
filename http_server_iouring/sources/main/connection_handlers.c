@@ -4,7 +4,7 @@
 
 const char *unimplemented_content =
     "HTTP/1.0 200 OK\r\n"
-    "Content-type: text/html\r\n"
+    "Content-Type: application/octet-stream\r\nContent-Length: %ld\r\n\r\n"
     "\r\n"
     "<html>"
     "<head>"
@@ -103,7 +103,7 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
 //     printf("r is %d,size if %lu \n",r); 
 //     int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, unimplemented_content ,csize );
    
-      int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, REPLY_200, st.st_size);
+      int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, "%s", unimplemented_content);
       printf("n is %d\n",n);
 
       add_write_request(ring, client_fd, n, true);

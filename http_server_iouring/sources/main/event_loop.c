@@ -58,7 +58,7 @@ void event_loop(int sockfd, struct io_uring *ring)
 //                                &offset, buffer_lengths[current_client_fd+1]) < 0)
  //                       perror("sendfile");
 
-//		    close(current_client_fd);
+		    close(current_client_fd);
 	    }
 
             break;
