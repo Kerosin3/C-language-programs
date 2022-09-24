@@ -20,6 +20,14 @@ int main(int argc, char *argv[])
     get_files_in_dir(argv[1]); // get dir and files
     uint16_t sock;
     sscanf(argv[2], "%hu", &sock);
+    if (sock <= 1000){
+	    printf("please do not use a port less than 1000\n");
+	    exit(1);
+    }
+    if (sock >=65535){
+            printf("please specify a port less than 65535\n");
+	    exit(1);
+    }
     int serv_fd = setup_serv_sock(sock);
     printf(">>launching server on a socket: %d<<\n", sock);
     setup_iouring(&ring, MAX_CONNECTIONS, false);
