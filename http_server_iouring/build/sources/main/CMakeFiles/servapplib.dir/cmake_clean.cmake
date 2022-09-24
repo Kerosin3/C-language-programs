@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/servapplib.dir/connection_handlers.c.o.d"
   "CMakeFiles/servapplib.dir/event_loop.c.o"
   "CMakeFiles/servapplib.dir/event_loop.c.o.d"
+  "CMakeFiles/servapplib.dir/http_resp.c.o"
+  "CMakeFiles/servapplib.dir/http_resp.c.o.d"
   "CMakeFiles/servapplib.dir/misc.c.o"
   "CMakeFiles/servapplib.dir/misc.c.o.d"
   "CMakeFiles/servapplib.dir/response_parser.c.o"

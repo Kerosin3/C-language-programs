@@ -41,16 +41,20 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: \
  /usr/include/bits/pthread_stack_min.h /usr/include/bits/dirent_ext.h \
  /usr/include/fcntl.h /usr/include/bits/fcntl.h \
  /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
- /usr/include/bits/struct_stat.h /usr/include/unistd.h \
+ /usr/include/bits/struct_stat.h /usr/include/string.h \
+ /usr/include/bits/types/locale_t.h /usr/include/bits/types/__locale_t.h \
+ /usr/include/strings.h /usr/include/unistd.h \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
  /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
- /usr/include/string.h /usr/include/bits/types/locale_t.h \
- /usr/include/bits/types/__locale_t.h /usr/include/strings.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/event_loop.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/connection_handlers.h \
+ /home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/response_parser.h \
+ /usr/include/asm-generic/errno-base.h /usr/include/errno.h \
+ /usr/include/bits/errno.h /usr/include/linux/errno.h \
+ /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
  /usr/include/liburing.h /usr/include/sys/socket.h \
  /usr/include/bits/types/struct_iovec.h /usr/include/bits/socket.h \
  /usr/include/bits/socket_type.h /usr/include/bits/sockaddr.h \
@@ -61,10 +65,7 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: \
  /usr/include/asm-generic/bitsperlong.h /usr/include/asm/sockios.h \
  /usr/include/asm-generic/sockios.h \
  /usr/include/bits/types/struct_osockaddr.h /usr/include/sys/stat.h \
- /usr/include/sys/uio.h /usr/include/bits/uio_lim.h /usr/include/errno.h \
- /usr/include/bits/errno.h /usr/include/linux/errno.h \
- /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
- /usr/include/asm-generic/errno-base.h /usr/include/signal.h \
+ /usr/include/sys/uio.h /usr/include/bits/uio_lim.h /usr/include/signal.h \
  /usr/include/bits/signum-generic.h /usr/include/bits/signum-arch.h \
  /usr/include/bits/types/sig_atomic_t.h \
  /usr/include/bits/types/siginfo_t.h /usr/include/bits/types/__sigval_t.h \

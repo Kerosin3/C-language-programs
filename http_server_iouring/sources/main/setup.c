@@ -24,10 +24,9 @@ void teardown_server_sock(int servsock)
     shutdown(servsock, SHUT_RDWR);
 }
 
-void setup_iouring(struct io_uring *ring, int ncon, bool pool)
+void setup_iouring(struct io_uring *ring, int ncon, bool pooling)
 {
-    struct io_uring_params params = {0};
-    if ((io_uring_queue_init(100, ring, 0)) != 0)
+    int flag = pooling ? IORING_SETUP_SQPOLL | IORING_SETUP_SQ_AFF : 0;
+    if ((io_uring_queue_init(ncon, ring, flag)) != 0)
         die("error io uring initialization");
-    printf("ring inited\n");
 }

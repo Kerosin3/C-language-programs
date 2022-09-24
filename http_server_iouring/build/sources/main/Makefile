@@ -216,6 +216,30 @@ event_loop.c.s:
 	cd /home/ker0/test/C_lang/http_server_iouring/build && $(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/event_loop.c.s
 .PHONY : event_loop.c.s
 
+http_resp.o: http_resp.c.o
+.PHONY : http_resp.o
+
+# target to build an object file
+http_resp.c.o:
+	cd /home/ker0/test/C_lang/http_server_iouring/build && $(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/http_resp.c.o
+.PHONY : http_resp.c.o
+
+http_resp.i: http_resp.c.i
+.PHONY : http_resp.i
+
+# target to preprocess a source file
+http_resp.c.i:
+	cd /home/ker0/test/C_lang/http_server_iouring/build && $(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/http_resp.c.i
+.PHONY : http_resp.c.i
+
+http_resp.s: http_resp.c.s
+.PHONY : http_resp.s
+
+# target to generate assembly for a file
+http_resp.c.s:
+	cd /home/ker0/test/C_lang/http_server_iouring/build && $(MAKE) $(MAKESILENT) -f sources/main/CMakeFiles/servapplib.dir/build.make sources/main/CMakeFiles/servapplib.dir/http_resp.c.s
+.PHONY : http_resp.c.s
+
 main.o: main.c.o
 .PHONY : main.o
 
@@ -331,6 +355,9 @@ help:
 	@echo "... event_loop.o"
 	@echo "... event_loop.i"
 	@echo "... event_loop.s"
+	@echo "... http_resp.o"
+	@echo "... http_resp.i"
+	@echo "... http_resp.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

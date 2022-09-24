@@ -51,18 +51,22 @@ void event_loop(int sockfd, struct io_uring *ring)
             current_client_fd = request_data_client_fd(cqe->user_data); // get current fd
             if (LIKELY(current_client_fd != 0))
             {
-                off_t offset = 0;
-		printf("fd to send %d\n",file_fds[current_client_fd]);
-
-                if (sendfile(current_client_fd, file_fds[current_client_fd], &offset,
-                             buffer_lengths[current_client_fd]) < 0)
-                    perror("sendfile");
-                printf("sended\n");
-                // 	            if(sendfile(current_client_fd, file_fds[current_client_fd+1],
-                //                                &offset, buffer_lengths[current_client_fd+1]) < 0)
-                //                       perror("sendfile");
-
-                close(current_client_fd);
+                off_t offset = 0; //default
+                if ((file_fds[current_client_fd]) < 0) // send jut a response
+                {
+		    //DumpHex(get_client_buffer(current_client_fd),buffer_lengths[current_client_fd]);  // for debug
+                    send(current_client_fd, get_client_buffer(current_client_fd), buffer_lengths[current_client_fd],
+                         0); // send reponse
+                }
+                else
+                {
+                    if (sendfile(current_client_fd, file_fds[current_client_fd], &offset,
+                                 buffer_lengths[current_client_fd]) < 0)
+                        perror("sendfile");
+                    close(file_fds[current_client_fd]);
+                }
+                shutdown(current_client_fd, SHUT_RDWR);// ???
+//		io_uring_prep_close(sqe, int fd)
             }
 
             break;

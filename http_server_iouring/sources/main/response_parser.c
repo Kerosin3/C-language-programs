@@ -8,6 +8,7 @@ char *extract_bytes(char *str)
     // char* st_ptr = str;
     char *st_ptr = str_cpy;
     char *part_beg = (void *)0;
+    char *main = "main";
     st_ptr = strstr(st_ptr, "GET");
     if (!st_ptr)
     {
@@ -20,16 +21,7 @@ char *extract_bytes(char *str)
     size_t len = 0;
     if (*(st_ptr + 1) == 32)
     {
-        char *ret = calloc(sizeof(char), 2);
-        ret[0] = '/';
-        ret[1] = '\0';
-        if (!ret)
-        {
-            printf("error while memory allcation\n");
-            exit(1);
-        }
-        free(str_cpy);
-        return NULL;
+        return main; // main page
     }
     else
     {
@@ -43,7 +35,7 @@ char *extract_bytes(char *str)
     }
     len = snprintf((void *)0, 0, "%s", part_beg);
     char *ret = calloc(sizeof(char), ++len);
-    strncpy(ret, part_beg+1, len-1);
+    strncpy(ret, part_beg + 1, len - 1);
     free(str_cpy);
     return ret;
 }

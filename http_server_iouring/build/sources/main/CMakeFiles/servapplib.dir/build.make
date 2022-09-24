@@ -153,6 +153,20 @@ sources/main/CMakeFiles/servapplib.dir/response_parser.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/servapplib.dir/response_parser.c.s"
 	cd /home/ker0/test/C_lang/http_server_iouring/build/sources/main && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ker0/test/C_lang/http_server_iouring/sources/main/response_parser.c -o CMakeFiles/servapplib.dir/response_parser.c.s
 
+sources/main/CMakeFiles/servapplib.dir/http_resp.c.o: sources/main/CMakeFiles/servapplib.dir/flags.make
+sources/main/CMakeFiles/servapplib.dir/http_resp.c.o: /home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.c
+sources/main/CMakeFiles/servapplib.dir/http_resp.c.o: sources/main/CMakeFiles/servapplib.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object sources/main/CMakeFiles/servapplib.dir/http_resp.c.o"
+	cd /home/ker0/test/C_lang/http_server_iouring/build/sources/main && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT sources/main/CMakeFiles/servapplib.dir/http_resp.c.o -MF CMakeFiles/servapplib.dir/http_resp.c.o.d -o CMakeFiles/servapplib.dir/http_resp.c.o -c /home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.c
+
+sources/main/CMakeFiles/servapplib.dir/http_resp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/servapplib.dir/http_resp.c.i"
+	cd /home/ker0/test/C_lang/http_server_iouring/build/sources/main && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.c > CMakeFiles/servapplib.dir/http_resp.c.i
+
+sources/main/CMakeFiles/servapplib.dir/http_resp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/servapplib.dir/http_resp.c.s"
+	cd /home/ker0/test/C_lang/http_server_iouring/build/sources/main && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.c -o CMakeFiles/servapplib.dir/http_resp.c.s
+
 # Object files for target servapplib
 servapplib_OBJECTS = \
 "CMakeFiles/servapplib.dir/bufandfiles.c.o" \
@@ -160,7 +174,8 @@ servapplib_OBJECTS = \
 "CMakeFiles/servapplib.dir/misc.c.o" \
 "CMakeFiles/servapplib.dir/setup.c.o" \
 "CMakeFiles/servapplib.dir/connection_handlers.c.o" \
-"CMakeFiles/servapplib.dir/response_parser.c.o"
+"CMakeFiles/servapplib.dir/response_parser.c.o" \
+"CMakeFiles/servapplib.dir/http_resp.c.o"
 
 # External object files for target servapplib
 servapplib_EXTERNAL_OBJECTS =
@@ -171,9 +186,10 @@ sources/main/libservapplib.a: sources/main/CMakeFiles/servapplib.dir/misc.c.o
 sources/main/libservapplib.a: sources/main/CMakeFiles/servapplib.dir/setup.c.o
 sources/main/libservapplib.a: sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o
 sources/main/libservapplib.a: sources/main/CMakeFiles/servapplib.dir/response_parser.c.o
+sources/main/libservapplib.a: sources/main/CMakeFiles/servapplib.dir/http_resp.c.o
 sources/main/libservapplib.a: sources/main/CMakeFiles/servapplib.dir/build.make
 sources/main/libservapplib.a: sources/main/CMakeFiles/servapplib.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking C static library libservapplib.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ker0/test/C_lang/http_server_iouring/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking C static library libservapplib.a"
 	cd /home/ker0/test/C_lang/http_server_iouring/build/sources/main && $(CMAKE_COMMAND) -P CMakeFiles/servapplib.dir/cmake_clean_target.cmake
 	cd /home/ker0/test/C_lang/http_server_iouring/build/sources/main && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/servapplib.dir/link.txt --verbose=$(VERBOSE)
 

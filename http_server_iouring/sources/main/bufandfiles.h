@@ -4,20 +4,26 @@
 #include "misc.h"
 #include <dirent.h>
 #include <fcntl.h>
+#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <linux/limits.h>
 #include <string.h>
+#include <unistd.h>
 
 #define BUFFER_SIZE 4096
-#define MAX_CONNECTIONS 100
+#define MAX_CONNECTIONS 1000
+#define MAXFILESINTHEDIR 512
+
+extern char *dir_name;
 
 extern char *buffers;
+extern char *filesinthedir;
 extern size_t *buffer_lengths;
 extern int *file_fds;
 
-extern char **fds_to_send;
+extern char **files_in_dir;
+
+void wrap_destroy_buffer();
 
 // inline char* client_buffer(int client_fd);
 void setup_buffers(int nconnections);

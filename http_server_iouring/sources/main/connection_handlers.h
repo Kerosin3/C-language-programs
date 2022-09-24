@@ -2,9 +2,13 @@
 #define CONNECTIONHANDLERS
 
 #include "bufandfiles.h"
+#include "http_resp.h"
 #include "misc.h"
 #include "picohttpparser.h"
 #include "response_parser.h"
+#include <asm-generic/errno-base.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <liburing.h>
 #include <limits.h>
 #include <netinet/in.h>

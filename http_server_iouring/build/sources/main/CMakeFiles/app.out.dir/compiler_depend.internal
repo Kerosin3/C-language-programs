@@ -74,6 +74,10 @@ sources/main/CMakeFiles/app.out.dir/main.c.o
  /usr/include/bits/fcntl-linux.h
  /usr/include/bits/stat.h
  /usr/include/bits/struct_stat.h
+ /usr/include/string.h
+ /usr/include/bits/types/locale_t.h
+ /usr/include/bits/types/__locale_t.h
+ /usr/include/strings.h
  /usr/include/unistd.h
  /usr/include/bits/posix_opt.h
  /usr/include/bits/environments.h
@@ -81,14 +85,17 @@ sources/main/CMakeFiles/app.out.dir/main.c.o
  /usr/include/bits/getopt_posix.h
  /usr/include/bits/getopt_core.h
  /usr/include/bits/unistd_ext.h
- /usr/include/string.h
- /usr/include/bits/types/locale_t.h
- /usr/include/bits/types/__locale_t.h
- /usr/include/strings.h
  /home/ker0/test/C_lang/http_server_iouring/sources/main/event_loop.h
  /home/ker0/test/C_lang/http_server_iouring/sources/main/connection_handlers.h
+ /home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.h
  /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h
  /home/ker0/test/C_lang/http_server_iouring/sources/main/response_parser.h
+ /usr/include/asm-generic/errno-base.h
+ /usr/include/errno.h
+ /usr/include/bits/errno.h
+ /usr/include/linux/errno.h
+ /usr/include/asm/errno.h
+ /usr/include/asm-generic/errno.h
  /usr/include/liburing.h
  /usr/include/sys/socket.h
  /usr/include/bits/types/struct_iovec.h
@@ -110,12 +117,6 @@ sources/main/CMakeFiles/app.out.dir/main.c.o
  /usr/include/sys/stat.h
  /usr/include/sys/uio.h
  /usr/include/bits/uio_lim.h
- /usr/include/errno.h
- /usr/include/bits/errno.h
- /usr/include/linux/errno.h
- /usr/include/asm/errno.h
- /usr/include/asm-generic/errno.h
- /usr/include/asm-generic/errno-base.h
  /usr/include/signal.h
  /usr/include/bits/signum-generic.h
  /usr/include/bits/signum-arch.h

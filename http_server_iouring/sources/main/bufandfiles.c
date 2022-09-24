@@ -1,4 +1,9 @@
 #include "bufandfiles.h"
+#include <dirent.h>
+#include <linux/limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 /*
  * setup buffers
  */
@@ -6,7 +11,8 @@
 char *buffers;
 size_t *buffer_lengths;
 int *file_fds;
-char **fds_to_send;
+char **files_in_dir;
+char *filesinthedir;
 
 void setup_buffers(int connections)
 {
@@ -22,12 +28,34 @@ void setup_buffers(int connections)
     if (!file_fds)
         die("malloc");
 
-    fds_to_send = calloc(100, sizeof(char*) );
-    for (size_t i = 0; i< 100; i++) {
-    	fds_to_send[i] = calloc(MAXNAMLEN,sizeof(char));
+    files_in_dir = calloc(MAXFILESINTHEDIR, sizeof(char *));
+    for (size_t i = 0; i < MAXFILESINTHEDIR; i++)
+    {
+        files_in_dir[i] = calloc(MAXNAMLEN, sizeof(char));
     }
-    if (!fds_to_send)
+    if (!files_in_dir)
         die("malloc");
+
+    filesinthedir = calloc(PATH_MAX, sizeof(char));
+    if (!filesinthedir)
+        die("malloc");
+}
+
+void destroy_buffers(char *buffers, size_t *buffer_lengths, int *file_fds, char **fdr)
+{
+    free(buffers);
+    free(buffer_lengths);
+    free(file_fds);
+    for (size_t i = 0; i < 100; i++)
+    {
+        free(fdr[i]);
+    }
+    free(files_in_dir);
+    free(filesinthedir);
+}
+void wrap_destroy_buffer()
+{
+    destroy_buffers(buffers, buffer_lengths, file_fds, files_in_dir);
 }
 
 int get_files_in_dir(char *dirname)
@@ -39,6 +67,7 @@ int get_files_in_dir(char *dirname)
     realpath(dirname, absp);
     d = opendir(dirname);
     size_t index = 0;
+    char *offset = filesinthedir;
     if (!d)
     {
         printf("error opening the directory, aborting!\n");
@@ -46,23 +75,17 @@ int get_files_in_dir(char *dirname)
     }
     while ((dir = readdir(d)) != NULL)
     {
-    printf("hahah\n");
-        //size_t len = snprintf(0, 0, "%s/%s", absp, dir->d_name);
-        //snprintf(a_file, len + 1, "%s/%s", absp, dir->d_name); //
-	size_t len = snprintf(0, 0, "%s", dir->d_name);
-        snprintf(a_file, len + 1, "%s",  dir->d_name); //
+        size_t len = snprintf(0, 0, "%s", dir->d_name);
+        snprintf(a_file, len + 1, "%s", dir->d_name); //
 
-        puts(a_file);
-	memcpy(fds_to_send[index],a_file,len+1);
+        memcpy(files_in_dir[index], a_file, len + 1);
+
+        len = snprintf(0, 0, "%s<br>", dir->d_name);
+        snprintf(a_file, len + 1, "%s<br>", dir->d_name); //
+        memcpy(offset, a_file, len + 1);
+
         index++;
+        offset += len;
     }
     return 1;
-}
-
-void close_fd_to_send(int *base)
-{
-    for (size_t i = 0; i < 1000; i++)
-    {
-//         close(fds_to_send[i]);
-    }
 }

@@ -73,6 +73,10 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
   /usr/include/bits/fcntl-linux.h \
   /usr/include/bits/stat.h \
   /usr/include/bits/struct_stat.h \
+  /usr/include/string.h \
+  /usr/include/bits/types/locale_t.h \
+  /usr/include/bits/types/__locale_t.h \
+  /usr/include/strings.h \
   /usr/include/unistd.h \
   /usr/include/bits/posix_opt.h \
   /usr/include/bits/environments.h \
@@ -80,14 +84,17 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
   /usr/include/bits/getopt_posix.h \
   /usr/include/bits/getopt_core.h \
   /usr/include/bits/unistd_ext.h \
-  /usr/include/string.h \
-  /usr/include/bits/types/locale_t.h \
-  /usr/include/bits/types/__locale_t.h \
-  /usr/include/strings.h \
   /home/ker0/test/C_lang/http_server_iouring/sources/main/event_loop.h \
   /home/ker0/test/C_lang/http_server_iouring/sources/main/connection_handlers.h \
+  /home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.h \
   /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h \
   /home/ker0/test/C_lang/http_server_iouring/sources/main/response_parser.h \
+  /usr/include/asm-generic/errno-base.h \
+  /usr/include/errno.h \
+  /usr/include/bits/errno.h \
+  /usr/include/linux/errno.h \
+  /usr/include/asm/errno.h \
+  /usr/include/asm-generic/errno.h \
   /usr/include/liburing.h \
   /usr/include/sys/socket.h \
   /usr/include/bits/types/struct_iovec.h \
@@ -109,12 +116,6 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
   /usr/include/sys/stat.h \
   /usr/include/sys/uio.h \
   /usr/include/bits/uio_lim.h \
-  /usr/include/errno.h \
-  /usr/include/bits/errno.h \
-  /usr/include/linux/errno.h \
-  /usr/include/asm/errno.h \
-  /usr/include/asm-generic/errno.h \
-  /usr/include/asm-generic/errno-base.h \
   /usr/include/signal.h \
   /usr/include/bits/signum-generic.h \
   /usr/include/bits/signum-arch.h \
@@ -244,6 +245,10 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
 
 /usr/include/sys/ucontext.h:
 
+/usr/include/linux/swab.h:
+
+/usr/include/bits/sigcontext.h:
+
 /usr/include/alloca.h:
 
 /usr/include/bits/types/struct_itimerspec.h:
@@ -271,8 +276,6 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
 /usr/include/bits/types/stack_t.h:
 
 /usr/include/bits/sigevent-consts.h:
-
-/usr/include/bits/types/struct_timeval.h:
 
 /usr/include/bits/types/__FILE.h:
 
@@ -430,6 +433,10 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
 
 /usr/include/fcntl.h:
 
+/usr/include/bits/types/struct_timeval.h:
+
+/home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.h:
+
 /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h:
 
 /usr/include/bits/pthread_stack_min-dynamic.h:
@@ -458,6 +465,10 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
 
 /usr/include/bits/struct_stat.h:
 
+/usr/include/bits/types/locale_t.h:
+
+/usr/include/bits/types/__locale_t.h:
+
 /usr/include/unistd.h:
 
 /usr/include/bits/atomic_wide_counter.h:
@@ -468,13 +479,21 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
 
 /usr/include/bits/getopt_posix.h:
 
-/usr/include/bits/types/locale_t.h:
-
-/usr/include/bits/types/__locale_t.h:
-
 /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h:
 
 /home/ker0/test/C_lang/http_server_iouring/sources/main/response_parser.h:
+
+/usr/include/asm-generic/types.h:
+
+/usr/include/asm-generic/errno-base.h:
+
+/usr/include/bits/errno.h:
+
+/usr/include/linux/errno.h:
+
+/usr/include/linux/fscrypt.h:
+
+/usr/include/asm-generic/errno.h:
 
 /usr/include/sys/cdefs.h:
 
@@ -500,25 +519,9 @@ sources/main/CMakeFiles/app.out.dir/main.c.o: /home/ker0/test/C_lang/http_server
 
 /usr/include/asm/bitsperlong.h:
 
-/usr/include/linux/swab.h:
-
-/usr/include/bits/sigcontext.h:
-
 /usr/include/bits/wchar.h:
 
 /usr/include/asm-generic/bitsperlong.h:
-
-/usr/include/bits/errno.h:
-
-/usr/include/linux/errno.h:
-
-/usr/include/linux/fscrypt.h:
-
-/usr/include/asm-generic/errno.h:
-
-/usr/include/asm-generic/types.h:
-
-/usr/include/asm-generic/errno-base.h:
 
 /usr/include/signal.h:
 
