@@ -1,6 +1,8 @@
 #include "connection_handlers.h"
 #include "bufandfiles.h"
 #include "misc.h"
+#include <asm-generic/socket.h>
+#include <bits/types/struct_timeval.h>
 #include <stdlib.h>
 
 #define SOCKBUFSIZE 65536
@@ -9,19 +11,30 @@
     "HTTP/1.0 200 OK\r\nServer: My-test-server \r\nDate: \r\n\
 Content-Type: application/octet-stream\r\nContent-Length: %ld\r\n\r\n"
 
+void set_flags(int socket){
+    int sndsize = SOCKBUFSIZE;
+    int err;
+
+    struct timeval timeout;
+    timeout.tv_sec = 10;
+    timeout.tv_usec= 0;
+    if ((err = setsockopt(socket, SOL_SOCKET, SO_REUSEADDR | SO_SNDBUF, (char *)&sndsize, (int)sizeof(sndsize))))
+        strerror(err);
+    if ((err = setsockopt(socket, SOL_SOCKET, SO_REUSEADDR | SO_RCVBUF, (char *)&sndsize, (int)sizeof(sndsize))))
+        strerror(err);
+    if ((err = setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout) ) )<0)
+        strerror(err);
+    if ((err = setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout) ) )<0)
+        strerror(err);
+}
+
 void add_read_request(struct io_uring *ring, int client_fd)
 {
     struct io_uring_sqe *sqe = io_uring_get_sqe(ring); // add to ring
     size_t current_length = buffer_lengths[client_fd]; // get current length
     io_uring_prep_recv(sqe, client_fd, get_client_buffer(client_fd) + current_length, BUFFER_SIZE - current_length, 0);
     io_uring_sqe_set_data64(sqe, make_request_data(client_fd, FLAG_READ));
-    int sndsize = SOCKBUFSIZE;
-    int err;
-    if ((err = setsockopt(sqe->fd, SOL_SOCKET, SO_REUSEADDR | SO_SNDBUF, (char *)&sndsize, (int)sizeof(sndsize))))
-        strerror(err);
-    if ((err = setsockopt(sqe->fd, SOL_SOCKET, SO_REUSEADDR | SO_RCVBUF, (char *)&sndsize, (int)sizeof(sndsize))))
-        strerror(err);
-    if (io_uring_submit(ring) < 0)
+        if (io_uring_submit(ring) < 0)
         printf("error submitting\n");
 }
 

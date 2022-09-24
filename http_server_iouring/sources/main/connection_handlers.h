@@ -30,6 +30,7 @@ typedef enum
 // concat fd and state to uin64
 u_int64_t make_request_data(int client_fd, flag_state flag);
 
+void set_flags(int socket);
 inline int request_data_client_fd(uint64_t request_data)
 {
     // UNIT_MAX = 0x00000000FFFFFFFF

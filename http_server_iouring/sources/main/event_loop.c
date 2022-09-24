@@ -29,13 +29,14 @@ void event_loop(int sockfd, struct io_uring *ring)
 
         if (UNLIKELY(io_uring_wait_cqe(ring, &cqe)))
             die("error accepting a connection");
-
+	printf("current fd is %d\n",cqe->res);
         switch (request_data_event_type(cqe->user_data)) // get type
         {
         case FLAG_ACCEPT:
             add_accept_request(ring, sockfd, &client_addr,
                                &client_addr_len); // add requst one more time  and set socket id
             buffer_lengths[cqe->res] = 0;         // set current read buffer 0
+	    set_flags(cqe->res); // works out?
             add_read_request(ring, cqe->res);     // res = fd of the socket res -> n bytes
             break;
         case FLAG_READ:

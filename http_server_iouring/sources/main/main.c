@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
     setup_buffers(MAX_CONNECTIONS); // establish buffers
-    char *dir_name = argv[1];
     get_files_in_dir(argv[1]); // get dir and files
     uint16_t sock;
     sscanf(argv[2], "%hu", &sock);
