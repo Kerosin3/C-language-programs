@@ -29,8 +29,6 @@ void event_loop(int sockfd, struct io_uring *ring)
 
         if (UNLIKELY(io_uring_wait_cqe(ring, &cqe)))
             die("error accepting a connection");
-        printf("current event: %u, fd is %d \n", request_data_event_type(cqe->user_data),
-               request_data_client_fd(cqe->user_data));
 
         switch (request_data_event_type(cqe->user_data)) // get type
         {
@@ -39,11 +37,8 @@ void event_loop(int sockfd, struct io_uring *ring)
                                &client_addr_len); // add requst one more time  and set socket id
             buffer_lengths[cqe->res] = 0;         // set current read buffer 0
             add_read_request(ring, cqe->res);     // res = fd of the socket res -> n bytes
-            printf("current event after submit: %u, fd is %d \n", request_data_event_type(ring->sq.sqes->user_data),
-                   request_data_client_fd(ring->sq.sqes->user_data));
             break;
         case FLAG_READ:
-            printf("read done\n");
             if (LIKELY(cqe->res)) // non-empty request?  set fd test not zero read
                 handle_request(ring, request_data_client_fd(cqe->user_data), cqe->res); //  //
             break;
@@ -51,10 +46,10 @@ void event_loop(int sockfd, struct io_uring *ring)
             current_client_fd = request_data_client_fd(cqe->user_data); // get current fd
             if (LIKELY(current_client_fd != 0))
             {
-                off_t offset = 0; //default
+                off_t offset = 0;                      // default
                 if ((file_fds[current_client_fd]) < 0) // send jut a response
                 {
-		    //DumpHex(get_client_buffer(current_client_fd),buffer_lengths[current_client_fd]);  // for debug
+                    // DumpHex(get_client_buffer(current_client_fd),buffer_lengths[current_client_fd]);  // for debug
                     send(current_client_fd, get_client_buffer(current_client_fd), buffer_lengths[current_client_fd],
                          0); // send reponse
                 }
@@ -65,8 +60,8 @@ void event_loop(int sockfd, struct io_uring *ring)
                         perror("sendfile");
                     close(file_fds[current_client_fd]);
                 }
-                shutdown(current_client_fd, SHUT_RDWR);// ???
-//		io_uring_prep_close(sqe, int fd)
+                shutdown(current_client_fd, SHUT_RDWR); // ???
+                                                        //		io_uring_prep_close(sqe, int fd)
             }
 
             break;

@@ -9,21 +9,18 @@
     "HTTP/1.0 200 OK\r\nServer: My-test-server \r\nDate: \r\n\
 Content-Type: application/octet-stream\r\nContent-Length: %ld\r\n\r\n"
 
-
 void add_read_request(struct io_uring *ring, int client_fd)
 {
     struct io_uring_sqe *sqe = io_uring_get_sqe(ring); // add to ring
     size_t current_length = buffer_lengths[client_fd]; // get current length
     io_uring_prep_recv(sqe, client_fd, get_client_buffer(client_fd) + current_length, BUFFER_SIZE - current_length, 0);
     io_uring_sqe_set_data64(sqe, make_request_data(client_fd, FLAG_READ));
-    printf("setting udata is :%LX,event: %u \n", sqe->user_data, request_data_event_type(sqe->user_data));
     int sndsize = SOCKBUFSIZE;
     int err;
     if ((err = setsockopt(sqe->fd, SOL_SOCKET, SO_REUSEADDR | SO_SNDBUF, (char *)&sndsize, (int)sizeof(sndsize))))
         strerror(err);
     if ((err = setsockopt(sqe->fd, SOL_SOCKET, SO_REUSEADDR | SO_RCVBUF, (char *)&sndsize, (int)sizeof(sndsize))))
         strerror(err);
-    printf("updated client sock opts\n");
     if (io_uring_submit(ring) < 0)
         printf("error submitting\n");
 }
@@ -57,15 +54,14 @@ void add_back_accept_request(struct io_uring *ring, int client_fd)
 
 void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
 {
-//    DumpHex(get_client_buffer(client_fd),n_read); debug
-//    printf(" size is %lu \n",n_read );
+    //    DumpHex(get_client_buffer(client_fd),n_read); debug
+    //    printf(" size is %lu \n",n_read );
     size_t prev_length = buffer_lengths[client_fd];
     size_t length = (buffer_lengths[client_fd] += n_read);        // add to length
     char *req_file = extract_bytes(get_client_buffer(client_fd)); // read request
     int flag_found = 0;
     size_t k = 0;
     printf("req file %s\n", req_file);
-    puts(filesinthedir);
 
     while ((files_in_dir[k])) // check files in dir
     {
@@ -83,7 +79,6 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
         {
             if (errno == EACCES) // access denied
             {
-                printf("send error page\n");
                 int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, "%s", http_403_content);
                 buffer_lengths[client_fd] = n;
                 file_fds[client_fd] = -1; // write -1
@@ -137,4 +132,3 @@ void add_write_request(struct io_uring *ring, int client_fd, size_t nbytes, bool
     io_uring_sqe_set_data(sqe, (void *)make_request_data(client_fd, FLAG_WRITE));
     io_uring_submit(ring);
 }
-

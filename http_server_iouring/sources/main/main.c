@@ -11,15 +11,18 @@ char *dir_name;
 
 int main(int argc, char *argv[])
 {
-    if ((argc > 2 || (argc == 1)))
+    if ((argc > 3 || (argc == 1) || (argc == 2)))
     {
-        printf("please specify just a directory, exiting..\n");
+        printf("please specify a directory, port, exiting..\n");
         exit(1);
     }
     setup_buffers(MAX_CONNECTIONS); // establish buffers
     char *dir_name = argv[1];
     get_files_in_dir(argv[1]); // get dir and files
-    int serv_fd = setup_serv_sock(12345);
+    uint16_t sock;
+    sscanf(argv[2], "%hu", &sock);
+    int serv_fd = setup_serv_sock(sock);
+    printf(">>launching server on a socket: %d<<\n", sock);
     setup_iouring(&ring, MAX_CONNECTIONS, false);
     signal(SIGPIPE, SIG_IGN);
 
