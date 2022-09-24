@@ -11,6 +11,8 @@
 #include <sys/file.h>
 #include <syslog.h>
 #include <unistd.h>
+#include <sys/syslog.h>
+#include <time.h>
 
 #define DEBUG 0
 #define INFO 1

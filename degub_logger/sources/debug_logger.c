@@ -5,7 +5,7 @@
 #define FAIL2 1024
 #define MAX_MSG 2000
 #define MAX_MSG_T 200
-#define NTRIES 10000
+#define NTRIES 100
 
 #define write_to_log(...) wrap_gglog(__LINE__, __FILE__, __VA_ARGS__);
 
@@ -20,7 +20,7 @@ static internal_init init_t;
 
 static char *get_level(log_level);
 static void write_backlog(int linen, char *, int, char *message);
-static FILE *get_file(char filename[static 1]);
+static FILE *get_file(char *filename);
 static void write_to_file(int, int n, ...);
 static void write_gglog(int, char *, unsigned LOG_LEVEL, char *message);
 static void write_log(int lineno, char *, int, log_level level, char *message);
@@ -44,7 +44,8 @@ static void write_backlog(int linen, char *fname_call, int fd, char *message)
 
     unsigned long init_size = 1024;
 
-    jmp_buf j1_jump;
+    char date[32];
+        jmp_buf j1_jump;
     if (FAIL == setjmp(j1_jump))
     {
         i++;
@@ -60,9 +61,13 @@ static void write_backlog(int linen, char *fname_call, int fd, char *message)
     }
     void *log = calloc(init_size, sizeof(void *));
 
-    if (!log)
+    if (!log){
+	time_t t = time(NULL);
+    	struct tm* tm = gmtime(&t);
+        strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S GMT", tm);
+        syslog(LOG_ERR, "error while allocing memory @ %s ",date);
         longjmp(j1_jump, FAIL); // try again
-                                //
+     }                  //
     char ln[MAX_MSG_T] = {0};
 
     size_t s_msg_len =
@@ -187,7 +192,7 @@ void stop_recording()
     syslog(LOG_INFO, "stop debug logging session");
 }
 
-static FILE *get_file(char filename[static 1])
+static FILE *get_file(char *filename)
 {
     FILE *log_file;
     log_file = fopen(filename, "a+");
