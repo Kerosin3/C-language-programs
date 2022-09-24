@@ -16,10 +16,12 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: \
  /usr/include/bits/types/__mbstate_t.h \
  /usr/include/bits/types/__fpos64_t.h /usr/include/bits/types/__FILE.h \
  /usr/include/bits/types/FILE.h /usr/include/bits/types/struct_FILE.h \
+ /usr/include/bits/types/cookie_io_functions_t.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/floatn.h \
  /usr/include/bits/floatn-common.h /usr/include/bits/stdio.h \
  /usr/include/stdlib.h /usr/include/bits/waitflags.h \
- /usr/include/bits/waitstatus.h /usr/include/sys/types.h \
+ /usr/include/bits/waitstatus.h /usr/include/bits/types/locale_t.h \
+ /usr/include/bits/types/__locale_t.h /usr/include/sys/types.h \
  /usr/include/bits/types/clock_t.h /usr/include/bits/types/clockid_t.h \
  /usr/include/bits/types/time_t.h /usr/include/bits/types/timer_t.h \
  /usr/include/bits/stdint-intn.h /usr/include/endian.h \
@@ -39,23 +41,23 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: \
  /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h \
  /usr/include/linux/limits.h \
  /usr/include/bits/pthread_stack_min-dynamic.h \
- /usr/include/bits/pthread_stack_min.h /usr/include/bits/dirent_ext.h \
- /usr/include/fcntl.h /usr/include/bits/fcntl.h \
- /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h \
- /usr/include/bits/struct_stat.h /usr/include/string.h \
- /usr/include/bits/types/locale_t.h /usr/include/bits/types/__locale_t.h \
- /usr/include/strings.h /usr/include/unistd.h \
+ /usr/include/bits/dirent_ext.h /usr/include/fcntl.h \
+ /usr/include/bits/fcntl.h /usr/include/bits/fcntl-linux.h \
+ /usr/include/bits/types/struct_iovec.h /usr/include/linux/falloc.h \
+ /usr/include/bits/stat.h /usr/include/bits/struct_stat.h \
+ /usr/include/string.h /usr/include/strings.h /usr/include/unistd.h \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/confname.h /usr/include/bits/getopt_posix.h \
  /usr/include/bits/getopt_core.h /usr/include/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/http_resp.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/picohttpparser.h \
  /home/ker0/test/C_lang/http_server_iouring/sources/main/response_parser.h \
  /usr/include/asm-generic/errno-base.h /usr/include/errno.h \
  /usr/include/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/asm/errno.h /usr/include/asm-generic/errno.h \
- /usr/include/liburing.h /usr/include/sys/socket.h \
- /usr/include/bits/types/struct_iovec.h /usr/include/bits/socket.h \
+ /usr/include/bits/types/error_t.h /usr/include/liburing.h \
+ /usr/include/sys/socket.h /usr/include/bits/socket.h \
  /usr/include/bits/socket_type.h /usr/include/bits/sockaddr.h \
  /usr/include/asm/socket.h /usr/include/asm-generic/socket.h \
  /usr/include/linux/posix_types.h /usr/include/linux/stddef.h \
@@ -64,11 +66,18 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: \
  /usr/include/asm-generic/bitsperlong.h /usr/include/asm/sockios.h \
  /usr/include/asm-generic/sockios.h \
  /usr/include/bits/types/struct_osockaddr.h /usr/include/sys/stat.h \
- /usr/include/sys/uio.h /usr/include/bits/uio_lim.h /usr/include/signal.h \
- /usr/include/bits/signum-generic.h /usr/include/bits/signum-arch.h \
- /usr/include/bits/types/sig_atomic_t.h \
+ /usr/include/bits/statx.h /usr/include/linux/stat.h \
+ /usr/include/linux/types.h /usr/include/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/bits/statx-generic.h \
+ /usr/include/bits/types/struct_statx_timestamp.h \
+ /usr/include/bits/types/struct_statx.h /usr/include/sys/uio.h \
+ /usr/include/bits/uio_lim.h /usr/include/bits/uio-ext.h \
+ /usr/include/signal.h /usr/include/bits/signum-generic.h \
+ /usr/include/bits/signum-arch.h /usr/include/bits/types/sig_atomic_t.h \
  /usr/include/bits/types/siginfo_t.h /usr/include/bits/types/__sigval_t.h \
  /usr/include/bits/siginfo-arch.h /usr/include/bits/siginfo-consts.h \
+ /usr/include/bits/siginfo-consts-arch.h \
  /usr/include/bits/types/sigval_t.h /usr/include/bits/types/sigevent_t.h \
  /usr/include/bits/sigevent-consts.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/types/stack_t.h \
@@ -81,12 +90,11 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include/stdint.h \
  /usr/include/stdint.h /usr/include/bits/wchar.h \
  /usr/include/bits/stdint-uintn.h /usr/include/time.h \
- /usr/include/bits/time.h /usr/include/bits/types/struct_tm.h \
+ /usr/include/bits/time.h /usr/include/bits/timex.h \
+ /usr/include/bits/types/struct_tm.h \
  /usr/include/bits/types/struct_itimerspec.h /usr/include/sched.h \
  /usr/include/bits/sched.h /usr/include/bits/types/struct_sched_param.h \
  /usr/include/bits/cpu-set.h /usr/include/linux/swab.h \
- /usr/include/linux/types.h /usr/include/asm/types.h \
- /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
  /usr/include/asm/swab.h /usr/include/liburing/compat.h \
  /usr/include/linux/time_types.h /usr/include/linux/openat2.h \
  /usr/include/liburing/io_uring.h /usr/include/linux/fs.h \
@@ -97,4 +105,5 @@ sources/main/CMakeFiles/servapplib.dir/connection_handlers.c.o: \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/limits.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/12.2.0/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/bits/posix2_lim.h \
- /usr/include/netinet/in.h /usr/include/bits/in.h
+ /usr/include/bits/xopen_lim.h /usr/include/netinet/in.h \
+ /usr/include/bits/in.h

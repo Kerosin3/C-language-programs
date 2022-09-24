@@ -36,6 +36,7 @@ signed long long parse_string(int fd, storage_url *storage, storage_url *storage
         memset(buffer, '\0', MAX_LEN);
     }
     free(buffer);
+    fclose(fp); // ok?
     return total_bytes;
 }
 long int extract_bytes(char buf[static 1])
