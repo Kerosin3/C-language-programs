@@ -2,7 +2,7 @@
 #define FILES
 
 #define _GNU_SOURCE
-
+#include "khash.h"
 #include <fcntl.h>
 #include <dirent.h> 
 #include <stdio.h> 

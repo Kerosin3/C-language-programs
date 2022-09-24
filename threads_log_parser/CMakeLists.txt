@@ -12,7 +12,7 @@ set(CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
 set(CMAKE_C_FLAGS_DEBUG "-g")
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 
-set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -pedantic-errors ")
+set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic ")
 
 #set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../test) #copy executable

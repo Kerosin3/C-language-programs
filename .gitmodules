@@ -13,3 +13,6 @@
 [submodule "http_server_iouring/sources/picohttpparser"]
 	path = http_server_iouring/sources/picohttpparser
 	url = https://github.com/h2o/picohttpparser.git
+[submodule "misc/testkhash/source/klib"]
+	path = misc/testkhash/source/klib
+	url = https://github.com/attractivechaos/klib.git
