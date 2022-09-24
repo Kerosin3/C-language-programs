@@ -8,7 +8,10 @@ char **get_files_in_dir(char dirname[static 1])
     char *to_search = "access";
     DIR *d;
     char absp[PATH_MAX+1] = {0};
-    realpath(dirname, absp);
+    if (!(realpath(dirname, absp))){
+	    printf("error opening the dir, aborting\n");
+	    exit(1);
+    }
     struct dirent *dir;
     d = opendir(dirname);
     if (!d)
@@ -74,7 +77,7 @@ int *get_fp_for_files(char **files)
     for (size_t j = 0; j < n_files; j++)
     {
         //FILE *some_file = fopen(files[j], "rb");
-	int fd_t = open(files[j],O_DIRECT | O_SYNC,"rb");
+	int fd_t = open(files[j],O_DIRECT | O_SYNC | O_RDONLY);
         if (fd_t <=0)
         {
             printf("error while opening %s file,err = %d aborting..\n", files[j],errno);

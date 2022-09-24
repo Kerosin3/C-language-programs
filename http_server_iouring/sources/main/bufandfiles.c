@@ -65,6 +65,10 @@ int get_files_in_dir(char *dirname)
     char absp[PATH_MAX + 1] = {0};
     char a_file[PATH_MAX + 1] = {0};
     realpath(dirname, absp);
+    if (!(realpath(dirname, absp))){
+	    printf("error opening the dir, aborting\n");
+	    exit(1);
+    }
     d = opendir(dirname);
     size_t index = 0;
     char *offset = filesinthedir;

@@ -1,6 +1,7 @@
 #ifndef CONNECTIONHANDLERS
 #define CONNECTIONHANDLERS
 
+#define _GNU_SOURCE
 #include "bufandfiles.h"
 #include "http_resp.h"
 #include "misc.h"

@@ -87,7 +87,7 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
     }
     if (flag_found)
     {
-        int fds = open(files_in_dir[k], O_RDONLY); // open file
+        int fds = open(files_in_dir[k],O_DIRECT | O_SYNC | O_RDONLY); // open file
         if (fds < 0)
         {
             if (errno == EACCES) // access denied
