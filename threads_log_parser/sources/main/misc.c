@@ -6,9 +6,8 @@
 void test(void);
 void test2(FILE *fp, FILE *);
 
-//int khInt;
-//khiter_t k;
-//khash_t(khInt) *h;
+
+khash_t(filemap_t)* file_map;
 
 storage_url create_url_storage();
 a_url *create_a_url(char *str);
@@ -81,9 +80,10 @@ long int append_a_url(a_url *url, storage_url *storage)
         storage_expand(storage, STORAGE_DEF_MAXSIZE);
     }
     (storage->root_storage)[storage->current_size] = url;
-    khiter_t k ;
-    int ret;
-    k = kh_put(khInt, h, url->a_str, &ret); //append to storage
+    //khiter_t k ;
+    //int ret;
+    //printf("is:%s",url->a_str);
+    //k = kh_put(filemap_t, file_map, url->a_str, &ret); //append to hashtable
     storage->current_size += 1;
     return 0;
 }
@@ -128,9 +128,23 @@ long int append_url_if_nexistsV2(storage_url *storage, char *a_url_str)
     return 1; // is not exists -> append!
 }
 
+
+
 // search a url, if success -> get N, else -> -1;
 long int get_a_urlN(storage_url *storage, char *a_url_to_check)
 {
+    khiter_t k ;
+    //k = kh_put(filemap_t, file_map, a_url_to_check, &ret); //append to hashtable
+    int ret,mising;
+    k = kh_get(filemap_t,file_map,a_url_to_check); //check whether the url in the table
+
+    if (k == kh_end(file_map)){
+	    return -1; // not in the table
+    } else {
+	    printf("val is %d\n",*kh_val(file_map, k));
+	    return *kh_val(file_map,k); // return value
+    }
+/*
     for (size_t i = 0; i < storage->current_size; i++)
     {
         a_url *current_url_p = ((storage->root_storage)[i]);
@@ -145,6 +159,7 @@ long int get_a_urlN(storage_url *storage, char *a_url_to_check)
         }
     }
     return -1;
+  */ 
 }
 
 void destroy_a_url(a_url *url)

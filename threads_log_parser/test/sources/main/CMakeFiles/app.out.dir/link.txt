@@ -1,0 +1,1 @@
+/usr/bin/cc -std=gnu11 -Wall -Wextra -Wpedantic -fomit-frame-pointer -O3 CMakeFiles/app.out.dir/main.c.o -o ../../app.out  libparserlib.a 

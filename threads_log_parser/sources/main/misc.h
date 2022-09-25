@@ -17,15 +17,17 @@
 #define URL 1
 #define REFERERENCES 2
 
+
+KHASH_MAP_INIT_STR(filemap_t, int*)
+
+extern khash_t(filemap_t)* file_map;
+
+extern int* get_file(const char* someurl);
+
 typedef struct {
 	unsigned long count;
 	char* a_str;
 } a_url;
-
-extern int khInt;
-KHASH_MAP_INIT_STR(khInt, int)
-extern khiter_t k;
-extern khash_t(khInt) *h;
 
 typedef struct {
 	a_url** root_storage;

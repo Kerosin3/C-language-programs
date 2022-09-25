@@ -78,6 +78,7 @@ int *get_fp_for_files(char **files)
     {
         //FILE *some_file = fopen(files[j], "rb");
 	int fd_t = open(files[j],O_DIRECT | O_SYNC | O_RDONLY);
+//	int fd_t = open(files[j],O_RDONLY);
         if (fd_t <=0)
         {
             printf("error while opening %s file,err = %d aborting..\n", files[j],errno);
