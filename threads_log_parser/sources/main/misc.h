@@ -35,6 +35,9 @@ typedef struct {
 	a_url** root_storage;
 	unsigned current_size;
 	unsigned max_size;
+	int      khSerial;
+	khash_t(khSerial)  tablemapfile;
+
 } storage_url;
 
 void get_10_most(storage_url* storage,int PARAM);

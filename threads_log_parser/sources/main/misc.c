@@ -35,6 +35,8 @@ storage_url create_url_storage()
     main_storage.current_size = 0;
     main_storage.max_size = STORAGE_DEF_MAXSIZE;
     main_storage.root_storage = main_pointer;
+    main_storage.khSerial = 1;
+    main_storage.filemapx = kh_init(1);
     return main_storage;
 }
 
