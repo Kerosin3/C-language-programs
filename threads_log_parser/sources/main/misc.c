@@ -1,9 +1,14 @@
 #include "misc.h"
+#include "khash.h"
 
 #define STORAGE_DEF_MAXSIZE 100
 
 void test(void);
 void test2(FILE *fp, FILE *);
+
+//int khInt;
+//khiter_t k;
+//khash_t(khInt) *h;
 
 storage_url create_url_storage();
 a_url *create_a_url(char *str);
@@ -76,6 +81,9 @@ long int append_a_url(a_url *url, storage_url *storage)
         storage_expand(storage, STORAGE_DEF_MAXSIZE);
     }
     (storage->root_storage)[storage->current_size] = url;
+    khiter_t k ;
+    int ret;
+    k = kh_put(khInt, h, url->a_str, &ret); //append to storage
     storage->current_size += 1;
     return 0;
 }
@@ -96,7 +104,7 @@ a_url *create_a_url(char *str)
     t_url->a_str = string_str;
     return t_url;
 }
-
+/*
 long int append_url_if_nexists(storage_url *storage, char *a_url_str)
 {
     long int N = -1;
@@ -106,6 +114,7 @@ long int append_url_if_nexists(storage_url *storage, char *a_url_str)
     append_a_url(t_url, storage);
     return 1; // is not exists -> append!
 }
+*/
 long int append_url_if_nexistsV2(storage_url *storage, char *a_url_str)
 {
     long int N = -1;

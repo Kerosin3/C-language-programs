@@ -5,12 +5,18 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include "khash_setup.h"
+#include "khash.h"
 #include "files.h"
 #include "misc.h"
 #include "test.h"
 #include "thrd_store.h"
 #define NUL (void *)0
+
+int khInt = 666;
+//KHASH_MAP_INIT_STR(khInt, int);
+
+//extern const int khStrInt;
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +25,9 @@ int main(int argc, char *argv[])
         printf("please specify just a directory, exiting..\n");
         exit(1);
     }
+    khiter_t k;
+    khash_t(khInt) *h= kh_init(khInt);
+
     char **files = get_files_in_dir(argv[1]);
     int *fdx = get_fp_for_files(files);
     process_data(fdx);

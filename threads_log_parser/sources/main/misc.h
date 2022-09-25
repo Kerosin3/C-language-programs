@@ -5,6 +5,14 @@
 #include <string.h>
 #include <threads.h>
 #include <time.h>
+#include "khash.h"
+
+
+
+#define kh_get_val(kname, hash, key, defVal) ({k=kh_get(kname, hash, key);(k!=kh_end(hash)?kh_val(hash,k):defVal);})
+
+
+#define kh_set(kname, hash, key, val) ({int ret; k = kh_put(kname, hash,key,&ret); kh_value(hash,k) = val; ret;})
 
 #define URL 1
 #define REFERERENCES 2
@@ -14,6 +22,10 @@ typedef struct {
 	char* a_str;
 } a_url;
 
+extern int khInt;
+KHASH_MAP_INIT_STR(khInt, int)
+extern khiter_t k;
+extern khash_t(khInt) *h;
 
 typedef struct {
 	a_url** root_storage;

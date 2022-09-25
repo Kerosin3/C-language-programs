@@ -3,6 +3,7 @@ ADD_LIBRARY( parserlib STATIC
 	     misc.c
 	     string_parse.c
 	     thrd_store.c
+	     khash_setup.c
 	     #test.c
 	     )
 ADD_EXECUTABLE (app.out
