@@ -6,6 +6,7 @@
 #include <threads.h>
 #include <time.h>
 #include "khash.h"
+#include "khash_setup.h"
 
 
 
@@ -17,8 +18,9 @@
 #define URL 1
 #define REFERERENCES 2
 
+extern mtx_t mtx_khash_store;
 
-KHASH_MAP_INIT_STR(filemap_t, int*)
+KHASH_MAP_INIT_STR(filemap_t, int)
 
 extern khash_t(filemap_t)* file_map;
 

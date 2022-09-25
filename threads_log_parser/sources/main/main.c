@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <threads.h>
 #include "khash_setup.h"
 #include "khash.h"
 #include "files.h"
@@ -26,6 +27,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     file_map = kh_init(filemap_t);
+    mtx_init(&mtx_khash_store,mtx_plain);
 
     char **files = get_files_in_dir(argv[1]);
     int *fdx = get_fp_for_files(files);

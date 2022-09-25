@@ -1,2 +1,0 @@
-/usr/bin/ar qc libparserlib.a CMakeFiles/parserlib.dir/files.c.o CMakeFiles/parserlib.dir/misc.c.o CMakeFiles/parserlib.dir/string_parse.c.o CMakeFiles/parserlib.dir/thrd_store.c.o CMakeFiles/parserlib.dir/khash_setup.c.o
-/usr/bin/ranlib libparserlib.a
