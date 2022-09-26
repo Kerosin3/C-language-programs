@@ -35,8 +35,7 @@ storage_url create_url_storage()
     main_storage.current_size = 0;
     main_storage.max_size = STORAGE_DEF_MAXSIZE;
     main_storage.root_storage = main_pointer;
-    main_storage.khSerial = 1;
-    main_storage.filemapx = kh_init(1);
+    main_storage.s1 =  kh_init(filemap_t);//pointer
     return main_storage;
 }
 
@@ -73,7 +72,6 @@ void destroy_url_storage(storage_url *storage)
         free(current_url_p->a_str);
         free(current_url_p);
     }
-
     free(storage->root_storage);
 }
 
@@ -88,11 +86,12 @@ long int append_a_url(a_url *url, storage_url *storage)
     int ret;
 //     printf("string is ->>>%s\n",url->a_str);
 //     printf("current size is %u\n",storage->current_size);
-    mtx_lock(&mtx_khash_store);
-    k = kh_put(filemap_t, file_map, url->a_str, &ret); //append to hashtable new url
-    kh_value(file_map,k) = storage->current_size;// assign N
-    printf("append %s N:%d\n",url->a_str,kh_value(file_map, k));
-    mtx_unlock(&mtx_khash_store);
+ //   mtx_lock(&mtx_khash_store);
+    k = kh_put(filemap_t, storage->s1, url->a_str, &ret); //append to hashtable new url
+    printf("-------\n");
+    kh_value(storage->s1,k) = storage->current_size;// assign N
+    printf("append %s N:%d\n",url->a_str,kh_value(storage->s1, k));
+   // mtx_unlock(&mtx_khash_store);
     storage->current_size += 1;
     return 0;
 }
@@ -148,10 +147,10 @@ long int append_url_if_nexistsV2(storage_url *storage, char *a_url_str)
 // search a url, if success -> get N, else -> -1;
 long int get_a_urlN(storage_url *storage, char *a_url_to_check)
 {
-/*	
+	
     khiter_t k;
     //mtx_lock(&mtx_khash_store);
-    k = kh_get(filemap_t,file_map,a_url_to_check); //test is it present
+    k = kh_get(filemap_t,storage->s1,a_url_to_check); //test is it present
     printf("test string: %s\n",a_url_to_check);
     if (k == kh_end(file_map)) {
 	    printf("not exists\n");
@@ -163,9 +162,9 @@ long int get_a_urlN(storage_url *storage, char *a_url_to_check)
     	    //mtx_unlock(&mtx_khash_store);
 	    return ret;
     }
-*/
 
 
+/*
 
     for (size_t i = 0; i < storage->current_size; i++)
     {
@@ -181,7 +180,7 @@ long int get_a_urlN(storage_url *storage, char *a_url_to_check)
         }
     }
     return -1;
-   
+  */ 
 }
 
 void destroy_a_url(a_url *url)
@@ -210,6 +209,8 @@ void merge_structs(storage_url *main_storage, storage_url *a_storage)
             append_a_url(t_url, main_storage); // append
         }
     }
+
+//    kh_destroy(filemap_t, storage->s1);
     destroy_url_storage(a_storage);
 }
 /*

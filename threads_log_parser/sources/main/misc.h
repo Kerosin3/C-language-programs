@@ -31,12 +31,12 @@ typedef struct {
 	char* a_str;
 } a_url;
 
+
 typedef struct {
 	a_url** root_storage;
 	unsigned current_size;
 	unsigned max_size;
-	int      khSerial;
-	khash_t(khSerial)  tablemapfile;
+        khash_t(filemap_t)* s1; 
 
 } storage_url;
 
