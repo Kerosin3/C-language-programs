@@ -1,16 +1,16 @@
 #include "files.h"
 
-
 int *get_fp_for_files(char **files);
 
 char **get_files_in_dir(char dirname[static 1])
 {
     char *to_search = "access";
     DIR *d;
-    char absp[PATH_MAX+1] = {0};
-    if (!(realpath(dirname, absp))){
-	    printf("error opening the dir, aborting\n");
-	    exit(1);
+    char absp[PATH_MAX + 1] = {0};
+    if (!(realpath(dirname, absp)))
+    {
+        printf("error opening the dir, aborting\n");
+        exit(1);
     }
     struct dirent *dir;
     d = opendir(dirname);
@@ -20,7 +20,7 @@ char **get_files_in_dir(char dirname[static 1])
         exit(1);
     }
     char **files = malloc((sizeof(char *)));
-    char buf[PATH_MAX+1] = {0};
+    char buf[PATH_MAX + 1] = {0};
     size_t j = 0;
     if (d)
     {
@@ -28,10 +28,10 @@ char **get_files_in_dir(char dirname[static 1])
 
         {
             if (strstr(dir->d_name, to_search) != NULL)
-            { 
-                size_t len = snprintf(0, 0, "%s/%s", absp,dir->d_name);
-                snprintf(buf, len+1, "%s/%s", absp,dir->d_name);// plus one?
-		//printf("filename is %s\n",buf);
+            {
+                size_t len = snprintf(0, 0, "%s/%s", absp, dir->d_name);
+                snprintf(buf, len + 1, "%s/%s", absp, dir->d_name); // plus one?
+                                                                    // printf("filename is %s\n",buf);
                 char *filename = calloc(sizeof(char), len + 1);
                 strcpy(filename, buf);
                 filename[len] = '\0';
@@ -76,12 +76,12 @@ int *get_fp_for_files(char **files)
     int *files_FD = malloc((n_files + 1) * sizeof(int));
     for (size_t j = 0; j < n_files; j++)
     {
-        //FILE *some_file = fopen(files[j], "rb");
-	int fd_t = open(files[j],O_DIRECT | O_SYNC | O_RDONLY);
-//	int fd_t = open(files[j],O_RDONLY);
-        if (fd_t <=0)
+        // FILE *some_file = fopen(files[j], "rb");
+        int fd_t = open(files[j], O_DIRECT | O_SYNC | O_RDONLY);
+        //	int fd_t = open(files[j],O_RDONLY);
+        if (fd_t <= 0)
         {
-            printf("error while opening %s file,err = %d aborting..\n", files[j],errno);
+            printf("error while opening %s file,err = %d aborting..\n", files[j], errno);
         }
         files_FD[j] = fd_t;
         int lock = flock(files_FD[j], LOCK_EX);

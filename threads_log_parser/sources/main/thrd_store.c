@@ -4,7 +4,6 @@ atomic_llong total_bytes = 0;
 mtx_t mtx_murl_storage;
 mtx_t mtx_mrefer_storage;
 
-
 typedef struct storage_cont
 {
     storage_url *main_storage_url;
