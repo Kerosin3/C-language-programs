@@ -8,6 +8,12 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+
+
+
+//#define REPLY_CLOSE "HTTP/1.1 200 OK\r\nConnection: close\r\n\
+//Connection: close\r\n\r\n"
+
 void event_loop(int sockfd, struct io_uring *ring)
 {
 
@@ -59,10 +65,14 @@ void event_loop(int sockfd, struct io_uring *ring)
                     if (sendfile(current_client_fd, file_fds[current_client_fd], &offset,
                                  buffer_lengths[current_client_fd]) < 0)
                         perror("sendfile");
+// 		    send(current_client_fd,REPLY_CLOSE,strlen(REPLY_CLOSE),MSG_DONTWAIT); // not working
                     close(file_fds[current_client_fd]);
                 }
                 shutdown(current_client_fd, SHUT_RDWR); // ???
-                                                        //		io_uring_prep_close(sqe, int fd)
+                int closeret = close(current_client_fd);
+		if (closeret<0)
+			printf("error while closing socket %d, %s\n",current_client_fd,strerror(errno));
+
             }
 
             break;

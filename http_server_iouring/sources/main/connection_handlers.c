@@ -9,7 +9,7 @@
 
 #define REPLY_200                                                                                                      \
     "HTTP/1.0 200 OK\r\nServer: My-test-server \r\nDate: \r\n\
-Content-Type: application/octet-stream\r\nContent-Length: %ld\r\n\r\n"
+Content-Type: application/octet-stream\r\nContent-Length: %ld\r\nConnection: close\r\n\r\n"
 
 void set_flags(int socket){
     int sndsize = SOCKBUFSIZE;
@@ -52,9 +52,9 @@ void add_accept_request(struct io_uring *ring, int serverfd, struct sockaddr_in 
         printf("error submitting\n");
 }
 
-void add_back_accept_request(struct io_uring *ring, int client_fd)
+void add_close_request(struct io_uring *ring, int client_fd)
 {
-    struct io_uring_sqe *sqe = io_uring_get_sqe(ring); // pop
+    struct io_uring_sqe *sqe = io_uring_get_sqe(ring); // 
     if (!sqe)
     {
         printf("error adding to que\n");
@@ -113,7 +113,7 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
         add_write_request(ring, client_fd, n, false);
         free(req_file);
     }
-    else if ((strcmp(req_file, "main")))
+    else if ((strcmp(req_file, "main"))) //not main
     {
         int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, "%s", http_404_content);
         buffer_lengths[client_fd] = n;
