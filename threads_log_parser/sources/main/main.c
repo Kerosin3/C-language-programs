@@ -25,5 +25,6 @@ int main(int argc, char *argv[])
     char **files = get_files_in_dir(argv[1]);
     int *fdx = get_fp_for_files(files);
     process_data(fdx);
+    free(fdx);
     return 0;
 }

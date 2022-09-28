@@ -122,5 +122,5 @@ void process_data(int *fds)
     destroy_url_storage(&main_storage_url);
     destroy_url_storage(&main_storage_refer);
 
-    close_all_fd(fds);
+//    close_all_fd(fds);
 }

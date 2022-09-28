@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/sendfile.h>
+
 #define MAX_LEN 9000
 
 long int extract_bytes(char buf[static 1]);

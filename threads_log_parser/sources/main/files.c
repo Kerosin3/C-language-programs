@@ -96,7 +96,7 @@ int *get_fp_for_files(char **files)
     destroy_filenames(files);
     return files_FD;
 }
-
+/*
 void close_all_fd(int *fdx)
 {
     size_t i = 0;
@@ -111,3 +111,4 @@ void close_all_fd(int *fdx)
     }
     free(fdx);
 }
+*/
