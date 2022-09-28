@@ -110,6 +110,7 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
                 buffer_lengths[client_fd] = n;
                 file_fds[client_fd] = -1; // write -1
                 add_write_request(ring, client_fd, n, false);
+                free(requested);
                 return;
             }
         }
