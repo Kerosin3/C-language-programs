@@ -8,7 +8,6 @@ char *extract_bytes(char *str)
     // char* st_ptr = str;
     char *st_ptr = str_cpy;
     char *part_beg = (void *)0;
-    char *main = "main";
     st_ptr = strstr(st_ptr, "GET");
     if (!st_ptr)
     {
@@ -21,7 +20,12 @@ char *extract_bytes(char *str)
     size_t len = 0;
     if (*(st_ptr + 1) == 32)
     {
-        return main; // main page
+        char *ret = calloc(sizeof(char), 5);
+        ret[0] = 'm', ret[1] = 'a';
+        ret[2] = 'i';
+        ret[3] = 'n';
+        ret[4] = '\0';
+        return ret; // main page
     }
     else
     {

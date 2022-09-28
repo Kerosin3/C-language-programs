@@ -4,27 +4,40 @@
 #include <asm-generic/socket.h>
 #include <bits/types/struct_timeval.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define SOCKBUFSIZE 65536
 
-#define REPLY_200                                                                                                      \
-    "HTTP/1.0 200 OK\r\nServer: My-test-server \r\nDate: \r\n\
-Content-Type: application/octet-stream\r\nContent-Length: %ld\r\nConnection: close\r\n\r\n"
+#define REPLY_200OK                                                                                                    \
+    "HTTP/1.0 200 OK\r\nServer: My-test-server \r\n"                                                                   \
+    "Content-Type: application/octet-stream\r\nContent-Length: %ld\r\nConnection: keep-alive\r\n"                      \
+    "\r\n"                                                                                                             \
+    "<!DOCTYPE html>"                                                                                                  \
+    "<html>"                                                                                                           \
+    "<head>"                                                                                                           \
+    "<title>Sendfile</title>"                                                                                          \
+    "</head>"                                                                                                          \
+    "<body>"                                                                                                           \
+    "<h1>Sending file %s</h1>"                                                                                         \
+    "<p>Please wait</p>"                                                                                               \
+    "</body>"                                                                                                          \
+    "</html>"
 
-void set_flags(int socket){
+void set_flags(int socket)
+{
     int sndsize = SOCKBUFSIZE;
     int err;
 
     struct timeval timeout;
     timeout.tv_sec = 10;
-    timeout.tv_usec= 0;
+    timeout.tv_usec = 0;
     if ((err = setsockopt(socket, SOL_SOCKET, SO_REUSEADDR | SO_SNDBUF, (char *)&sndsize, (int)sizeof(sndsize))))
         strerror(err);
     if ((err = setsockopt(socket, SOL_SOCKET, SO_REUSEADDR | SO_RCVBUF, (char *)&sndsize, (int)sizeof(sndsize))))
         strerror(err);
-    if ((err = setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout) ) )<0)
+    if ((err = setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))) < 0)
         strerror(err);
-    if ((err = setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout) ) )<0)
+    if ((err = setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout))) < 0)
         strerror(err);
 }
 
@@ -34,7 +47,7 @@ void add_read_request(struct io_uring *ring, int client_fd)
     size_t current_length = buffer_lengths[client_fd]; // get current length
     io_uring_prep_recv(sqe, client_fd, get_client_buffer(client_fd) + current_length, BUFFER_SIZE - current_length, 0);
     io_uring_sqe_set_data64(sqe, make_request_data(client_fd, FLAG_READ));
-        if (io_uring_submit(ring) < 0)
+    if (io_uring_submit(ring) < 0)
         printf("error submitting\n");
 }
 
@@ -54,7 +67,7 @@ void add_accept_request(struct io_uring *ring, int serverfd, struct sockaddr_in 
 
 void add_close_request(struct io_uring *ring, int client_fd)
 {
-    struct io_uring_sqe *sqe = io_uring_get_sqe(ring); // 
+    struct io_uring_sqe *sqe = io_uring_get_sqe(ring); //
     if (!sqe)
     {
         printf("error adding to que\n");
@@ -67,18 +80,19 @@ void add_close_request(struct io_uring *ring, int client_fd)
 
 void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
 {
-    //    DumpHex(get_client_buffer(client_fd),n_read); debug
-    //    printf(" size is %lu \n",n_read );
-    size_t prev_length = buffer_lengths[client_fd];
-    size_t length = (buffer_lengths[client_fd] += n_read);        // add to length
-    char *req_file = extract_bytes(get_client_buffer(client_fd)); // read request
+    // size_t prev_length = buffer_lengths[client_fd];
+    // size_t length = (buffer_lengths[client_fd] += n_read);        // add to length
+    char *requested = extract_bytes(get_client_buffer(client_fd)); // read request
     int flag_found = 0;
     size_t k = 0;
-    printf("req file %s\n", req_file);
-
+    if (!requested)
+    {
+        printf("error precessing GET request\n");
+        return;
+    }
     while ((files_in_dir[k])) // check files in dir
     {
-        if (!(strcmp(req_file, files_in_dir[k])))
+        if (!(strcmp(requested, files_in_dir[k])))
         {
             flag_found = 1;
             break;
@@ -87,7 +101,7 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
     }
     if (flag_found)
     {
-        int fds = open(files_in_dir[k],O_DIRECT | O_SYNC | O_RDONLY); // open file
+        int fds = open(files_in_dir[k], O_DIRECT | O_SYNC | O_RDONLY); // open file
         if (fds < 0)
         {
             if (errno == EACCES) // access denied
@@ -96,11 +110,10 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
                 buffer_lengths[client_fd] = n;
                 file_fds[client_fd] = -1; // write -1
                 add_write_request(ring, client_fd, n, false);
-                free(req_file);
                 return;
             }
         }
-
+        // send file
         file_fds[client_fd] = fds; // write req fd to client fd array
 
         struct stat st;
@@ -109,17 +122,15 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
 
         buffer_lengths[client_fd] = csize;
 
-        int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, REPLY_200, csize);
-        add_write_request(ring, client_fd, n, false);
-        free(req_file);
+        int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, REPLY_200OK, csize, requested);
+        add_write_request(ring, client_fd, n, true);
     }
-    else if ((strcmp(req_file, "main"))) //not main
+    else if ((strcmp(requested, "main"))) // not main
     {
         int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, "%s", http_404_content);
         buffer_lengths[client_fd] = n;
         file_fds[client_fd] = -1; // write -1
         add_write_request(ring, client_fd, n, false);
-        free(req_file);
     }
     else // main page
     {
@@ -128,6 +139,7 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
         file_fds[client_fd] = -1; // write -1
         add_write_request(ring, client_fd, n, false);
     }
+    free(requested);
 }
 
 /*
