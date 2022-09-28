@@ -1,9 +1,6 @@
 #include "debug_logger.h"
 #include <string.h>
 
-#define OK 1
-#define FAIL 0
-#define FAIL2 1024
 #define MAX_MSG 2000
 #define MAX_MSG_T 200
 #define NTRIES 100
