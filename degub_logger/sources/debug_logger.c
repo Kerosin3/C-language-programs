@@ -1,4 +1,5 @@
 #include "debug_logger.h"
+#include <string.h>
 
 #define OK 1
 #define FAIL 0
@@ -37,28 +38,12 @@ static char *get_level(log_level level)
 
 static void write_backlog(int linen, char *fname_call, int fd, char *message)
 {
-    static const char *start_bt = "-----------------LOG:ERRORS,BACKTRACE-------------------\n";
-    static const char *end_bt = "--------------------------------------------------------\n";
-    unsigned i = 0;
+    static const char *start_bt = "LOG:ERRORS,BACKTRACE";
     unsigned bt_size = 0;
 
     unsigned long init_size = 1024;
 
     char date[32];
-        jmp_buf j1_jump;
-    if (FAIL == setjmp(j1_jump))
-    {
-        i++;
-        if (i >= NTRIES)
-            exit(1); // many tries
-    }
-    if (FAIL2 == setjmp(j1_jump))
-    {
-        i++;
-        init_size += (unsigned)FAIL2;
-        if (i >= NTRIES)
-            exit(1); // many tries
-    }
     void *log = calloc(init_size, sizeof(void *));
 
     if (!log){
@@ -66,20 +51,20 @@ static void write_backlog(int linen, char *fname_call, int fd, char *message)
     	struct tm* tm = gmtime(&t);
         strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S GMT", tm);
         syslog(LOG_ERR, "error while allocing memory @ %s ",date);
-        longjmp(j1_jump, FAIL); // try again
+	return;
      }                  //
     char ln[MAX_MSG_T] = {0};
 
     size_t s_msg_len =
-        snprintf(0, 0, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call, linen);
-    snprintf(ln, MAX_MSG_T, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call, linen);
+        snprintf(0, 0, ",FILE:%s,LINE NUMBER %u", fname_call, linen);
+    snprintf(ln, MAX_MSG_T, ",FILE:%s,LINE NUMBER %u, ", fname_call, linen);
     if ((s_msg_len >= MAX_MSG_T))
         syslog(LOG_INFO, "maximum msg reached, truncate output");
 
     bt_size = backtrace(log, init_size);
     if (!(bt_size < init_size))
     { // truncated
-        longjmp(j1_jump, FAIL2);
+        syslog(LOG_ERR, "truncated backtrace output occurred ");
     }
     g_flock.l_len = 0;
     g_flock.l_start = 0;
@@ -94,7 +79,7 @@ static void write_backlog(int linen, char *fname_call, int fd, char *message)
     write(fd, message, strlen(message));
     fsync(fd);
     backtrace_symbols_fd(log, bt_size, fd);
-    write(fd, end_bt, strlen(end_bt));
+    //write(fd, "\n", 1);
 
     fcntl(fd, F_UNLCK);
 
@@ -131,17 +116,16 @@ static void write_log(int lineno, char *fname_call, int fd, log_level level, cha
         buf[MAX_MSG - 1] = '\0';
     }
     strcpy(buf, message);
-
     char ln[MAX_MSG_T] = {0};
     size_t s_msg_len =
-        snprintf(0, 0, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call, lineno);
-    snprintf(ln, MAX_MSG_T, "---------------------FILE:%s,LINE NUMBER %u --------------------\n", fname_call, lineno);
+        snprintf(0, 0, "FILE:%s,LINE NUMBER %u,", fname_call, lineno);
+    snprintf(ln, MAX_MSG_T, "FILE:%s,LINE NUMBER %u,", fname_call, lineno);
     char sn[MAX_MSG_T] = {0};
-    size_t l_msg_len = snprintf(0, 0, "---------------------LOG LEVEL %s --------------------\n", get_level(level));
+    size_t l_msg_len = snprintf(0, 0, "LOG LEVEL %s ", get_level(level));
     if ((s_msg_len >= MAX_MSG_T) || (l_msg_len >= MAX_MSG_T))
         syslog(LOG_INFO, "maximum msg reached, truncate output");
-    snprintf(sn, MAX_MSG_T, "---------------------LOG LEVEL %s --------------------\n", get_level(level));
-    static const char *end_bt = "--------------------------------------------------------\n";
+    snprintf(sn, MAX_MSG_T, "LOG LEVEL %s ", get_level(level));
+    static const char *end_bt = "";
 
     write_to_file(fd, 4, sn, ln, buf, end_bt);
 }
