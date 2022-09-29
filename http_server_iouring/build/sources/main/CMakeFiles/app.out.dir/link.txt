@@ -1,1 +1,0 @@
-/usr/bin/cc -Wall -Wextra -Wpedantic -pedantic-errors  -O3 CMakeFiles/app.out.dir/main.c.o -o ../../app.out  ../contrib/libpicohttpparserlib.a libservapplib.a -luring ../contrib/libpicohttpparserlib.a 
