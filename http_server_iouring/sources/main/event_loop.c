@@ -44,7 +44,7 @@ void event_loop(int sockfd, struct io_uring *ring)
 
         if (UNLIKELY(io_uring_wait_cqe(ring, &cqe)))
             die("error accepting a connection");
-        printf("current fd is %d, cycle serial:%llu\n", cqe->res, ii);
+        //printf("current fd is %d, cycle serial:%llu\n", cqe->res, ii);
         switch (request_data_event_type(cqe->user_data)) // get type
         {
         case FLAG_ACCEPT:
@@ -89,6 +89,5 @@ void event_loop(int sockfd, struct io_uring *ring)
         }
         io_uring_cqe_seen(ring, cqe);
         ii++;
-	printf("-------------\n");
     }
 }
