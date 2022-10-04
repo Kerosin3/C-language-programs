@@ -12,16 +12,31 @@
     "HTTP/1.0 200 OK\r\nServer: My-test-server \r\n"                                                                   \
     "Content-Type: application/octet-stream\r\nContent-Length: %ld\r\nConnection: keep-alive\r\n"                      \
     "\r\n"                                                                                                             \
-    "<!DOCTYPE html>"                                                                                                  \
-    "<html>"                                                                                                           \
-    "<head>"                                                                                                           \
-    "<title>Sendfile</title>"                                                                                          \
-    "</head>"                                                                                                          \
-    "<body>"                                                                                                           \
-    "<h1>Sending file %s</h1>"                                                                                         \
-    "<p>Please wait</p>"                                                                                               \
-    "</body>"                                                                                                          \
-    "</html>"
+
+
+
+
+int request_data_client_fd(uint64_t request_data)
+{
+    // UNIT_MAX = 0x00000000FFFFFFFF
+    return request_data & UINT_MAX;
+}
+
+flag_state request_data_event_type(uint64_t request_data)
+{
+    uint64_t mask = ULLONG_MAX - UINT_MAX;
+    // ULLONG_MAX - UINT_MAX = 0xFFFFFFFF00000000
+    uint64_t ret = (request_data & (mask)) >> 32;
+    return (flag_state)ret;
+}
+
+
+char *get_client_buffer(int client_fd)
+{
+    return &buffers[client_fd * BUFFER_SIZE];
+}
+
+
 
 void set_flags(int socket)
 {
@@ -101,7 +116,7 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
     }
     if (flag_found)
     {
-        int fds = open(files_in_dir[k], O_DIRECT | O_SYNC | O_RDONLY); // open file
+        int fds = open(files_in_dir[k],  O_SYNC | O_RDONLY); // open file
         if (fds < 0)
         {
             if (errno == EACCES) // access denied
@@ -123,7 +138,7 @@ void handle_request(struct io_uring *ring, int client_fd, size_t n_read)
 
         buffer_lengths[client_fd] = csize;
 
-        int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, REPLY_200OK, csize, requested);
+        int n = snprintf(get_client_buffer(client_fd), BUFFER_SIZE, REPLY_200OK, csize );
         add_write_request(ring, client_fd, n, true);
     }
     else if ((strcmp(requested, "main"))) // not main

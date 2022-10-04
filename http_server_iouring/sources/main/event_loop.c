@@ -76,7 +76,7 @@ void event_loop(int sockfd, struct io_uring *ring)
                             break;
                         }
                     } while (sended != 0);
-                    send(current_client_fd, REPLY_200S, strlen(REPLY_200S), MSG_CONFIRM);
+//                    send(current_client_fd, REPLY_200S, strlen(REPLY_200S), MSG_CONFIRM); realize as redirect!
                 }
                 close(file_fds[current_client_fd]);
                 shutdown(current_client_fd, SHUT_RDWR);

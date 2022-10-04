@@ -32,19 +32,13 @@ typedef enum
 u_int64_t make_request_data(int client_fd, flag_state flag);
 
 void set_flags(int socket);
-inline int request_data_client_fd(uint64_t request_data)
-{
-    // UNIT_MAX = 0x00000000FFFFFFFF
-    return request_data & UINT_MAX;
-}
 
-inline flag_state request_data_event_type(uint64_t request_data)
-{
-    uint64_t mask = ULLONG_MAX - UINT_MAX;
-    // ULLONG_MAX - UINT_MAX = 0xFFFFFFFF00000000
-    uint64_t ret = (request_data & (mask)) >> 32;
-    return (flag_state)ret;
-}
+int request_data_client_fd(uint64_t request_data);
+
+flag_state request_data_event_type(uint64_t request_data);
+
+char *get_client_buffer(int client_fd);
+
 
 void add_accept_request(struct io_uring *ring, int serverfd, struct sockaddr_in *a_client_adrd,
                         socklen_t *client_addr_len);
@@ -53,10 +47,4 @@ void add_read_request(struct io_uring *ring, int client_fd);
 void add_write_request(struct io_uring *ring, int client_fd, size_t nbytes, bool more_data);
 
 void handle_request(struct io_uring *ring, int client_fd, size_t n_read);
-
-inline char *get_client_buffer(int client_fd)
-{
-    return &buffers[client_fd * BUFFER_SIZE];
-}
-
 #endif
