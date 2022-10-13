@@ -13,6 +13,7 @@ int main(int argc, char *argv[]){
 	} else {
 		printf("DB created!\n");
 	}
+	get_rows(db);
 //	get_column(db);
 
 

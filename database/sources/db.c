@@ -3,6 +3,7 @@
 int callback(void *some, int argc, char **argv, char **ColName);
 char const *const execute_commands[99];
 
+int get_rows(sqlite3* db);
 int fill_db(sqlite3* db){
 	//sqlite3 *db;
 	char *err_msg = 0 ;
@@ -28,49 +29,34 @@ int fill_db(sqlite3* db){
 //	int last_id = sqlite3_last_insert_rowid(db);
 	//printf("last id %d\n",last_id);
 
-//	char *sql = "SELECT Id, age FROM oscar WHERE id = ?";
-	char *sql = "SELECT COUNT(*) FROM oscar";
+}
+
+int get_rows(sqlite3* db){
+	int handle_sq = sqlite3_open("testdb.db",&db);
+
+
+	//char *sql = "select count(*) from oscar";
+	char *sql = "select count(*) from oscar";
 	sqlite3_stmt *res;
 	handle_sq = sqlite3_prepare_v2(db,sql,-1,&res,0);
-	
-//	sqlite3_step(res);
-/*
-	if (handle_sq == SQLITE_OK){
-		sqlite3_bind(res);
-	} else {
-		printf("error\n");
+	if (handle_sq!=SQLITE_OK){
+		printf("error handling\n");
 	}
-*/	
-	size_t count = 0;
-	/*while((handle_sq = sqlite3_step(res) == SQLITE_ROW)){
-		count++;
-		printf("-->%d\n",sqlite3_column_int(res,0));
-	}
-		printf("count is %lu \n",count);
-	if (handle_sq == SQLITE_DONE){
-		printf("count is %lu \n",count);
-	}
-*/
-
 
 	int step = sqlite3_step(res);
 	if (step == SQLITE_ROW){
-		printf("%d: \n",sqlite3_column_int(res,0));
-//		printf("%s: \n",sqlite3_column_text(res,1));
+		printf("steprez=%d,count =  %d: \n",step,sqlite3_column_int(res,0));
 	}
-	
 	sqlite3_finalize(res);
-
-
 	return 0;
 }
 
 int get_column(sqlite3* db){
 
-	//char *sql = "SELECT * FROM oscar";
+	char *sql = "SELECT * FROM oscar";
 //	char *sql = "PRAGMA table_info(oscar)";
 	//char *sql = "PRAGMA table_info(oscar)";
-	char *sql = "SELECT length(oscar))";
+	//char *sql = "SELECT length(oscar))";
 	
 	char *err_msg = 0 ;
 	int handle_sq ;
@@ -84,6 +70,7 @@ int get_column(sqlite3* db){
 		sqlite3_close(db);
 		return 1;
 	} else { printf("OK\n"); }
+	sqlite3_close(db);
 	return 0;
 
 }

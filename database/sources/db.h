@@ -7,6 +7,7 @@
 #include "misc.h"
 
 int fill_db();
+int get_rows(sqlite3* db);
 
 int get_column(sqlite3* db);
 #endif
