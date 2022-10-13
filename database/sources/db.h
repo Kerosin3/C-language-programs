@@ -1,13 +1,25 @@
 #ifndef _DB
 #define _DB
 
-#include <stdio.h>
-#include <stdint.h>
-#include <sqlite3.h>
 #include "misc.h"
+#include <limits.h>
+#include <sqlite3.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <tgmath.h>
 
-int fill_db();
-int get_rows(sqlite3* db);
+typedef enum
+{
+    id = 0,
+    year,
+    age,
+    name,
+    movie
+} columnN;
 
-int get_column(sqlite3* db);
+long int get_summ_scalar(sqlite3 *db, columnN);
+int get_rows(sqlite3 *db);
+int fill_db(sqlite3 *db,char* dbname);
+
+int get_column(sqlite3 *db);
 #endif
