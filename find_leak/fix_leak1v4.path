@@ -1,19 +1,22 @@
 diff --git a/find_leak/14_posix_homework/clib/clib/src/common/clib-package.c b/find_leak/14_posix_homework/clib/clib/src/common/clib-package.c
-index 268538e..af20c18 100644
+index 268538e..cc2b4d8 100644
 --- a/find_leak/14_posix_homework/clib/clib/src/common/clib-package.c
 +++ b/find_leak/14_posix_homework/clib/clib/src/common/clib-package.c
-@@ -664,9 +664,13 @@ clib_package_new_from_slug_with_package_name(const char *slug, int verbose,
-       json = res->data;
+@@ -661,12 +661,16 @@ clib_package_new_from_slug_with_package_name(const char *slug, int verbose,
+ #else
+       res = http_get(json_url);
+ #endif
+-      json = res->data;
        _debug("status: %d", res->status);
        if (!res || !res->ok) {
--        goto download;
-+	      if (res){
-+		      http_get_free(res);
-+		      res = void* 0;
++	      if (res) {
++		http_get_free(res);
++		res = void* 0;
 +	      }
+         goto download;
        }
        log = "fetch";
-+        goto download;
++      json = res->data;
      }
    }
  
