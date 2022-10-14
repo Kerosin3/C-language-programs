@@ -9,6 +9,8 @@ sqlite3 *db;
 
 #define MAX_TEXT_SIZE 256
 #define MAX_N_TABLE 100
+//#define CREATEDB
+
 char *tablename;
 char *columnname;
 char **tablenames_p;
@@ -39,20 +41,21 @@ int main(int argc, char *argv[])
         exit(1);
     }
     dbname = argv[1];
-    //-------create and fill DB-----------
-    /*
-     int openOK = fill_db(db);
-     if (openOK)
-     {
-         printf("Error while crating DB, aborting\n");
-         return 1;
-     }
-     else
-     {
-         printf("DB created!\n");
-     return 0;
-     }
- */
+
+#ifdef CREATEDB
+    int openOK = fill_db(db);
+    if (openOK)
+    {
+        printf("Error while crating DB, aborting\n");
+        return 1;
+    }
+    else
+    {
+        printf("DB created!\n");
+    	sqlite3_close(db);
+    }
+#endif
+    // test if bd file exists in cur folder
     if (access(dbname, F_OK) != 0)
     {
         fprintf(stdout, "no such db file exists!\n");
@@ -67,12 +70,11 @@ int main(int argc, char *argv[])
         sqlite3_close(db);
         exit(1);
     }
-
     sqlite3_close(db);
 
+    // check if tablename presents---------------------------------------
     tablename = argv[2];
     tablenames_p = 0;
-    // check tablenames---------------------------------------
     tablenames_p = calloc(MAX_N_TABLE, sizeof(char *));
     for (size_t i = 0; i < MAX_N_TABLE; i++)
     {
@@ -101,7 +103,7 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
     //-------------------------------------------------
-    // check table
+    // check specified column exists
     columnname = argv[3];
     if (get_know_whether_columnmane_exists(db))
     {
@@ -109,7 +111,7 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
     //---------------------------------------------------
-    // get n rows
+    // get number of rows in the table
 
     if ((t_glob_size = get_rowsN(db)) < 0)
     {
@@ -117,7 +119,7 @@ int main(int argc, char *argv[])
         goto cleanup;
     }
 
-    //  calculate staticstics
+    //  calculate staticstics if integer type
     if (get_summ_scalar(db) < 0)
         printf("there were errors while processing\n");
     sqlite3_close(db);
