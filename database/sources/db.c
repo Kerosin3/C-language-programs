@@ -1,19 +1,18 @@
 #include "db.h"
-#include <math.h>
-#include <sqlite3.h>
-#include <string.h>
+
+#define sql_query "SELECT id, %s From %s WHERE id = ? AND typeof(%s) =  \"integer\""
 
 int callback_tablenames(void *some, int argc, char **argv, char **ColName);
 
-int callback(void *some, int argc, char **argv, char **ColName);
-#define sql_query "SELECT id, %s From %s WHERE id = ?"
+// int callback(void *some, int argc, char **argv, char **ColName);
 
-#define tablesize 90
 char const *const execute_commands[tablesize];
 
-size_t g_var = 0 ;
+size_t g_var = 0;
 
-int get_rows(sqlite3 *db);
+/*
+ *fill a db
+ */
 int fill_db(sqlite3 *db)
 {
     char *err_msg = 0;
@@ -27,7 +26,7 @@ int fill_db(sqlite3 *db)
         return 1;
     }
 
-    for (size_t i = 0; i < tablesize; i++)
+    for (size_t i = 0; i < (size_t)t_glob_size; i++)
     {
         handle_sq = sqlite3_exec(db, execute_commands[i], 0, 0, &err_msg);
         if (handle_sq != SQLITE_OK)
@@ -41,8 +40,7 @@ int fill_db(sqlite3 *db)
     return 0;
 }
 
-
-int get_know_whether_tablename(sqlite3 *db)
+int get_know_whether_columnmane_exists(sqlite3 *db)
 {
 
     int handle_sq = sqlite3_open(dbname, &db);
@@ -51,23 +49,25 @@ int get_know_whether_tablename(sqlite3 *db)
         printf("error opening DB\n");
         return -1;
     }
-    char sql_q[512] = {0};
-    int n = 0;
-//    n = snprintf(sql_q, 512, sql_query, "year", tablename);
     int notnull;
-    const char* Zdatatype;
-    const char* zcollseq;
+    const char *Zdatatype;
+    const char *zcollseq;
     int pk;
     int autoincr;
-    printf("%s %s %s\n",dbname,tablename,columnname);
-    int rez = sqlite3_table_column_metadata(db,NULL,tablename,columnname,&Zdatatype,&zcollseq,&notnull,&pk,&autoincr  ); //OK??
-    if (rez!= SQLITE_OK){
-	    printf("now found! %d\n",rez);
-    } else {
-	    printf("FOUND!\n");
+    int rez = sqlite3_table_column_metadata(db, NULL, tablename, columnname, &Zdatatype, &zcollseq, &notnull, &pk,
+                                            &autoincr); // OK
+    if (rez != SQLITE_OK)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
     }
 }
-
+/*
+ * calculate statistics for scalar column
+ * */
 long int get_summ_scalar(sqlite3 *db)
 {
 
@@ -78,23 +78,8 @@ long int get_summ_scalar(sqlite3 *db)
         return -1;
     }
     char sql_q[512] = {0};
-    int n = 0;
-    n = snprintf(sql_q, 512, sql_query, "year", tablename);
-    /*
-    switch (N)
-    {
-    case (year):
-        n = snprintf(sql_q, 512, sql_query, "year", tablename);
-        break;
-    case (age):
-        n = snprintf(sql_q, 512, sql_query, "age",  tablename);
-        break;
-    default:
-        return -1;
-        break;
-    }*/
-//     char* sql_q =  "SELECT id, age From oscar WHERE id = ?";
-    printf("SQL:%s\n",sql_q);
+    snprintf(sql_q, 512, sql_query, columnname, tablename, columnname);
+    // printf("SQL:%s\n", sql_q); print SQL req
     sqlite3_stmt *res;
     int step;
     unsigned init_n = 1;
@@ -103,22 +88,30 @@ long int get_summ_scalar(sqlite3 *db)
     long int min = INT32_MAX;
     double disp = 0;
     long int current_val = 0;
-    double data[tablesize] = {0};
+    double *data = calloc(t_glob_size, sizeof(double));
     do
     {
         handle_sq = sqlite3_prepare_v2(db, sql_q, -1, &res, 0);
         if (handle_sq != SQLITE_OK)
         {
-            printf("error handling request\n %d\n",handle_sq);
-	    return -1;
-            break;
+            printf("error handling request %d \n", handle_sq);
+            free(data);
+            return -1;
         }
         sqlite3_bind_int(res, 1, init_n);
-        if ((step = sqlite3_step(res)) != SQLITE_ROW)
+        step = sqlite3_step(res);
+        if (((step != SQLITE_ROW) && (init_n == 1)))
+        {
+            free(data);
+            printf("please specify a column, which contains a valid integer data\n");
+            return -1;
+        }
+        if ((step != SQLITE_ROW))
+        {
             break;
+        }
         current_val = sqlite3_column_int(res, 1);
         data[init_n - 1] = (double)current_val;
-        printf("->%ld\n", current_val);
         if (max < current_val)
             max = current_val;
         if (min > current_val)
@@ -128,113 +121,77 @@ long int get_summ_scalar(sqlite3 *db)
 
     } while (step == SQLITE_ROW);
 
-    double mean = (sum / init_n);
-    printf("value n %u\n", init_n - 1);
+    double mean = (sum / (init_n - 1));
     for (size_t i = 0; i < init_n - 1; i++)
     {
         disp += pow((data[i] - mean), 2);
     }
     disp /= (init_n - 1);
-    printf("mean %f \n", mean);
-    printf("disp is %f \n", disp);
-    printf("max %ld, min %ld, sum %ld\n", max, min, sum);
+    printf("max value: %ld, min value: %ld, mean value: %2.f, variance: %.2f, sum: %lu \n", max, min, mean, disp, sum);
     sqlite3_finalize(res);
-    return sum;
+    free(data);
+    return init_n - 1;
 }
 
-
-
-int get_rows(sqlite3 *db)
+int get_rowsN(sqlite3 *db)
 {
-    int handle_sq = sqlite3_open("testdb.db", &db);
-
-    char *sql = "select count(*) from oscar";
-    sqlite3_stmt *res;
-    handle_sq = sqlite3_prepare_v2(db, sql, -1, &res, 0);
+    int handle_sq = sqlite3_open(dbname, &db);
     if (handle_sq != SQLITE_OK)
     {
-        printf("error handling\n");
+        printf("error opening DB\n");
+        return -1;
     }
-
+    char sql_q[512] = {0};
+    snprintf(sql_q, 512, "select count(*) from %s", tablename);
+    sqlite3_stmt *res;
+    handle_sq = sqlite3_prepare_v2(db, sql_q, -1, &res, 0);
+    if (handle_sq != SQLITE_OK)
+    {
+        printf("error handling request!\n");
+        return -1;
+    }
+    int tsize;
     int step = sqlite3_step(res);
     if (step == SQLITE_ROW)
     {
-        printf("steprez=%d,count =  %s: \n", step, sqlite3_column_text(res, 0));
+        memset(sql_q, 0, 512);
+        snprintf(sql_q, 512, "%s", sqlite3_column_text(res, 0));
+        sscanf(sql_q, "%d", &tsize);
+    }
+    if (tsize < 0)
+    {
+        printf("wrong tablesize!\n");
+        return -1;
     }
     sqlite3_finalize(res);
-    return 0;
+    return tsize;
 }
 
-
-int get_table_names(sqlite3* db){
+int get_table_names(sqlite3 *db)
+{
 
     int handle_sq = sqlite3_open(dbname, &db);
     char *err_msg = 0;
 
     char *sql = "SELECT name FROM sqlite_master WHERE type='table'";
-    sqlite3_stmt *res;
-    handle_sq = sqlite3_exec(db,sql,callback_tablenames,0,&err_msg);
+    handle_sq = sqlite3_exec(db, sql, callback_tablenames, 0, &err_msg);
     if (handle_sq != SQLITE_OK)
     {
         printf("error handling\n");
-	return 1;
-    }
-     return 1;
-    sqlite3_finalize(res);
-
-}
-
-int get_column(sqlite3 *db)
-{
-
-    //char *sql = "SELECT * FROM oscar";
-    //	char *sql = "PRAGMA table_info(oscar)";
-     char *sql = "PRAGMA table_info(oscar)";
-    // char *sql = "SELECT length(oscar))";
-
-    char *err_msg = 0;
-    int handle_sq;
-
-    sqlite3_open(dbname, &db);
-
-    handle_sq = sqlite3_exec(db, sql, callback, 0, &err_msg);
-    if (handle_sq != SQLITE_OK)
-    {
-        printf("-error while preforming command to DB\n");
-        sqlite3_free(err_msg);
-        sqlite3_close(db);
         return 1;
     }
-    else
-    {
-        printf("OK\n");
-    }
-    sqlite3_close(db);
-    return 0;
+    return 1;
 }
-int callback(void *some, int argc, char **argv, char **ColName)
-{
-    some = 0;
-    size_t k =0;
-    for (size_t i = 0; i < argc; i++)
-    {
-        printf("%s = %s \n", ColName[i], argv[i] ? argv[i] : "Null");
-    }
-    printf("\n");
-    return 0;
-}
-
 int callback_tablenames(void *some, int argc, char **argv, char **ColName)
 {
     some = 0;
-    size_t k =0;
-    for (size_t i = 0; i < argc; i++)
+    for (size_t i = 0; i < (long unsigned)argc; i++)
     {
-	if (*argv[i] != '0') {
-		strcpy(tablenames_p[g_var],argv[g_var]);
-		g_var++;
-		
-    	}
+        if (*argv[i] != '0')
+        {
+            strcpy(tablenames_p[g_var], argv[g_var]);
+            g_var++;
+        }
     }
     return 0;
 }
@@ -332,3 +289,41 @@ char const *const execute_commands[tablesize] = {
     "INSERT INTO oscar VALUES(88,2015,54,'Julianne Moore','Still Alice');",
     "INSERT INTO oscar VALUES(89,2016,26,'Brie Larson','Room');",
 };
+
+/*
+int get_column(sqlite3 *db)
+{
+
+    char *sql = "PRAGMA table_info(oscar)";
+
+    char *err_msg = 0;
+    int handle_sq;
+
+    sqlite3_open(dbname, &db);
+
+    handle_sq = sqlite3_exec(db, sql, callback, 0, &err_msg);
+    if (handle_sq != SQLITE_OK)
+    {
+        printf("-error while preforming command to DB\n");
+        sqlite3_free(err_msg);
+        sqlite3_close(db);
+        return 1;
+    }
+    else
+    {
+        printf("OK\n");
+    }
+    sqlite3_close(db);
+    return 0;
+}
+int callback(void *some, int argc, char **argv, char **ColName)
+{
+    some = 0;
+    for (size_t i = 0; i < (long unsigned)argc; i++)
+    {
+        printf("%s = %s \n", ColName[i], argv[i] ? argv[i] : "Null");
+    }
+    printf("\n");
+    return 0;
+}
+*/

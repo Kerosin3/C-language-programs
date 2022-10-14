@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(deamon_filesize LANGUAGES C)
+project(sqlite3example LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 set(C_EXTENSIONS TRUE)
@@ -9,7 +9,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -pedantic-errors ")
 
-#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../test_dir) #copy
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 add_subdirectory(sources/)
