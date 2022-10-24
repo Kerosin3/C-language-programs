@@ -48,6 +48,7 @@ int get_know_whether_columnmane_exists(sqlite3 *db)
     int rez = sqlite3_table_column_metadata(db, NULL, tablename, columnname, &Zdatatype, &zcollseq, &notnull, &pk,
                                             &autoincr); // OK
 	
+
     if (rez != SQLITE_OK)
     {
         return 1;
@@ -155,6 +156,7 @@ int get_table_names(sqlite3 *db)
     char *err_msg = 0;
 
     char *sql = "SELECT name FROM sqlite_master WHERE type='table'";
+    //char *sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='oscar'"; //better to use
     handle_sq = sqlite3_exec(db, sql, callback_tablenames, 0, &err_msg);
 
     if (handle_sq != SQLITE_OK)
