@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     if (openOK)
     {
         printf("Error while crating DB, aborting\n");
+    	sqlite3_close(db);
         return 1;
     }
     else
@@ -70,7 +71,6 @@ int main(int argc, char *argv[])
         sqlite3_close(db);
         exit(1);
     }
-    sqlite3_close(db);
 
     // check if tablename presents---------------------------------------
     tablename = argv[2];
@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
         if (ii >= MAX_N_TABLE - 1)
         {
             fprintf(stdout, "no such table!\n");
+            sqlite3_close(db);
             exit(1);
         }
         if (!(strncmp(tablename, tablenames_p[ii], strnlen(tablename, MAX_TEXT_SIZE))))
@@ -122,8 +123,8 @@ int main(int argc, char *argv[])
     //  calculate staticstics if integer type
     if (get_summ_scalar(db) < 0)
         printf("there were errors while processing\n");
-    sqlite3_close(db);
 cleanup:
+    sqlite3_close(db);
     for (size_t i = 0; i < MAX_N_TABLE; i++)
     {
         free(tablenames_p[i]);

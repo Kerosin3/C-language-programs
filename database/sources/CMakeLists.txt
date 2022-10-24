@@ -8,4 +8,5 @@ ADD_EXECUTABLE (app.out
 
 TARGET_LINK_LIBRARIES(app.out
 		      sqlite3
+		      m
 	      	     )

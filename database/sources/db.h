@@ -1,7 +1,6 @@
 #ifndef _DB
 #define _DB
 
-#include "misc.h"
 #include <limits.h>
 #include <sqlite3.h>
 #include <stdint.h>

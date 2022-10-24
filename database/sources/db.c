@@ -16,7 +16,6 @@ size_t g_var = 0;
 int fill_db(sqlite3 *db)
 {
     char *err_msg = 0;
-
     int handle_sq = sqlite3_open(dbname, &db);
 
     if (handle_sq != SQLITE_OK)
@@ -33,7 +32,6 @@ int fill_db(sqlite3 *db)
         {
             printf("error while preforming command to DB\n");
             sqlite3_free(err_msg);
-            sqlite3_close(db);
             return 1;
         }
     }
@@ -42,13 +40,6 @@ int fill_db(sqlite3 *db)
 
 int get_know_whether_columnmane_exists(sqlite3 *db)
 {
-
-    int handle_sq = sqlite3_open(dbname, &db);
-    if (handle_sq != SQLITE_OK)
-    {
-        printf("error opening DB\n");
-        return -1;
-    }
     int notnull;
     const char *Zdatatype;
     const char *zcollseq;
@@ -56,6 +47,7 @@ int get_know_whether_columnmane_exists(sqlite3 *db)
     int autoincr;
     int rez = sqlite3_table_column_metadata(db, NULL, tablename, columnname, &Zdatatype, &zcollseq, &notnull, &pk,
                                             &autoincr); // OK
+	
     if (rez != SQLITE_OK)
     {
         return 1;
@@ -70,13 +62,7 @@ int get_know_whether_columnmane_exists(sqlite3 *db)
  * */
 long int get_summ_scalar(sqlite3 *db)
 {
-
-    int handle_sq = sqlite3_open(dbname, &db);
-    if (handle_sq != SQLITE_OK)
-    {
-        printf("error opening DB\n");
-        return -1;
-    }
+    int handle_sq;
     char sql_q[512] = {0};
     snprintf(sql_q, 512, sql_query, columnname, tablename, columnname);
     // printf("SQL:%s\n", sql_q); print SQL req
@@ -118,6 +104,7 @@ long int get_summ_scalar(sqlite3 *db)
             min = current_val;
         sum += current_val;
         init_n++;
+	sqlite3_finalize(res);
 
     } while (step == SQLITE_ROW);
 
@@ -135,12 +122,7 @@ long int get_summ_scalar(sqlite3 *db)
 
 int get_rowsN(sqlite3 *db)
 {
-    int handle_sq = sqlite3_open(dbname, &db);
-    if (handle_sq != SQLITE_OK)
-    {
-        printf("error opening DB\n");
-        return -1;
-    }
+    int handle_sq;
     char sql_q[512] = {0};
     snprintf(sql_q, 512, "select count(*) from %s", tablename);
     sqlite3_stmt *res;
@@ -169,12 +151,12 @@ int get_rowsN(sqlite3 *db)
 
 int get_table_names(sqlite3 *db)
 {
-
-    int handle_sq = sqlite3_open(dbname, &db);
+    int handle_sq;
     char *err_msg = 0;
 
     char *sql = "SELECT name FROM sqlite_master WHERE type='table'";
     handle_sq = sqlite3_exec(db, sql, callback_tablenames, 0, &err_msg);
+
     if (handle_sq != SQLITE_OK)
     {
         printf("error handling\n");
