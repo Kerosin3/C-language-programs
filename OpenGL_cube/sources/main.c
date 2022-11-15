@@ -1,83 +1,123 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <GL/glut.h>
-#include <GL/gl.h>
+#include	<stdlib.h>
+#include	<math.h>
 
 
-int WindW, WindH;
-int i;
-int alpha;
 
-void Visibility(int state) // Visibility function
+
+
+/*
+** Function called to update rendering
+*/
+void		DisplayFunc(void)
 {
-  if (state == GLUT_NOT_VISIBLE) printf("Window not visible!\n");
-  if (state == GLUT_VISIBLE) printf("Window visible!\n");
-}
+  static float alpha = 0;
 
-void Reshape(int width, int height) // Reshape function
-{
-  glViewport(0, 0, width, height);
-  glMatrixMode(GL_PROJECTION);
+  /* Clear the buffer, clear the matrix */
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity();
-  // gluOrtho2D(-1, 1, -1, 1);
-  glOrtho(-1, 1, -1, 1, 0, 10);
-  glMatrixMode(GL_MODELVIEW);
 
-  WindW = width;
-  WindH = height;
-}
+  /* A step backward, then spin the cube */
+  glTranslatef(0, 0, -10);
+  glRotatef(30, 1, 0, 0);
+  glRotatef(alpha, 0, 1, 0);
 
-void timf(int value) // Timer function
-{
-  glutPostRedisplay();  // Redraw windows
-  glutTimerFunc(40, timf, 0); // Setup next timer
-}
+  /* We tell we want to draw quads */
+  glBegin(GL_QUADS);
 
+  /* Every four calls to glVertex, a quad is drawn */
+  glColor3f(0, 0, 0); glVertex3f(-1, -1, -1);
+  glColor3f(0, 0, 1); glVertex3f(-1, -1,  1);
+  glColor3f(0, 1, 1); glVertex3f(-1,  1,  1);
+  glColor3f(0, 1, 0); glVertex3f(-1,  1, -1);
 
-void Draw(void) // Window redraw function
-{
+  glColor3f(1, 0, 0); glVertex3f( 1, -1, -1);
+  glColor3f(1, 0, 1); glVertex3f( 1, -1,  1);
+  glColor3f(1, 1, 1); glVertex3f( 1,  1,  1);
+  glColor3f(1, 1, 0); glVertex3f( 1,  1, -1);
 
-  glClear(GL_COLOR_BUFFER_BIT);
+  glColor3f(0, 0, 0); glVertex3f(-1, -1, -1);
+  glColor3f(0, 0, 1); glVertex3f(-1, -1,  1);
+  glColor3f(1, 0, 1); glVertex3f( 1, -1,  1);
+  glColor3f(1, 0, 0); glVertex3f( 1, -1, -1);
 
-  glLineWidth(3);
-  glColor3f(0.0f, 0.6f, 0.9f);
+  glColor3f(0, 1, 0); glVertex3f(-1,  1, -1);
+  glColor3f(0, 1, 1); glVertex3f(-1,  1,  1);
+  glColor3f(1, 1, 1); glVertex3f( 1,  1,  1);
+  glColor3f(1, 1, 0); glVertex3f( 1,  1, -1);
 
-  glPushMatrix();
-  glRotatef(alpha, 0.0f, 0.0f, 1.0f);
-  alpha += 2;
-  if (alpha > 359) alpha = 0;
-  glBegin(GL_LINES);
-    glVertex2f(-0.5f, 0.5f);
-    glVertex2f(0.5f, -0.5f);
-    // glVertex2f(0.9f, 0.9f);
+  glColor3f(0, 0, 0); glVertex3f(-1, -1, -1);
+  glColor3f(0, 1, 0); glVertex3f(-1,  1, -1);
+  glColor3f(1, 1, 0); glVertex3f( 1,  1, -1);
+  glColor3f(1, 0, 0); glVertex3f( 1, -1, -1);
+
+  glColor3f(0, 0, 1); glVertex3f(-1, -1,  1);
+  glColor3f(0, 1, 1); glVertex3f(-1,  1,  1);
+  glColor3f(1, 1, 1); glVertex3f( 1,  1,  1);
+  glColor3f(1, 0, 1); glVertex3f( 1, -1,  1);
+
+  /* No more quads */
   glEnd();
-  glPopMatrix();
 
+  /* Rotate a bit more */
+  alpha = alpha + 0.1;
 
+  /* End */
   glFlush();
   glutSwapBuffers();
+
+  /* Update again and again */
+  glutPostRedisplay();
+}
+
+/*
+** Function called when the window is created or resized
+*/
+void		ReshapeFunc(int width, int height)
+{
+  glMatrixMode(GL_PROJECTION);
+
+  glLoadIdentity();
+  gluPerspective(20, width / (float) height, 5, 15);
+  glViewport(0, 0, width, height);
+
+  glMatrixMode(GL_MODELVIEW);
+  glutPostRedisplay();
+}
+
+/*
+** Function called when a key is hit
+*/
+void		KeyboardFunc(unsigned char key, int x, int y)
+{
+  int foo;
+
+  foo = x + y; /* Has no effect: just to avoid a warning */
+  if ('q' == key || 'Q' == key || 27 == key)
+      exit(0);
 }
 
 
-int main(int argc, char *argv[]){
-
-  WindW = 400;
-  WindH = 300;
-  alpha = 4;
-
+int main(int argc, char **argv)
+{
+  /* Creation of the window */
   glutInit(&argc, argv);
-  glutInitWindowSize(WindW, WindH);
-  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-  (void)glutCreateWindow("OTUS OpenGL");
+  glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+  glutInitWindowSize(500, 500);
+  glutCreateWindow("Spinning cube");
 
-  glutReshapeFunc(Reshape); // Set up reshape function
-  glutDisplayFunc(Draw);    // Set up redisplay function
-  glutTimerFunc(40, timf, 0); // Set up timer for 40ms, about 25 fps
-  glutVisibilityFunc(Visibility); // Set up visibility funtion
-  glClearColor(1, 1, 1, 0);
+  /* OpenGL settings */
+  glClearColor(0, 0, 0, 0);
+  glEnable(GL_DEPTH_TEST);
 
+  /* Declaration of the callbacks */
+  glutDisplayFunc(&DisplayFunc);
+  glutReshapeFunc(&ReshapeFunc);
+  glutKeyboardFunc(&KeyboardFunc);
+
+  /* Loop */
   glutMainLoop();
 
-	return 0;
+  /* Never reached */
+  return 0;
 }
