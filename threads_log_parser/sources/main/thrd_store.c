@@ -69,6 +69,8 @@ void process_data(int *fds)
     storage_url main_storage_url = create_url_storage();
     storage_url main_storage_refer = create_url_storage();
 
+    thrd_t thrd_pullze_solver; // create threads
+
     size_t i = 0;
     while ((fds[i] != -1))
     {
