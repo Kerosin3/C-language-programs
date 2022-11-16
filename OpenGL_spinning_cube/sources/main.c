@@ -6,6 +6,7 @@
 #define SPINNING_FACTOR 1.0 // for more speed -> increase
 #define PERSPECTIVE_DISTANCE 30 // set how far the cube is seen
 #define ANGLE_OF_VIEW 30
+#define CLOCKWISE 1  // 1 is clockwise, -1 if anticlockwise
 
 // draw cube with gradients on its sides
 void DisplayFunc(void)
@@ -17,7 +18,11 @@ void DisplayFunc(void)
 
     glTranslatef(0, 0, -10);
     glRotatef(ANGLE_OF_VIEW, 1, 0, 0);
+#if(CLOCKWISE == 1 )
+    glRotatef(alpha, 0, -1, 0);
+#else
     glRotatef(alpha, 0, 1, 0);
+#endif
 
     glBegin(GL_QUADS); // begin draw
     
@@ -104,12 +109,15 @@ void KeyboardFunc(unsigned char key, int x, int y)
     int dummy;
 
     dummy = x + y; //its ok
-    if (27 == key)
+    if (27 == key) {
+	printf("exiting application spinning cube\n");
         exit(0);
+	}
 }
 
 int main(int argc, char **argv)
 {
+    printf("starting application spinning cube\n");
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
