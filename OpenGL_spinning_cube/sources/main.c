@@ -113,7 +113,7 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
-    glutCreateWindow("OpeGL spinning cube");
+    glutCreateWindow("OpenGL spinning cube");
 
     glClearColor(0, 0, 0, 0);
     glEnable(GL_DEPTH_TEST);
