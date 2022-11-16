@@ -1,5 +1,4 @@
 #include <GL/glut.h>
-#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -117,7 +116,7 @@ void KeyboardFunc(unsigned char key, int x, int y)
 
 int main(int argc, char **argv)
 {
-    printf("starting application spinning cube\n");
+    printf("starting application spinning cube, press Esc to exit\n");
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
